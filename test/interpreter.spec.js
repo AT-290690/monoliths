@@ -173,6 +173,12 @@ describe('interpretation should work as expected', () => {
       300
     )
   })
+  it(':+: should work', () => {
+    deepEqual(runFromInterpreted('|> [.: [1; 2; 3; 4; 5; 6]; :+: [3]]').items, [
+      [1, 2, 3],
+      [4, 5, 6],
+    ])
+  })
   it('>> and << should work', () => {
     deepEqual(
       runFromInterpreted(`

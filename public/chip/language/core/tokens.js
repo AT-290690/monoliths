@@ -685,10 +685,10 @@ const tokens = {
       throw new TypeError('Invalid number of arguments to .-:')
     const string = evaluate(args[0], env)
     if (typeof string !== 'string')
-      throw new TypeError('First argument of .-: must be an ""')
+      throw new TypeError('First argument of .-: must be a string')
     const separator = evaluate(args[1], env)
     if (typeof separator !== 'string')
-      throw new TypeError('Second argument of .-: must be an ""')
+      throw new TypeError('Second argument of .-: must be a string')
     return Brrr.from(string.split(separator))
   },
   ['.+:']: (args, env) => {
@@ -699,8 +699,27 @@ const tokens = {
       throw new TypeError('First argument of .+: must be an .: []')
     const separator = evaluate(args[1], env)
     if (typeof separator !== 'string')
-      throw new TypeError('Second argument of .+: must be an ""')
+      throw new TypeError('Second argument of .+: must be a string')
     return array.join(separator)
+  },
+  [':+:']: (args, env) => {
+    if (args.length !== 2)
+      throw new TypeError('Invalid number of arguments to :+:')
+    const array = evaluate(args[0], env)
+    if (!Brrr.isBrrr(array))
+      throw new TypeError('First argument of :+: must be an .: []')
+    const n = evaluate(args[1], env)
+    if (typeof n !== 'number')
+      throw new TypeError('Second argument of :+: must be an number')
+    return array.partition(n)
+  },
+  [':..']: (args, env) => {
+    if (args.length < 1)
+      throw new TypeError('Invalid number of arguments to :..')
+    const dimensions = args.map((arg) => evaluate(arg, env))
+    if (dimensions.some((d) => !Number.isInteger(d)))
+      throw new TypeError('Argument of :.. must be integers')
+    return Brrr.matrix(...dimensions)
   },
   ['#']: (args, env) => {
     if (!args.length) throw new SyntaxError('Invalid use of operation #')

@@ -141,6 +141,8 @@ const dfs = (tree, locals) => {
         )});`
       // case '</>':
       //   return `document.createElement(${dfs(tree.args[0], locals)})`
+      case ':..':
+        return `Brrr.matrix(${tree.args.map((x) => dfs(x, locals)).join(',')})`
       case '.:':
         return 'Brrr.of(' + tree.args.map((x) => dfs(x, locals)).join(',') + ')'
       case '..:=':
@@ -173,6 +175,11 @@ const dfs = (tree, locals) => {
         )});`
       case '.+:':
         return `_join(${dfs(tree.args[0], locals)}, ${dfs(
+          tree.args[1],
+          locals
+        )});`
+      case ':+:':
+        return `_partition(${dfs(tree.args[0], locals)}, ${dfs(
           tree.args[1],
           locals
         )});`
