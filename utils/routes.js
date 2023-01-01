@@ -86,7 +86,7 @@ router['GET /dir'] = async (req, res) => {
   })
   res.end(creds.id)
 }
-router['POST /exec'] = async (req, res, { query, cookie }) => {
+router['POST /compile'] = async (req, res, { query, cookie }) => {
   if (!cookieJar.isCookieVerified(cookie, query.dir)) {
     res.writeHead(403, { 'Content-Type': 'text/html' })
     res.end('403: Unauthorized!')

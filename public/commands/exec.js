@@ -1,4 +1,10 @@
-import { encodeBase64 } from '../chip/language/misc/compression.js'
+import {
+  compress,
+  decompress,
+  encodeBase64,
+} from '../chip/language/misc/compression.js'
+import { removeNoCode } from '../chip/language/misc/helpers.js'
+import { LZUTF8 } from '../chip/language/misc/lz-utf8.js'
 import {
   autoComplete,
   consoleEditor,
@@ -98,11 +104,10 @@ export const execute = async (CONSOLE) => {
       }
 
       break
-    case 'EXEC':
-    case '>>':
+    case 'COMPILE':
     case '$':
       {
-        fetch(`${API}exec?dir=${State.dir}&sub=${PARAMS[0] ?? ''}`, {
+        fetch(`${API}compile?dir=${State.dir}&sub=${PARAMS[0] ?? ''}`, {
           method: 'POST',
           'Content-Type': 'application/json',
           credentials: 'same-origin',
@@ -214,6 +219,25 @@ export const execute = async (CONSOLE) => {
       }
 
       break
+    case 'COMPRESS':
+      editor.setValue(
+        LZUTF8.compress(compress(removeNoCode(editor.getValue())), {
+          outputEncoding: 'Base64',
+        })
+      )
+      consoleElement.value = ''
+      break
+    case 'DECOMPRESS':
+      editor.setValue(
+        decompress(
+          LZUTF8.decompress(decodeURIComponent(editor.getValue().trim()), {
+            inputEncoding: 'Base64',
+            outputEncoding: 'String',
+          })
+        )
+      )
+      consoleElement.value = ''
+      break
     case 'SAVE':
     case '+':
       {
@@ -306,6 +330,7 @@ export const execute = async (CONSOLE) => {
  X: clears search, log and canvas pannels
  EMPTY: deletes all files in the folder
  WINDOW: open app window
+ COMPILE: compiles the selected dir
  SAVE: save in starage
  LOAD: load from storage
  DELETE: remove from storage
