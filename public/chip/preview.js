@@ -7,8 +7,7 @@ import {
 } from './language/misc/utils.js'
 import { wrapInBody, removeNoCode } from './language/misc/helpers.js'
 import { parse } from './language/core/parser.js'
-import Brrr from './language/extentions/Brrr.js'
-
+import Brrr from './language/extensions/Brrr.js'
 const encoding = new URLSearchParams(location.search).get('s')
 if (encoding) {
   const inlined = wrapInBody(

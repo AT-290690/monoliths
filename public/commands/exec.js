@@ -251,7 +251,7 @@ export const execute = async (CONSOLE) => {
     case '%':
       {
         const encoded = encodeURIComponent(encodeBase64(editor.getValue()))
-        const link = 'https://at-290690.github.io/chip/preview.html?s='
+        const link = `${API}chip/preview.html?s=`
         if (encoded) window.open(link + encoded, '_blank').focus()
       }
       break
