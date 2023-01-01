@@ -1,2 +1,2 @@
-# monoliths
-Cloud based IDE for custom language
+# monolith
+cloud based IDE for custom programming language
