@@ -423,5 +423,5 @@ export const compileToJs = (AST) => {
     if (!semiColumnEdgeCases.has(current + next)) program += current
   }
   const top = vars.size ? `var ${[...vars].join(',')};` : ''
-  return { body: `${top}${program}`, modules }
+  return { top, program, modules }
 }

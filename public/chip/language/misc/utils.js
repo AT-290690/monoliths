@@ -388,19 +388,27 @@ export const treeShake = (modules) => {
 
 export const compileModule = (source) => {
   const inlined = wrapInBody(removeNoCode(source))
-  const { body, modules } = compileToJs(parse(inlined))
+  const { top, program, modules } = compileToJs(parse(inlined))
   const lib = treeShake(modules)
   return `const VOID = null;
 ${Brrr.toString()}
 ${brrrHelpers}
 ${languageUtilsString}
 ${lib};
-${body}`
+${top}${program}`
 }
-
+export const compileBuild = (source) => {
+  const inlined = wrapInBody(removeNoCode(source))
+  const { top, program, modules } = compileToJs(parse(inlined))
+  const lib = treeShake(modules)
+  return `const VOID = null;
+${languageUtilsString}
+${lib};
+${top}async function entry(){${program.substring(6, program.length - 4)}}`
+}
 export const compileHtml = (source, scripts = '') => {
   const inlined = wrapInBody(removeNoCode(source))
-  const { body, modules } = compileToJs(parse(inlined))
+  const { top, program, modules } = compileToJs(parse(inlined))
   const lib = treeShake(modules)
   return `
 <style>body { background: #0e0e0e } </style><body>
@@ -412,12 +420,12 @@ const VOID = null;
 ${languageUtilsString}
 </script>
 <script>${lib}</script>
-<script> (() => { ${body} })()</script>
+<script> (() => { ${top}${program} })()</script>
 </body>`
 }
 export const compileHtmlModule = (source) => {
   const inlined = wrapInBody(removeNoCode(source))
-  const { body, modules } = compileToJs(parse(inlined))
+  const { top, program, modules } = compileToJs(parse(inlined))
   const lib = treeShake(modules)
   return `
 <style>body { background: #0e0e0e } </style><body>
@@ -426,7 +434,7 @@ export const compileHtmlModule = (source) => {
   const VOID = null;
   ${languageUtilsString};
   ${lib};
-  (() => { ${body} })()
+  (() => { ${top}${program} })()
  </script>
 </body>`
 }

@@ -102,16 +102,11 @@ export const execute = async (CONSOLE) => {
     case '>>':
     case '$':
       {
-        fetch(
-          `${API}exec?dir=${State.dir}&filename=${
-            PARAMS[0] ?? State.lastSelectedFile ?? 'entry.js'
-          }`,
-          {
-            method: 'POST',
-            'Content-Type': 'application/json',
-            credentials: 'same-origin',
-          }
-        )
+        fetch(`${API}exec?dir=${State.dir}&filename=entry.bit`, {
+          method: 'POST',
+          'Content-Type': 'application/json',
+          credentials: 'same-origin',
+        })
           .then(() => {
             droneIntel(execIcon)
           })
@@ -171,7 +166,7 @@ export const execute = async (CONSOLE) => {
     case 'LOAD':
     case '.':
       {
-        const filename = PARAMS[0] ?? State.lastSelectedFile ?? 'entry.js'
+        const filename = PARAMS[0] ?? State.lastSelectedFile ?? 'entry.bit'
         const response = await fetch(`${API}portals/${State.dir}/${filename}`, {
           credentials: 'same-origin',
         })
@@ -198,7 +193,7 @@ export const execute = async (CONSOLE) => {
       {
         consoleElement.value = ''
         const newFile = PARAMS[0]
-        const filename = newFile ?? State.lastSelectedFile ?? 'entry.js'
+        const filename = newFile ?? State.lastSelectedFile ?? 'entry.bit'
         const source = consoleEditor
           .getValue()
           .split('\n')
@@ -224,7 +219,7 @@ export const execute = async (CONSOLE) => {
       {
         consoleElement.value = ''
         const newFile = PARAMS[0]
-        const filename = newFile ?? State.lastSelectedFile ?? 'entry.js'
+        const filename = newFile ?? State.lastSelectedFile ?? 'entry.bit'
         const source = editor.getValue()
         if (newFile !== State.lastSelectedFile) State.cache = ''
         fetch(`${API}save?dir=${State.dir}&filename=${filename}`, {

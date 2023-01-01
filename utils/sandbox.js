@@ -1,4 +1,5 @@
 import {
+  compileBuild,
   compileHtmlModule,
   compileModule,
 } from '../public/chip/language/misc/utils.js'
@@ -10,10 +11,12 @@ import { removeNoCode } from '../public/chip/language/misc/helpers.js'
 import { LZUTF8 } from '../public/chip/language/misc/lz-utf8.js'
 import vm from 'vm'
 import { readFile, writeFile, rm, mkdir } from 'fs/promises'
+import Brrr from '../public/chip/language/extensions/Brrr.js'
 const sanitizePath = (path) => path.replaceAll('../', '')
 
 process.on('message', async ({ script, dir }) => {
   const sandbox = {
+    Brrr: Brrr,
     read: (path) => readFile(dir + sanitizePath(path), 'utf-8'),
     write: (path, data) => writeFile(dir + sanitizePath(path), data),
     remove: (path) => rm(dir + sanitizePath(path), { recursive: true }),
@@ -34,7 +37,10 @@ process.on('message', async ({ script, dir }) => {
       ),
   }
   try {
-    vm.runInNewContext(`async function entry () { ${script} }`, sandbox)
+    const parsed = compileBuild(script)
+    vm.runInNewContext(parsed.replaceAll('await', 'await '), sandbox)
     sandbox.entry()
-  } catch (err) {}
+  } catch (err) {
+    console.log(err)
+  }
 })

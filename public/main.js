@@ -45,7 +45,7 @@ document.addEventListener('keydown', (e) => {
   } else if (e.key === 'Enter' && activeElement === consoleElement) {
     execute(consoleElement)
   } else if (e.key === 'ArrowUp' && activeElement === consoleElement) {
-    consoleElement.value = State.lastSelectedFile ?? 'entry.js'
+    consoleElement.value = State.lastSelectedFile ?? 'entry.bit'
   } else if (e.key === 'Escape') {
     e.preventDefault()
     e.stopPropagation()
