@@ -52,6 +52,7 @@ document.addEventListener('keydown', (e) => {
     popupContainer.style.display = 'none'
     applicationContainer.style.display = 'none'
     autoComplete.innerHTML = ''
+    autoComplete.style.display = 'none'
   }
 })
 State.activeWindow = editorContainer

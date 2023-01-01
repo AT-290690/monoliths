@@ -102,7 +102,7 @@ export const execute = async (CONSOLE) => {
     case '>>':
     case '$':
       {
-        fetch(`${API}exec?dir=${State.dir}&filename=entry.bit`, {
+        fetch(`${API}exec?dir=${State.dir}&sub=${PARAMS[0] ?? ''}`, {
           method: 'POST',
           'Content-Type': 'application/json',
           credentials: 'same-origin',

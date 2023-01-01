@@ -22,10 +22,9 @@ class ThreadPool {
 }
 
 const forks = new ThreadPool(cpus().length)
-const run = async (scriptPath, dir) => {
-  const script = await readFile(scriptPath, 'utf-8')
+const run = async (files, dir) => {
   forks.send({
-    script,
+    files,
     dir,
   })
 }
