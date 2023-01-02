@@ -65,35 +65,6 @@ export const LIBRARY = {
         .substring(1)
         .toUpperCase(),
   },
-  OBJECT: {
-    NAME: 'OBJECT',
-    getprototypeof: (obj) => Object.getPrototypeOf(obj),
-    hasown: (obj, prop) => Object.hasOwn(obj, prop),
-    hasownproperty: (obj, prop) => obj.hasOwnProperty(prop),
-    getprototype: (obj) => obj.prototype,
-    setprototype: (obj, prototype) => (obj.prototype = prototype),
-    forin: (object, callback) => {
-      for (const key in object) callback(key, object)
-      return object
-    },
-    forof: (object, callback) => {
-      for (const key in object) callback(object[key])
-      return object
-    },
-    jsonstring: (object) => JSON.stringify(object),
-    jsonparse: (string) => JSON.parse(string),
-    clone: (obj) => structuredClone(obj),
-    has: (obj, ...props) => +props.every((x) => x in obj),
-    keys: (obj) => Object.keys(obj),
-    values: (obj) => Object.values(obj),
-    entries: (obj) => Object.entries(obj),
-    fromentries: (entries) => Object.fromEntries(entries),
-    freeze: (obj) => {
-      void Object.freeze(obj)
-      return obj
-    },
-    size: (obj) => Object.keys(obj).length,
-  },
   BITWISE: {
     NAME: 'BITWISE',
     and: (a, b) => a & b,

@@ -5,9 +5,9 @@ const sanitizeProp = (prop) => {
     prop.includes('__proto__')
   )
     throw new TypeError(`Forbidden property access ${prop}`)
-
   return prop
 }
+
 const compile = () => {
   const vars = new Set()
   let modules = {}
@@ -33,16 +33,7 @@ const compile = () => {
           if (res !== undefined) return `((${name}=${res}),${name});`
           break
         }
-        case '#': {
-          const names = tree.args.map(({ name }) => {
-            locals.add(name)
-            return `${name} = "${name}"`
-          })
 
-          return `((${names.join(',')}),${
-            tree.args[tree.args.length - 1].name
-          });`
-        }
         case '=': {
           const res = dfs(tree.args[1], locals)
           return `((${tree.args[0].name}=${res}),${tree.args[0].name});`
@@ -151,8 +142,6 @@ const compile = () => {
             tree.args[1],
             locals
           )});`
-        // case '</>':
-        //   return `document.createElement(${dfs(tree.args[0], locals)})`
         case ':..':
           return `Brrr.matrix(${tree.args
             .map((x) => dfs(x, locals))
@@ -201,31 +190,10 @@ const compile = () => {
           )});`
         case '.:?':
           return `_length(${dfs(tree.args[0], locals)});`
-        case '::':
-          return (
-            '{' +
-            tree.args
-              .map((x) => dfs(x, locals))
-              .reduce((acc, item, index) => {
-                if (index % 2 === 0) {
-                  const key = item.replace(';', '')
-                  acc +=
-                    key[0] === '"'
-                      ? `"${key.replaceAll('"', '')}":`
-                      : `[${key}]:`
-                } else acc += `${item},`
-                return acc
-              }, '') +
-            '}'
-          )
         case 'tco':
           return '_tco(' + dfs(tree.args[0], locals) + ');'
         case '...':
           return `_spreadArr([${tree.args
-            .map((x) => dfs(x, locals))
-            .join(',')}]);`
-        case ':::':
-          return `_spreadObj([${tree.args
             .map((x) => dfs(x, locals))
             .join(',')}]);`
         case '|>': {
@@ -250,6 +218,55 @@ const compile = () => {
             locals
           )});`
         }
+
+        case '::':
+          return (
+            'new Map([' +
+            tree.args
+              .map((x) => dfs(x, locals))
+              .reduce((acc, item, index) => {
+                if (index % 2 === 0) {
+                  const key = item.replace(';', '')
+                  acc +=
+                    key[0] === '"'
+                      ? `["${key.replaceAll('"', '')}",`
+                      : `[${key},`
+                } else acc += `${item}],`
+                return acc
+              }, '') +
+            '])'
+          )
+        case '#': {
+          const names = tree.args.map(({ name }) => {
+            locals.add(name)
+            return `${name} = "${name}"`
+          })
+
+          return `((${names.join(',')}),${
+            tree.args[tree.args.length - 1].name
+          });`
+        }
+        case '.':
+          return `_mapGet(${dfs(tree.args[0], locals)}, ${dfs(
+            tree.args[1],
+            locals
+          )})`
+        case '.=':
+          return `_mapSet(${dfs(tree.args[0], locals)}, ${dfs(
+            tree.args[1],
+            locals
+          )}, ${dfs(tree.args[2], locals)})`
+        case '.!=':
+          return `_mapRemove(${dfs(tree.args[0], locals)}, ${dfs(
+            tree.args[1],
+            locals
+          )})`
+        case ':::':
+          return `_mapEntries(${dfs(tree.args[0], locals)})`
+        case '::*':
+          return `_mapValues(${dfs(tree.args[0], locals)})`
+        case '::.':
+          return `_mapKeys(${dfs(tree.args[0], locals)})`
         case '.:@':
           return `_rot(${dfs(tree.args[0], locals)}, ${dfs(
             tree.args[1],
@@ -303,62 +320,6 @@ const compile = () => {
           const [array, callback, out] = tree.args.map((x) => dfs(x, locals))
           return `_reduceRight(${array}, ${callback}, ${out});`
         }
-        case '.': {
-          const prop = []
-          for (let i = 1; i < tree.args.length; ++i) {
-            const arg = tree.args[i]
-            const p =
-              (arg.type === 'value'
-                ? '"' + arg.value?.toString().trim().replaceAll('"', '') + '"'
-                : dfs(arg, locals)) ?? null
-
-            prop.push(sanitizeProp(p))
-          }
-          return `${dfs(tree.args[0], locals)}${prop
-            .map((x) => '[' + x + ']')
-            .join('')}`
-        }
-        case '.!=': {
-          const prop = []
-          for (let i = 1; i < tree.args.length; ++i) {
-            const arg = tree.args[i]
-            const p =
-              (arg.type === 'value'
-                ? '"' + arg.value?.toString().trim().replaceAll('"', '') + '"'
-                : dfs(arg, locals)) ?? null
-            prop.push(sanitizeProp(p))
-          }
-          const path = prop.map((x) => '[' + x + ']').join('')
-          if (tree.args[0].type === 'apply') {
-            locals.add('_tmp_')
-            const obj = dfs(tree.args[0], locals)
-            return `((delete (_tmp_=${obj})${path}), _tmp_);`
-          } else {
-            const obj = dfs(tree.args[0], locals)
-            return `((delete ${obj}${path}), ${obj});`
-          }
-        }
-        case '.=': {
-          const res = dfs(tree.args[tree.args.length - 1], locals)
-          const prop = []
-          for (let i = 1; i < tree.args.length - 1; ++i) {
-            const arg = tree.args[i]
-            const p =
-              (arg.type === 'value'
-                ? '"' + arg.value?.toString().trim().replaceAll('"', '') + '"'
-                : dfs(arg, locals)) ?? null
-            prop.push(sanitizeProp(p))
-          }
-          const path = prop.map((x) => '[' + x + ']').join('')
-          if (tree.args[0].type === 'apply') {
-            locals.add('_tmp_')
-            const obj = dfs(tree.args[0], locals)
-            return `(((_tmp_=${obj})${path}=${res}), _tmp_);`
-          } else {
-            const obj = dfs(tree.args[0], locals)
-            return `((${obj}${path}=${res}), ${obj});`
-          }
-        }
         default: {
           if (tree.operator.name)
             return (
@@ -376,8 +337,7 @@ const compile = () => {
                 sanitizeProp(x.value)
               )
               return methods
-                .map((dirtyMethod) => {
-                  const method = sanitizeProp(dirtyMethod)
+                .map((method) => {
                   if (method) {
                     locals.add(method)
                     if (imp in modules) modules[imp].push(method)
@@ -386,20 +346,6 @@ const compile = () => {
                   return `${method} = ${imp}["${method}"];`
                 })
                 .join('')
-            } else if (
-              tree.operator.operator.name === '.' &&
-              tree.type === 'apply'
-            ) {
-              const [parent, method] = tree.operator.args
-              const arg = tree.args.map((x) => dfs(x, locals))
-              const caller = parent.name ? parent.name : dfs(parent, locals)
-              return method.type === 'value'
-                ? `${caller}["${sanitizeProp(method.value)}"](${arg.join(
-                    ','
-                  )});`
-                : `${caller}[${sanitizeProp(dfs(method, locals))}](${arg.join(
-                    ','
-                  )});`
             } else {
               return `(${dfs(tree.operator, locals)})(${tree.args
                 .map((x) => dfs(x, locals))

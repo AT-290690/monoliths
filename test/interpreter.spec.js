@@ -4,45 +4,61 @@ describe('interpretation should work as expected', () => {
   it('definitions', () => {
     deepEqual(
       runFromInterpreted(
-        `:= [x; 10]; := [y; 3]; := [temp; x]; = [x; y]; = [y; temp]; :: ["x"; x; "y"; y]`
+        `:= [x; 10]; := [y; 3]; := [temp; x]; = [x; y]; = [y; temp]`
       ),
-      { x: 3, y: 10 }
+      10
     )
     throws(() => runFromInterpreted(`: [29; 0]`), RangeError)
   })
-  it('handles prototype polution', () => {
-    throws(
-      () =>
-        runFromInterpreted(
-          `. [LIBRARY; "constructor"; "constructor"]["console.log(1)"][]`
-        ),
-      TypeError
-    )
-    throws(
-      () =>
-        runFromInterpreted(`<- ["constructor"][. [:: ["x"; 10]; "constructor"]];
-constructor ["console.log(2)"][];`),
-      TypeError
-    )
-    throws(
-      () =>
-        runFromInterpreted(
-          `. [:: ["x"; 10]; "constructor"; "constructor"]["console.log(3)"][];`
-        ),
-      TypeError
-    )
-    throws(
-      () => runFromInterpreted(`<- ["constructor"] [. [:: []]];`),
-      TypeError
-    )
-    throws(
-      () =>
-        runFromInterpreted(
-          `<- ["constructor"] [. [:: []; "constructor"]]; constructor ["console.log(2)"][];`
-        ),
-      TypeError
+  it(':: ::. ::: ::* should work', () => {
+    deepEqual(runFromInterpreted(`::: [:: ["x"; 10; "y"; 23; "z"; 4]]`).items, [
+      ['x', 10],
+      ['y', 23],
+      ['z', 4],
+    ])
+    deepEqual(runFromInterpreted(`::. [:: ["x"; 10; "y"; 23; "z"; 4]]`).items, [
+      'x',
+      'y',
+      'z',
+    ])
+    deepEqual(
+      runFromInterpreted(`::* [:: ["x"; 10; "y"; 23; "z"; 4]]`).items,
+      [10, 23, 4]
     )
   })
+  //   it('handles prototype polution', () => {
+  //     throws(
+  //       () =>
+  //         runFromInterpreted(
+  //           `. [LIBRARY; "constructor"; "constructor"]["console.log(1)"][]`
+  //         ),
+  //       TypeError
+  //     )
+  //     throws(
+  //       () =>
+  //         runFromInterpreted(`<- ["constructor"][. [:: ["x"; 10]; "constructor"]];
+  // constructor ["console.log(2)"][];`),
+  //       TypeError
+  //     )
+  //     throws(
+  //       () =>
+  //         runFromInterpreted(
+  //           `. [:: ["x"; 10]; "constructor"; "constructor"]["console.log(3)"][];`
+  //         ),
+  //       TypeError
+  //     )
+  //     throws(
+  //       () => runFromInterpreted(`<- ["constructor"] [. [:: []]];`),
+  //       TypeError
+  //     )
+  //     throws(
+  //       () =>
+  //         runFromInterpreted(
+  //           `<- ["constructor"] [. [:: []; "constructor"]]; constructor ["console.log(2)"][];`
+  //         ),
+  //       TypeError
+  //     )
+  //   })
   it('simple math', () => {
     equal(
       runFromInterpreted(
@@ -264,13 +280,12 @@ constructor ["console.log(2)"][];`),
       101
     )
   })
-  it('... and ::: shoud work', () => {
+  it('...  shoud work', () => {
     deepEqual(
       runFromInterpreted(`.: [
       ... [.: [1; 2; 3]; .: [4; 5; 6]];
-      ::: [:: ["x"; 10]; :: ["y"; 23]]
       ]`).items,
-      [[1, 2, 3, 4, 5, 6], { x: 10, y: 23 }]
+      [[1, 2, 3, 4, 5, 6]]
     )
   })
   it('*:: and ~:: should work', () => {

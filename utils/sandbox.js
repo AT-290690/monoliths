@@ -2,6 +2,7 @@ import {
   compileExecutable,
   compileHtmlModule,
   compileModule,
+  run,
 } from '../public/chip/language/misc/utils.js'
 import { writeFile, readFile } from 'fs/promises'
 import {
@@ -12,7 +13,7 @@ import {
 import path from 'path'
 import { runInNewContext } from 'vm'
 const sanitizePath = (path) => path.replaceAll('../', '')
-process.on('message', async ({ files, dir, type }) => {
+process.on('message', async ({ portal, files, dir, type, target }) => {
   const script = (
     await Promise.all(
       files
@@ -27,7 +28,7 @@ process.on('message', async ({ files, dir, type }) => {
     switch (type) {
       case 'compile':
         {
-          writeFile(dir + '/index.html', compileHtmlModule(script))
+          writeFile(`${portal}/${target}`, compileHtmlModule(script))
         }
         break
       case 'bit':

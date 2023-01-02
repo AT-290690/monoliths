@@ -92,13 +92,15 @@ router['POST /execute'] = async (req, res, { query, cookie }) => {
     res.end('403: Unauthorized!')
     return
   }
-
+  const portal = directoryName + '/portals/' + query.dir
   const dir =
     directoryName + '/portals/' + query.dir + '/' + sanitizePath(query.sub)
   try {
     await access(dir, constants.F_OK)
     if ((await lstat(dir)).isDirectory()) {
       forks.send({
+        portal,
+        target: query.target,
         files: await readdir(dir),
         dir,
         type: query.type,

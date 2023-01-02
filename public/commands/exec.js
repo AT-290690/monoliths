@@ -139,8 +139,15 @@ export const execute = async (CONSOLE) => {
     case 'COMPILE':
     case '$':
       {
+        const sub = PARAMS[0]
+          ? PARAMS[0][PARAMS[0].length - 1] !== '/'
+            ? PARAMS[0] + '/'
+            : PARAMS[0]
+          : ''
         fetch(
-          `${API}execute?dir=${State.dir}&sub=${PARAMS[0] ?? ''}&type=compile`,
+          `${API}execute?dir=${State.dir}&sub=${sub}&target=${
+            PARAMS[1] ?? 'index.html'
+          }&type=compile`,
           {
             method: 'POST',
             'Content-Type': 'application/json',

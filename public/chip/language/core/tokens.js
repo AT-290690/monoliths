@@ -1,7 +1,6 @@
 import evaluate from './interpreter.js'
 import Brrr from '../extensions/Brrr.js'
 export const VOID = undefined
-const MAX_KEY = 10
 export const pipe =
   (...fns) =>
   (x) =>
@@ -12,20 +11,7 @@ const dfs = (tree) => {
   callback(tree['*'])
   for (const branch of tree['=>']) dfs(branch)
 }
-const sanitizeProp = (arg, env) => {
-  const dirtyProp = extract(arg, env)?.toString()
-  if (
-    dirtyProp.includes('constructor') ||
-    dirtyProp.includes('prototype') ||
-    dirtyProp.includes('__proto__')
-  )
-    throw new TypeError(`Forbidden property access ${dirtyProp}`)
-  if (dirtyProp.length > MAX_KEY)
-    throw new RangeError(
-      `Key name "${dirtyProp}" is too long. Max length is ${MAX_KEY} characters!`
-    )
-  return dirtyProp
-}
+const MAX_KEY = 10
 const tokens = {
   ['+']: (args, env) => {
     if (args.length < 2) throw new TypeError('Invalid number of arguments to +')
@@ -485,132 +471,6 @@ const tokens = {
       )
     return array.set(index, evaluate(args[2], env))
   },
-  // ['</>']: (args, env) => {
-  //   const type = evaluate(args[0], env)
-  //   if (typeof type !== 'string')
-  //     throw new TypeError('Argument of </> must be a string')
-  //   return document.createElement(type)
-  // },
-  ['.=']: (args, env) => {
-    const main = args[0]
-    const last = args[args.length - 1]
-    const prop = []
-    for (let i = 1; i < args.length - 1; ++i) {
-      const arg = args[i]
-      prop.push(sanitizeProp(arg, env) ?? VOID)
-    }
-    const value = evaluate(last, env)
-    if (main.type === 'apply') {
-      const entity = evaluate(main, env)
-      if (prop.length === 1) entity[prop[0]] = value
-      else {
-        let temp = entity
-        const last = prop.pop()
-        prop.forEach((item) => (temp = temp[item]))
-        temp[last] = value
-      }
-      return entity
-    } else if (main.type === 'word') {
-      const entityName = main.name
-      for (let scope = env; scope; scope = Object.getPrototypeOf(scope))
-        if (Object.prototype.hasOwnProperty.call(scope, entityName)) {
-          const entity = scope[entityName]
-          if (prop.length === 1) entity[prop[0]] = value
-          else {
-            let temp = entity
-            const last = prop.pop()
-            prop.forEach((item) => (temp = temp[item]))
-            temp[last] = value
-          }
-          return entity
-        }
-    }
-  },
-  ['.!=']: (args, env) => {
-    const prop = []
-    for (let i = 1; i < args.length; ++i) {
-      const arg = args[i]
-      prop.push(sanitizeProp(arg, env) ?? VOID)
-    }
-
-    for (let scope = env; scope; scope = Object.getPrototypeOf(scope))
-      if (Object.prototype.hasOwnProperty.call(scope, entityName)) {
-        if (prop.length === 1) {
-          let temp = scope[entityName]
-          delete temp[prop[0]]
-          return temp
-        } else {
-          let temp = scope[entityName]
-          const last = prop.pop()
-          prop.forEach((item) => (temp = temp[item]))
-          //const value = temp[last];
-          delete temp[last]
-          return scope[entityName]
-        }
-      }
-  },
-  ['.']: (args, env) => {
-    const prop = []
-    for (let i = 1; i < args.length; ++i) {
-      const arg = args[i]
-      prop.push(sanitizeProp(arg, env) ?? VOID)
-    }
-    if (args[0].type === 'apply' || args[0].type === 'value') {
-      const entity = evaluate(args[0], env)
-      if (prop.length === 1) {
-        const entityProperty = entity[prop[0]]
-        if (typeof entityProperty === 'function') {
-          const caller = entity
-          const fn = entityProperty
-          return fn.bind(caller)
-        } else return entityProperty ?? VOID
-      } else {
-        let temp = entity
-        const last = prop.pop()
-        prop.forEach((item) => (temp = temp[item]))
-        const entityProperty = temp[last]
-        if (typeof entityProperty === 'function') {
-          const caller = temp
-          const fn = entityProperty
-          return fn.bind(caller)
-        } else return entityProperty ?? VOID
-      }
-    } else {
-      const entityName = args[0].name
-      for (let scope = env; scope; scope = Object.getPrototypeOf(scope))
-        if (Object.prototype.hasOwnProperty.call(scope, entityName)) {
-          if (prop.length === 1) {
-            const entityProperty = scope[entityName][prop[0]]
-            if (typeof entityProperty === 'function') {
-              const caller = scope[entityName]
-              const fn = entityProperty
-              return fn.bind(caller)
-            } else return entityProperty ?? VOID
-          } else {
-            let temp = scope[entityName]
-            const last = prop.pop()
-            prop.forEach((item) => (temp = temp[item]))
-            const entityProperty = temp[last]
-            if (typeof entityProperty === 'function') {
-              const caller = temp
-              const fn = entityProperty
-              return fn.bind(caller)
-            } else return entityProperty ?? VOID
-          }
-        }
-    }
-  },
-  [':::']: (args, env) => {
-    if (!args.length) throw new TypeError('Invalid number of arguments to ...')
-    const [first, ...rest] = args
-    const toSpread = evaluate(first, env)
-    if (typeof toSpread !== 'object' || Brrr.isBrrr(toSpread))
-      throw new SyntaxError('::: can only be used on ::')
-    return {
-      ...toSpread,
-      ...rest.reduce((acc, item) => ({ ...acc, ...evaluate(item, env) }), {}),
-    }
-  },
   ['...']: (args, env) => {
     if (!args.length) throw new TypeError('Invalid number of arguments to ...')
     const [first, ...rest] = args
@@ -671,7 +531,7 @@ const tokens = {
     let tempKey = ''
     return args.reduce((acc, item, i) => {
       if (i % 2) {
-        acc[tempKey] = extract(item, env)
+        acc.set(tempKey, extract(item, env))
       } else {
         const key = extract(item, env)
         if (typeof key !== 'string') {
@@ -686,7 +546,171 @@ const tokens = {
         tempKey = key
       }
       return acc
-    }, {})
+    }, new Map())
+  },
+  ['.']: (args, env) => {
+    const prop = []
+    for (let i = 1; i < args.length; ++i) {
+      const arg = args[i]
+      prop.push(extract(arg, env)?.toString() ?? VOID)
+    }
+    if (args[0].type === 'apply' || args[0].type === 'value') {
+      const entity = evaluate(args[0], env)
+      if (prop.length === 1) {
+        const entityProperty = entity.get(prop[0])
+        if (typeof entityProperty === 'function') {
+          const caller = entity
+          const fn = entityProperty
+          return fn.bind(caller)
+        } else return entityProperty ?? VOID
+      } else {
+        let temp = entity
+        if (!(temp instanceof Map))
+          throw new TypeError(
+            `. can only be used on a ::[] - getting ${entity}`
+          )
+        const last = prop.pop()
+        prop.forEach((item) => (temp = temp.get(item)))
+        const entityProperty = temp.get(last)
+        if (typeof entityProperty === 'function') {
+          const caller = temp
+          const fn = entityProperty
+          return fn.bind(caller)
+        } else return entityProperty ?? VOID
+      }
+    } else {
+      const entityName = args[0].name
+      for (let scope = env; scope; scope = Object.getPrototypeOf(scope))
+        if (Object.prototype.hasOwnProperty.call(scope, entityName)) {
+          if (prop.length === 1) {
+            const entityProperty = scope[entityName].get(prop[0])
+            if (typeof entityProperty === 'function') {
+              const caller = scope[entityName]
+              const fn = entityProperty
+              return fn.bind(caller)
+            } else return entityProperty ?? VOID
+          } else {
+            let temp = scope[entityName]
+            if (!(temp instanceof Map))
+              throw new TypeError(
+                `. can only be used on a ::[] - getting ${entityName}`
+              )
+            const last = prop.pop()
+            prop.forEach((item) => (temp = temp.get(item)))
+            const entityProperty = temp.get(last)
+            if (typeof entityProperty === 'function') {
+              const caller = temp
+              const fn = entityProperty
+              return fn.bind(caller)
+            } else return entityProperty ?? VOID
+          }
+        }
+    }
+  },
+  ['.=']: (args, env) => {
+    const main = args[0]
+    const last = args[args.length - 1]
+    const prop = []
+    for (let i = 1; i < args.length - 1; ++i) {
+      const arg = args[i]
+      prop.push(extract(arg, env)?.toString() ?? VOID)
+    }
+    const value = evaluate(last, env)
+    if (main.type === 'apply') {
+      const entity = evaluate(main, env)
+      if (prop.length === 1) entity.set(prop[0], value)
+      else {
+        let temp = entity
+        const last = prop.pop()
+        prop.forEach((item) => (temp = temp.get(item)))
+        temp.set(last, value)
+      }
+      return entity
+    } else if (main.type === 'word') {
+      const entityName = main.name
+      for (let scope = env; scope; scope = Object.getPrototypeOf(scope))
+        if (Object.prototype.hasOwnProperty.call(scope, entityName)) {
+          const entity = scope[entityName]
+          if (prop.length === 1) entity.set(prop[0], value)
+          else {
+            let temp = entity
+            const last = prop.pop()
+            prop.forEach((item) => (temp = temp.get(item)))
+            temp.set(last, value)
+          }
+          return entity
+        }
+    }
+  },
+  ['.!=']: (args, env) => {
+    const prop = []
+    for (let i = 1; i < args.length; ++i) {
+      const arg = args[i]
+      prop.push(extract(arg, env)?.toString() ?? VOID)
+    }
+    const entityName = args[0].name
+    for (let scope = env; scope; scope = Object.getPrototypeOf(scope))
+      if (Object.prototype.hasOwnProperty.call(scope, entityName)) {
+        if (prop.length === 1) {
+          let temp = scope[entityName]
+          temp.delete(prop[0])
+          return temp
+        } else {
+          let temp = scope[entityName]
+          const last = prop.pop()
+          prop.forEach((item) => {
+            if (item instanceof Map) temp = temp.get(item)
+            else {
+              throw new TypeError(
+                `path of ${prop.join(
+                  '->'
+                )} -> ${last} doesn't exist in :: ${entityName}`
+              )
+            }
+          })
+          temp.delete(last)
+          return scope[entityName]
+        }
+      }
+  },
+  ['#']: (args, env) => {
+    if (!args.length) throw new SyntaxError('Invalid use of operation #')
+    args.forEach(({ name, type }) => {
+      if (type !== 'word')
+        throw new SyntaxError(
+          'Invalid use of operation # (Arguments must be words)'
+        )
+      if (name.includes('.') || name.includes('-'))
+        throw new SyntaxError(
+          'Invalid use of operation # (variable name must not contain . or -)'
+        )
+      env[name] = name
+    })
+    return args[args.length - 1].name
+  },
+  [':::']: (args, env) => {
+    if (args.length !== 1)
+      throw new TypeError('Invalid number of arguments to :::')
+    const map = evaluate(args[0], env)
+    if (!(map.constructor.name === 'Map'))
+      throw new TypeError('First argument of ::: must be an :: []')
+    return Brrr.from([...map.entries()].map(Brrr.from))
+  },
+  ['::.']: (args, env) => {
+    if (args.length !== 1)
+      throw new TypeError('Invalid number of arguments to ::.')
+    const map = evaluate(args[0], env)
+    if (!(map.constructor.name === 'Map'))
+      throw new TypeError('First argument of ::. must be an :: []')
+    return Brrr.from([...map.keys()])
+  },
+  ['::*']: (args, env) => {
+    if (args.length !== 1)
+      throw new TypeError('Invalid number of arguments to ::* ')
+    const map = evaluate(args[0], env)
+    if (!(map.constructor.name === 'Map'))
+      throw new TypeError('First argument of ::* must be an :: []')
+    return Brrr.from([...map.values()])
   },
   ['.:']: (args, env) => Brrr.from(args.map((item) => extract(item, env))),
   ['<-']: (args, env) => (exp) => {
@@ -696,9 +720,9 @@ const tokens = {
         method.includes('constructor') ||
         method.includes('prototype') ||
         method.includes('__proto__')
-      ) {
+      )
         throw new TypeError(`Forbidden property access ${method}`)
-      }
+
       env[method] = exp[method]
     })
     return VOID
@@ -751,22 +775,6 @@ const tokens = {
     if (dimensions.some((d) => !Number.isInteger(d)))
       throw new TypeError('Argument of :.. must be integers')
     return Brrr.matrix(...dimensions)
-  },
-  ['#']: (args, env) => {
-    if (!args.length) throw new SyntaxError('Invalid use of operation #')
-    args.forEach(({ name, type }) => {
-      if (type !== 'word')
-        throw new SyntaxError(
-          'Invalid use of operation # (Arguments must be words)'
-        )
-      if (name.includes('.') || name.includes('-'))
-        throw new SyntaxError(
-          'Invalid use of operation # (variable name must not contain . or -)'
-        )
-      env[name] = name
-    })
-
-    return args[args.length - 1].name
   },
   ['.:?']: (args, env) => {
     if (args.length !== 1)

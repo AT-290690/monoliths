@@ -177,10 +177,9 @@ describe('compilation should work as expected', () => {
      + [100]]`
     equal(runFromInterpreted(source), runFromCompiled(source))
   })
-  it('... and ::: shoud work', () => {
+  it('... shoud work', () => {
     const source = `.: [
       ... [.: [1; 2; 3]; .: [4; 5; 6]];
-      ::: [:: ["x"; 10]; :: ["y"; 23]]
       ]`
     deepEqual(runFromInterpreted(source), runFromCompiled(source))
   })
@@ -198,7 +197,14 @@ describe('compilation should work as expected', () => {
     deepEqual(runFromInterpreted(source1), runFromCompiled(source2))
     deepEqual(runFromInterpreted(source2), runFromCompiled(source2))
   })
-
+  it(':: ::. ::: ::* should work', () => {
+    const source1 = `::: [:: ["x"; 10; "y"; 23; "z"; 4]]`
+    const source2 = `::. [:: ["x"; 10; "y"; 23; "z"; 4]]`
+    const source3 = `::* [:: ["x"; 10; "y"; 23; "z"; 4]]`
+    deepEqual(runFromInterpreted(source1), runFromCompiled(source1))
+    deepEqual(runFromInterpreted(source2), runFromCompiled(source2))
+    deepEqual(runFromInterpreted(source3), runFromCompiled(source3))
+  })
   it(':+: should work', () => {
     const source1 = ` |> [
       .: [3; 4; 2; 1; 2; 3];

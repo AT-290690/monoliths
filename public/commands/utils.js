@@ -38,7 +38,14 @@ ${
       ? `"${msg}"`
       : typeof msg === 'function'
       ? '-> []'
-      : JSON.stringify(msg.constructor.name === 'Brrr' ? msg.items : msg, null)
+      : JSON.stringify(
+          msg.constructor.name === 'Brrr'
+            ? msg.items
+            : msg.constructor.name === 'Map'
+            ? Object.fromEntries(msg)
+            : msg,
+          null
+        )
           .replaceAll('[', '.: [')
           .replaceAll('{', ':: [')
           .replaceAll('}', ']')
