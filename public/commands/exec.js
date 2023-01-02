@@ -112,9 +112,7 @@ export const execute = async (CONSOLE) => {
           'Content-Type': 'application/json',
           credentials: 'same-origin',
         })
-          .then(() => {
-            droneIntel(execIcon)
-          })
+          .then(() => droneIntel(execIcon))
           .catch((err) => console.log(err))
         consoleElement.value = ''
       }

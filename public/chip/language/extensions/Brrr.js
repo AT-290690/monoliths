@@ -553,7 +553,7 @@ export default class Brrr {
     return Brrr.from(
       this.reduce((acc, current, index, self) => {
         if (Brrr.isBrrr(current))
-          current.forEach((item) => acc.push(callback(item)))
+          current.forEach((item, i, a) => acc.push(callback(item, i, a)))
         else acc.push(callback(current, index, self))
         return acc
       }, [])

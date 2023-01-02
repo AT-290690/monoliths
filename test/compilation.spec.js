@@ -9,7 +9,7 @@ describe('compilation should work as expected', () => {
       <- ["CONVERT"] [LIBRARY];
   <- ["boolean"] [CONVERT];
   := [type of thing; -> [entity; ? [== [entity; void]; void; . [entity; "constructor"; "name"]]]];
-  >> [.: [0; "0"; boolean [0]; :: ["0"; 0]; .: [0]; -> [0]; void]; -> [x; i; a; ..:= [a; i; type of thing [x]]]];
+  >> [.: [0; "0"; boolean [0]; :: ["0"; 0]; .: [0]; -> [0]; void]; -> [x; i; a; ^= [a; i; type of thing [x]]]];
       `
     deepEqual(runFromInterpreted(source), runFromCompiled(source))
   })
@@ -140,17 +140,17 @@ describe('compilation should work as expected', () => {
     := [out; .: []];
     >> [.: [1; 2; 3; 4]; -> [x; i; a; .:= [out; * [x; 10]]]];
     << [.: [10; 20; 30]; -> [x; i; a; .:= [out; - [:. [out; i]; * [x; 0.1]]]]];
-    >> [out; -> [x; i; a; ..:= [out; i; + [x; i]]]];
+    >> [out; -> [x; i; a; ^= [out; i; + [x; i]]]];
     out;
     `
     deepEqual(runFromInterpreted(source1), runFromCompiled(source1))
     const source2 = `
       |> [
         .: [1; 2; 3; 4];
-        >> [-> [x; i; a; ..:= [a; i; * [x; 10]]]];
-        << [-> [x; i; a; ..:= [a; i; - [:. [a; i]; * [x; 0.1]]]]];
-        >> [-> [x; i; a; ..:= [a; i; + [x; i]]]];
-        << [-> [x; i; a; ..:= [a; i; + [:. [a; i]; i; 1]]]];
+        >> [-> [x; i; a; ^= [a; i; * [x; 10]]]];
+        << [-> [x; i; a; ^= [a; i; - [:. [a; i]; * [x; 0.1]]]]];
+        >> [-> [x; i; a; ^= [a; i; + [x; i]]]];
+        << [-> [x; i; a; ^= [a; i; + [:. [a; i]; i; 1]]]];
       ]
       `
     deepEqual(runFromInterpreted(source2), runFromCompiled(source2))

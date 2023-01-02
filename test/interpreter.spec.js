@@ -18,7 +18,7 @@ describe('interpretation should work as expected', () => {
 
   := [type of; -> [entity; ? [== [entity; void]; void; . [entity; "constructor"; "name"]]]];
 
-  >> [.: [0; "0"; boolean [0]; :: ["0"; 0]; .: [0]; -> [0]; void]; -> [x; i; a; ..:= [a; i; type of [x]]]];
+  >> [.: [0; "0"; boolean [0]; :: ["0"; 0]; .: [0]; -> [0]; void]; -> [x; i; a; ^= [a; i; type of [x]]]];
       `).items,
       ['Number', 'String', 'Boolean', 'Object', 'Brrr', 'Function', void 0]
     )
@@ -185,7 +185,7 @@ describe('interpretation should work as expected', () => {
     := [out; .: []];
     >> [.: [1; 2; 3; 4]; -> [x; i; a; .:= [out; * [x; 10]]]];
     << [.: [10; 20; 30]; -> [x; i; a; .:= [out; - [:. [out; i]; * [x; 0.1]]]]];
-    >> [out; -> [x; i; a; ..:= [out; i; + [x; i]]]];
+    >> [out; -> [x; i; a; ^= [out; i; + [x; i]]]];
     out;
       `).items,
       [10, 21, 32, 43, 31, 23, 15]
@@ -195,10 +195,10 @@ describe('interpretation should work as expected', () => {
       runFromInterpreted(`
       |> [
         .: [1; 2; 3; 4];
-        >> [-> [x; i; a; ..:= [a; i; * [x; 10]]]];
-        << [-> [x; i; a; ..:= [a; i; - [:. [a; i]; * [x; 0.1]]]]];
-        >> [-> [x; i; a; ..:= [a; i; + [x; i]]]];
-        << [-> [x; i; a; ..:= [a; i; + [:. [a; i]; i; 1]]]];
+        >> [-> [x; i; a; ^= [a; i; * [x; 10]]]];
+        << [-> [x; i; a; ^= [a; i; - [:. [a; i]; * [x; 0.1]]]]];
+        >> [-> [x; i; a; ^= [a; i; + [x; i]]]];
+        << [-> [x; i; a; ^= [a; i; + [:. [a; i]; i; 1]]]];
       ]
       `).items,
       [10, 21, 32, 43]
@@ -220,7 +220,7 @@ describe('interpretation should work as expected', () => {
     deepEqual(
       runFromInterpreted(`.<< [.: [1; 2; 3; 4]; -> [x; i; a; + [i; * [x; 2]]]]`)
         .items,
-      [2, 5, 8, 11]
+      [2, 5, 8, 11].reverse()
     )
   })
 

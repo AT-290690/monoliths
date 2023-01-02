@@ -258,6 +258,17 @@ const tokens = {
       copy.set(i, callback(array.get(i), i, array))
     return copy
   },
+  ['>>_']: (args, env) => {
+    if (args.length !== 2)
+      throw new TypeError('Invalid number of arguments to >>.')
+    const array = evaluate(args[0], env)
+    if (!(array.constructor.name === 'Brrr'))
+      throw new TypeError('First argument of >>. must be an .: []')
+    const callback = evaluate(args[1], env)
+    if (typeof callback !== 'function')
+      throw new TypeError('Second argument of >>. must be an -> []')
+    return array.flatten(callback)
+  },
   ['<<']: (args, env) => {
     if (args.length !== 2)
       throw new TypeError('Invalid number of arguments to <<')
@@ -279,8 +290,9 @@ const tokens = {
     if (typeof callback !== 'function')
       throw new TypeError('Second argument of .<< must be an -> []')
     const copy = new Brrr()
-    for (let i = array.length - 1; i >= 0; --i)
-      copy.set(i, callback(array.get(i), i, array))
+    const len = array.length - 1
+    for (let i = len; i >= 0; --i)
+      copy.set(len - i, callback(array.get(i), i, array))
     return copy
   },
   ['~::']: (args, env) => {
@@ -443,15 +455,15 @@ const tokens = {
       )
     return array.at(index)
   },
-  ['..:=']: (args, env) => {
+  ['^=']: (args, env) => {
     if (args.length !== 3)
-      throw new TypeError('Invalid number of arguments to ..:=')
+      throw new TypeError('Invalid number of arguments to ^=')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
-      throw new TypeError('First argument of  ..:= must be an .: []')
+      throw new TypeError('First argument of  ^= must be an .: []')
     const index = evaluate(args[1], env)
     if (!Number.isInteger(index))
-      throw new TypeError('Second argument of  ..:= must be a number')
+      throw new TypeError('Second argument of  ^= must be a number')
     if (!array.isInBounds(Math.abs(index)))
       throw new TypeError(
         `Index is out of bounds [${index}] <> .: [${array.length}]`

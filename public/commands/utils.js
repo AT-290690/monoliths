@@ -113,7 +113,7 @@ export const exe = async (source) => {
     consoleElement.value = consoleElement.value.trim() || err + ' '
     droneButton.classList.remove('shake')
     droneButton.classList.add('shake')
-    editor.focus()
+    // editor.focus()
     droneIntel(errorIcon)
   }
 }
@@ -181,17 +181,3 @@ export const rmDir = (path) => {
   delete cd[last]
   return { structure, cd }
 }
-
-// removeNoCode()
-// compress()
-// encodeURIComponent(
-//   LZUTF8.compress(source.trim(), {
-//     outputEncoding: 'Base64',
-//   })
-// )
-
-// LZUTF8.decompress(decodeURIComponent(source.trim()), {
-//   inputEncoding: 'Base64',
-//   outputEncoding: 'String',
-// })
-// decompress()

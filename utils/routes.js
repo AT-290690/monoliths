@@ -259,4 +259,4 @@ const match = (key, req, res, params) => {
   route(req, res, params)
   return true
 }
-export { match, root, router }
+export { match, root, router, directoryName }

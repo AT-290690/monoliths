@@ -145,7 +145,7 @@ const dfs = (tree, locals) => {
         return `Brrr.matrix(${tree.args.map((x) => dfs(x, locals)).join(',')})`
       case '.:':
         return 'Brrr.of(' + tree.args.map((x) => dfs(x, locals)).join(',') + ')'
-      case '..:=':
+      case '^=':
         return `_set(${dfs(tree.args[0], locals)}, ${dfs(
           tree.args[1],
           locals
@@ -264,6 +264,11 @@ const dfs = (tree, locals) => {
         )});`
       case '.<<':
         return `_mapRight(${dfs(tree.args[0], locals)}, ${dfs(
+          tree.args[1],
+          locals
+        )});`
+      case '>>_':
+        return `_flatMap(${dfs(tree.args[0], locals)}, ${dfs(
           tree.args[1],
           locals
         )});`
