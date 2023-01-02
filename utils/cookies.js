@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto'
-import { access } from 'fs/promises'
+import { access, rm } from 'fs/promises'
 import { directoryName } from './routes.js'
 
 const parseCookies = (req) => {
@@ -21,7 +21,7 @@ class CookieJar {
         this.#cookies.delete(id)
         const filepath = `${directoryName}/portals/${id}`
         access(filepath, constants.F_OK)
-          .then(() => rm(filepath, { recursive: true }, () => {}))
+          .then(() => rm(filepath, { recursive: true }))
           .catch((err) => console.log(err))
       }, this.#cookies.get(id).maxAge * 1000)
     }
