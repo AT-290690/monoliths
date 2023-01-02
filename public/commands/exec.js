@@ -104,6 +104,23 @@ export const execute = async (CONSOLE) => {
       }
 
       break
+    case 'SIGNAL':
+    case '!64':
+      {
+        fetch(`${API}execute?dir=${State.dir}&type=js64`, {
+          method: 'POST',
+          'Content-Type': 'application/text',
+          credentials: 'same-origin',
+          body: LZUTF8.compress(compress(removeNoCode(editor.getValue())), {
+            outputEncoding: 'Base64',
+          }),
+        })
+          .then(() => droneIntel(execIcon))
+          .catch((err) => console.log(err))
+        consoleElement.value = ''
+      }
+      break
+    case 'BEAKON':
     case '!':
       {
         const sub = PARAMS[0]
@@ -121,6 +138,23 @@ export const execute = async (CONSOLE) => {
         consoleElement.value = ''
       }
       break
+    case 'ISIGNAL':
+    case '>>64':
+      {
+        fetch(`${API}execute?dir=${State.dir}&type=bit64`, {
+          method: 'POST',
+          'Content-Type': 'application/text',
+          credentials: 'same-origin',
+          body: LZUTF8.compress(compress(removeNoCode(editor.getValue())), {
+            outputEncoding: 'Base64',
+          }),
+        })
+          .then(() => droneIntel(execIcon))
+          .catch((err) => console.log(err))
+        consoleElement.value = ''
+      }
+      break
+    case 'IBEACON':
     case '>>':
       {
         fetch(

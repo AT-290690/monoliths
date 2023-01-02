@@ -86,24 +86,29 @@ router['GET /dir'] = async (req, res) => {
   })
   res.end(creds.id)
 }
-router['POST /execute'] = async (req, res, { query, cookie }) => {
-  if (!cookieJar.isCookieVerified(cookie, query.dir)) {
+router['POST /execute'] = async (
+  req,
+  res,
+  { query: { dir, sub, type, target }, cookie }
+) => {
+  if (!cookieJar.isCookieVerified(cookie, dir)) {
     res.writeHead(403, { 'Content-Type': 'text/html' })
     res.end('403: Unauthorized!')
     return
   }
-  const portal = directoryName + '/portals/' + query.dir
-  const dir =
-    directoryName + '/portals/' + query.dir + '/' + sanitizePath(query.sub)
+  const portal = directoryName + '/portals/' + dir
+  const subDir =
+    directoryName + '/portals/' + dir + '/' + (sub ? sanitizePath(sub) : '')
   try {
-    await access(dir, constants.F_OK)
-    if ((await lstat(dir)).isDirectory()) {
+    await access(subDir, constants.F_OK)
+    if ((await lstat(subDir)).isDirectory()) {
       forks.send({
+        payload: type.includes('64') && (await getReqData(req)),
         portal,
-        target: query.target,
-        files: await readdir(dir),
-        dir,
-        type: query.type,
+        target,
+        files: await readdir(subDir),
+        dir: subDir,
+        type,
       })
     }
 
