@@ -827,24 +827,18 @@ export const LIBRARY = {
     },
     noborder: () => 'border: none;',
     borderradius: (value) => `border-radius: ${value};`,
-    setbounds: (value) => ({
-      top: value,
-      left: value,
-      right: value,
-      bottom: value,
-    }),
     border: (options) =>
-      `border: ${options.size ?? ''} ${options.type ?? ''} ${
-        options.color ?? ''
+      `border: ${options.get('size') ?? ''} ${options.get('type') ?? ''} ${
+        options.get('color') ?? ''
       };`.trim(),
     margin: (options) =>
-      `margin: ${options.top ?? '0'} ${options.right ?? '0'} ${
-        options.bottom ?? '0'
-      } ${options.left ?? '0'};`,
+      `margin: ${options.get('top') ?? '0'} ${options.get('right') ?? '0'} ${
+        options.get('bottom') ?? '0'
+      } ${options.get('left') ?? '0'};`,
     padding: (options) =>
-      `padding: ${options.top ?? '0'} ${options.right ?? '0'} ${
-        options.bottom ?? '0'
-      } ${options.left ?? '0'};`,
+      `padding: ${options.get('top') ?? '0'} ${options.get('right') ?? '0'} ${
+        options.get('bottom') ?? '0'
+      } ${options.get('left') ?? '0'};`,
     display: (display) =>
       `display: ${
         { f: 'flex', g: 'grid', i: 'inline', b: 'block', ib: 'inline-block' }[
