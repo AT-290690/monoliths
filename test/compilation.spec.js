@@ -4,15 +4,6 @@ import {
   runFromCompiled,
 } from '../public/chip/language/misc/utils.js'
 describe('compilation should work as expected', () => {
-  it('types', () => {
-    const source = `
-      <- ["CONVERT"] [LIBRARY];
-  <- ["boolean"] [CONVERT];
-  := [type of thing; -> [entity; ? [== [entity; void]; void; . [entity; "constructor"; "name"]]]];
-  >> [.: [0; "0"; boolean [0]; :: ["0"; 0]; .: [0]; -> [0]; void]; -> [x; i; a; ^= [a; i; type of thing [x]]]];
-      `
-    deepEqual(runFromInterpreted(source), runFromCompiled(source))
-  })
   it('definitions', () => {
     const source = `:= [x; 10]; := [y; 3]; := [temp; x]; = [x; y]; = [y; temp]; :: ["x"; x; "y"; y]`
     deepEqual(runFromInterpreted(source), runFromCompiled(source))
@@ -37,15 +28,15 @@ describe('compilation should work as expected', () => {
       := [switch case; -> [matcher;
            ?? [
            . [:: [
-             "knock knock"; -> [..["who's there"]];
-             "meaning of life"; -> [..[42]];
+             "knk"; -> [..["who's there"]];
+             "mean"; -> [..[42]];
              ;; add more cases here
              ;; ...
            ]; matcher];
              ;; default case
-           -> ["nothing matched"]
+           -> ["not"]
          ][]]];
-         .: [switch case ["meaning of life"]; switch case [0]; switch case  ["knock knock"]];
+         .: [switch case ["mean"]; switch case [0]; switch case  ["knk"]];
      `
     deepEqual(runFromInterpreted(source), runFromInterpreted(source))
   })

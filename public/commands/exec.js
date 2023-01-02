@@ -104,14 +104,49 @@ export const execute = async (CONSOLE) => {
       }
 
       break
-    case 'COMPILE':
-    case '$':
+    case '!':
       {
-        fetch(`${API}compile?dir=${State.dir}&sub=${PARAMS[0] ?? ''}`, {
+        const sub = PARAMS[0]
+          ? PARAMS[0][PARAMS[0].length - 1] !== '/'
+            ? PARAMS[0] + '/'
+            : PARAMS[0]
+          : ''
+        fetch(`${API}execute?dir=${State.dir}&sub=${sub}&type=js`, {
           method: 'POST',
           'Content-Type': 'application/json',
           credentials: 'same-origin',
         })
+          .then(() => droneIntel(execIcon))
+          .catch((err) => console.log(err))
+        consoleElement.value = ''
+      }
+      break
+    case '>>':
+      {
+        fetch(
+          `${API}execute?dir=${State.dir}&sub=${PARAMS[0] ?? ''}&type=bit`,
+          {
+            method: 'POST',
+            'Content-Type': 'application/json',
+            credentials: 'same-origin',
+          }
+        )
+          .then(() => droneIntel(execIcon))
+          .catch((err) => console.log(err))
+        consoleElement.value = ''
+      }
+      break
+    case 'COMPILE':
+    case '$':
+      {
+        fetch(
+          `${API}execute?dir=${State.dir}&sub=${PARAMS[0] ?? ''}&type=compile`,
+          {
+            method: 'POST',
+            'Content-Type': 'application/json',
+            credentials: 'same-origin',
+          }
+        )
           .then(() => droneIntel(execIcon))
           .catch((err) => console.log(err))
         consoleElement.value = ''

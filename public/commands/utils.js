@@ -114,6 +114,7 @@ export const exe = async (source) => {
     droneButton.classList.remove('shake')
     droneButton.classList.add('shake')
     // editor.focus()
+    // console.log(err)
     droneIntel(errorIcon)
   }
 }

@@ -1,6 +1,7 @@
 import evaluate from './interpreter.js'
 import Brrr from '../extensions/Brrr.js'
 export const VOID = undefined
+const MAX_KEY = 10
 export const pipe =
   (...fns) =>
   (x) =>
@@ -10,6 +11,20 @@ const extract = (item, env) =>
 const dfs = (tree) => {
   callback(tree['*'])
   for (const branch of tree['=>']) dfs(branch)
+}
+const sanitizeProp = (arg, env) => {
+  const dirtyProp = extract(arg, env)?.toString()
+  if (
+    dirtyProp.includes('constructor') ||
+    dirtyProp.includes('prototype') ||
+    dirtyProp.includes('__proto__')
+  )
+    throw new TypeError(`Forbidden property access ${dirtyProp}`)
+  if (dirtyProp.length > MAX_KEY)
+    throw new RangeError(
+      `Key name "${dirtyProp}" is too long. Max length is ${MAX_KEY} characters!`
+    )
+  return dirtyProp
 }
 const tokens = {
   ['+']: (args, env) => {
@@ -482,7 +497,7 @@ const tokens = {
     const prop = []
     for (let i = 1; i < args.length - 1; ++i) {
       const arg = args[i]
-      prop.push(extract(arg, env)?.toString() ?? VOID)
+      prop.push(sanitizeProp(arg, env) ?? VOID)
     }
     const value = evaluate(last, env)
     if (main.type === 'apply') {
@@ -515,15 +530,15 @@ const tokens = {
     const prop = []
     for (let i = 1; i < args.length; ++i) {
       const arg = args[i]
-      prop.push(extract(arg, env)?.toString() ?? VOID)
+      prop.push(sanitizeProp(arg, env) ?? VOID)
     }
-    const entityName = args[0].name
+
     for (let scope = env; scope; scope = Object.getPrototypeOf(scope))
       if (Object.prototype.hasOwnProperty.call(scope, entityName)) {
         if (prop.length === 1) {
-          scope[entityName][prop[0]]
-          delete scope[entityName][prop[0]]
-          return scope[entityName]
+          let temp = scope[entityName]
+          delete temp[prop[0]]
+          return temp
         } else {
           let temp = scope[entityName]
           const last = prop.pop()
@@ -538,7 +553,7 @@ const tokens = {
     const prop = []
     for (let i = 1; i < args.length; ++i) {
       const arg = args[i]
-      prop.push(extract(arg, env)?.toString() ?? VOID)
+      prop.push(sanitizeProp(arg, env) ?? VOID)
     }
     if (args[0].type === 'apply' || args[0].type === 'value') {
       const entity = evaluate(args[0], env)
@@ -653,33 +668,37 @@ const tokens = {
     return array.chop()
   },
   ['::']: (args, env) => {
-    let count = 0
-    return Object.fromEntries(
-      args.reduce((acc, item, i) => {
-        if (i % 2) {
-          acc[count].push(extract(item, env))
-          count++
-        } else {
-          const key = extract(item, env)
-          if (typeof key !== 'string') {
-            throw new SyntaxError(
-              'Invalid use of operation :: (Only strings can be used as keys)'
-            )
-          } else if (key.length > 32) {
-            throw new RangeError(
-              `Key name "${key}" is too long. Max length is 32 characters!`
-            )
-          }
-          acc[count] = [key]
+    let tempKey = ''
+    return args.reduce((acc, item, i) => {
+      if (i % 2) {
+        acc[tempKey] = extract(item, env)
+      } else {
+        const key = extract(item, env)
+        if (typeof key !== 'string') {
+          throw new SyntaxError(
+            'Invalid use of operation :: (Only strings can be used as keys)'
+          )
+        } else if (key.length > MAX_KEY) {
+          throw new RangeError(
+            `Key name "${key}" is too long. Max length is ${MAX_KEY} characters!`
+          )
         }
-        return acc
-      }, [])
-    )
+        tempKey = key
+      }
+      return acc
+    }, {})
   },
   ['.:']: (args, env) => Brrr.from(args.map((item) => extract(item, env))),
   ['<-']: (args, env) => (exp) => {
     args.forEach((arg) => {
       const method = arg.value
+      if (
+        method.includes('constructor') ||
+        method.includes('prototype') ||
+        method.includes('__proto__')
+      ) {
+        throw new TypeError(`Forbidden property access ${method}`)
+      }
       env[method] = exp[method]
     })
     return VOID

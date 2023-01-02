@@ -10,17 +10,37 @@ describe('interpretation should work as expected', () => {
     )
     throws(() => runFromInterpreted(`: [29; 0]`), RangeError)
   })
-  it('types', () => {
-    deepEqual(
-      runFromInterpreted(`
-      <- ["CONVERT"] [LIBRARY];
-  <- ["boolean"] [CONVERT];
-
-  := [type of; -> [entity; ? [== [entity; void]; void; . [entity; "constructor"; "name"]]]];
-
-  >> [.: [0; "0"; boolean [0]; :: ["0"; 0]; .: [0]; -> [0]; void]; -> [x; i; a; ^= [a; i; type of [x]]]];
-      `).items,
-      ['Number', 'String', 'Boolean', 'Object', 'Brrr', 'Function', void 0]
+  it('handles prototype polution', () => {
+    throws(
+      () =>
+        runFromInterpreted(
+          `. [LIBRARY; "constructor"; "constructor"]["console.log(1)"][]`
+        ),
+      TypeError
+    )
+    throws(
+      () =>
+        runFromInterpreted(`<- ["constructor"][. [:: ["x"; 10]; "constructor"]];
+constructor ["console.log(2)"][];`),
+      TypeError
+    )
+    throws(
+      () =>
+        runFromInterpreted(
+          `. [:: ["x"; 10]; "constructor"; "constructor"]["console.log(3)"][];`
+        ),
+      TypeError
+    )
+    throws(
+      () => runFromInterpreted(`<- ["constructor"] [. [:: []]];`),
+      TypeError
+    )
+    throws(
+      () =>
+        runFromInterpreted(
+          `<- ["constructor"] [. [:: []; "constructor"]]; constructor ["console.log(2)"][];`
+        ),
+      TypeError
     )
   })
   it('simple math', () => {
@@ -54,19 +74,19 @@ describe('interpretation should work as expected', () => {
   it('switch case', () => {
     deepEqual(
       runFromInterpreted(`
-       := [switch case; -> [matcher;
-            ?? [
-            . [:: [
-              "knock knock"; -> [..["who's there"]];
-              "meaning of life"; -> [..[42]];
-              ;; add more cases here
-              ;; ...
-            ]; matcher];
-              ;; default case
-            -> ["nothing matched"]
-          ][]]];
-          .: [switch case ["meaning of life"]; switch case [0]; switch case  ["knock knock"]];
-      `).items,
+      := [switch case; -> [matcher;
+        ?? [
+        . [:: [
+          "knk"; -> [..["who's there"]];
+          "life"; -> [..[42]];
+          ;; add more cases here
+          ;; ...
+        ]; matcher];
+          ;; default case
+        -> ["nothing matched"]
+      ][]]];
+      .: [switch case ["life"]; switch case [0]; switch case  ["knk"]];
+  `).items,
       [42, 'nothing matched', "who's there"]
     )
   })
@@ -145,10 +165,6 @@ describe('interpretation should work as expected', () => {
       `),
       28
     )
-  })
-
-  it('length of string', () => {
-    equal(runFromInterpreted(`. ["01010"; "length"];`), 5)
   })
 
   it('import should work', () => {

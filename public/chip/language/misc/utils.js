@@ -458,3 +458,18 @@ import { exe } from '${utils}';
 </script>
 </body>`
 }
+
+export const compileExecutable = (source, ctx) => {
+  const inlined = wrapInBody(removeNoCode(source))
+  const ENV = protolessModule(ctx)
+  ENV[';;tokens'] = protolessModule(tokens)
+  const { AST } = cell(ENV, false)(inlined)
+  const { top, program, modules } = compileToJs(AST, ctx)
+  const lib = treeShake(modules)
+  return `const VOID = null;
+  ${Brrr.toString()}
+  ${brrrHelpers}
+  ${languageUtilsString}
+  ${lib};
+  ${top}${program}`
+}

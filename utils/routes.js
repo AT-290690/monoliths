@@ -86,7 +86,7 @@ router['GET /dir'] = async (req, res) => {
   })
   res.end(creds.id)
 }
-router['POST /compile'] = async (req, res, { query, cookie }) => {
+router['POST /execute'] = async (req, res, { query, cookie }) => {
   if (!cookieJar.isCookieVerified(cookie, query.dir)) {
     res.writeHead(403, { 'Content-Type': 'text/html' })
     res.end('403: Unauthorized!')
@@ -101,7 +101,7 @@ router['POST /compile'] = async (req, res, { query, cookie }) => {
       forks.send({
         files: await readdir(dir),
         dir,
-        type: 'compile',
+        type: query.type,
       })
     }
 
@@ -113,6 +113,7 @@ router['POST /compile'] = async (req, res, { query, cookie }) => {
     res.end()
   }
 }
+
 router['GET /ls'] = async (req, res, { query, cookie }) => {
   if (!cookieJar.isCookieVerified(cookie, query.dir)) {
     res.writeHead(403, { 'Content-Type': 'text/html' })
