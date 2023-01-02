@@ -61,7 +61,7 @@ export const execute = async (CONSOLE) => {
       run()
       break
     case 'LICENSE':
-      editor.setValue(`/*
+      editor.setValue(`
   MIT License
 
   Copyright (c) 2023 AT-290690
@@ -83,7 +83,7 @@ export const execute = async (CONSOLE) => {
   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
-  */`)
+  `)
       droneIntel(keyIcon)
 
       break
@@ -315,7 +315,7 @@ export const execute = async (CONSOLE) => {
     case 'HELP':
     case '?':
       State.cache = ''
-      editor.setValue(`/* 
+      editor.setValue(`
 -----------------------------
  Press on the drone - run code
  Press ctrl/command + s - run code
@@ -337,7 +337,7 @@ export const execute = async (CONSOLE) => {
  DUMP: dump console output in a file
  LICENSE: read license info
  ----------------------------
-*/`)
+`)
       droneIntel(keyIcon)
       consoleElement.value = ''
       break

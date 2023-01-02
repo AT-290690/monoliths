@@ -22,10 +22,5 @@ class ThreadPool {
 }
 
 const forks = new ThreadPool(cpus().length)
-const run = async (files, dir) => {
-  forks.send({
-    files,
-    dir,
-  })
-}
-export { run }
+
+export { forks }

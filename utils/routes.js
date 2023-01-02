@@ -2,7 +2,7 @@ import { writeFile, readFile, access, mkdir, readdir, lstat } from 'fs/promises'
 import { constants, rm } from 'fs'
 import { brotliCompress } from 'zlib'
 import path from 'path'
-import { run } from './threads.js'
+import { forks } from './threads.js'
 import { cookieJar, cookieRecepie } from './cookies.js'
 const directoryName = './public'
 const root = path.normalize(path.resolve(directoryName))
@@ -97,7 +97,13 @@ router['POST /compile'] = async (req, res, { query, cookie }) => {
     directoryName + '/portals/' + query.dir + '/' + sanitizePath(query.sub)
   try {
     await access(dir, constants.F_OK)
-    if ((await lstat(dir)).isDirectory()) await run(await readdir(dir), dir)
+    if ((await lstat(dir)).isDirectory()) {
+      forks.send({
+        files: await readdir(dir),
+        dir,
+        type: 'compile',
+      })
+    }
 
     res.writeHead(200, { 'Content-Type': 'application/text' })
     res.end()
