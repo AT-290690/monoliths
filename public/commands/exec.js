@@ -94,8 +94,7 @@ export const execute = async (CONSOLE) => {
         consoleElement.classList.remove('error_line')
         const source = editor.getValue()
         const selection = editor.getSelection()
-        if (!selection) return exe('throw new Error("Nothing is selected")')
-
+        if (!selection) return (consoleElement.value = 'Nothing is selected!')
         const out = `__debug_log[${
           selection[selection.length - 1] === ';'
             ? selection.substring(0, selection.length - 1)
