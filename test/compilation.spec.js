@@ -206,15 +206,31 @@ describe('compilation should work as expected', () => {
     deepEqual(runFromInterpreted(source3), runFromCompiled(source3))
   })
   it(':+: should work', () => {
-    const source1 = ` |> [
+    const source1 = `|> [
       .: [3; 4; 2; 1; 2; 3];
       :+: [3]
-    ];
-    `
-    const source2 = `
-      :+: [.: [3; 4; 2; 1; 2; 3]; 2];
-    `
-    deepEqual(runFromInterpreted(source1), runFromCompiled(source2))
+    ];`
+    deepEqual(runFromInterpreted(source1), runFromCompiled(source1))
+    const source2 = `:+: [.: [3; 4; 2; 1; 2; 3]; 2];`
     deepEqual(runFromInterpreted(source2), runFromCompiled(source2))
+  })
+  it(':+ and :- should work', () => {
+    const source1 = `|> [
+      .: [1; 2; 3; 4; 5; 6; 7; 8];
+      :+ [4; "x"; "y"; "z"];
+      :- [0; 4];
+      :- [3; 4]
+    ]`
+    const source2 = `|> [
+      .: [1; 2; 3; 4; 5; 6; 7; 8];
+      :+ [2; "x"; "y"; "z"];
+    ]`
+    const source3 = `|> [
+      .: [1; 2; 3; 4; 5; 6; 7; 8];
+      :- [2; 4];
+    ]`
+    deepEqual(runFromInterpreted(source1), runFromCompiled(source1))
+    deepEqual(runFromInterpreted(source2), runFromCompiled(source2))
+    deepEqual(runFromInterpreted(source3), runFromCompiled(source3))
   })
 })

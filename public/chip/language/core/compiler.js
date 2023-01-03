@@ -263,6 +263,17 @@ const compile = () => {
           )})`
         case ':::':
           return `_mapEntries(${dfs(tree.args[0], locals)})`
+        case ':+': {
+          const [first, second, ...rest] = tree.args.map((item) =>
+            dfs(item, locals)
+          )
+          return `_addAt(${first}, ${second}, ${rest})`
+        }
+        case ':-':
+          return `_removeFrom(${dfs(tree.args[0], locals)}, ${dfs(
+            tree.args[1],
+            locals
+          )}, ${dfs(tree.args[2], locals)})`
         case '::*':
           return `_mapValues(${dfs(tree.args[0], locals)})`
         case '::.':

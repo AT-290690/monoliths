@@ -73,8 +73,7 @@ describe('interpretation should work as expected', () => {
     equal(
       runFromInterpreted(
         `:= [age; 18];
-   ? [>= [age; 18]; "Can work!"; "Can't work"];
-      `
+   ? [>= [age; 18]; "Can work!"; "Can't work"];`
       ),
       'Can work!'
     )
@@ -314,24 +313,45 @@ describe('interpretation should work as expected', () => {
       [2, 1, 2, 3, 3, 4]
     )
     deepEqual(
-      runFromInterpreted(`
-      .:@ [.: [3; 4; 2; 1; 2; 3]; 3; 1]
-    `).items,
+      runFromInterpreted(`.:@ [.: [3; 4; 2; 1; 2; 3]; 3; 1]`).items,
       [1, 2, 3, 3, 4, 2]
     )
   })
   it('.+: should work', () => {
-    equal(
-      runFromInterpreted(`
-      .+: [.: ["a"; "b"; "c"; "d"]; ""]
-    `),
-      'abcd'
+    equal(runFromInterpreted(`.+: [.: ["a"; "b"; "c"; "d"]; ""]`), 'abcd')
+    equal(runFromInterpreted(`.+: [.: ["a"; "b"; "c"; "d"]; "-"]`), 'a-b-c-d')
+  })
+  it(':+ and :- should work', () => {
+    deepEqual(
+      runFromInterpreted(`|> [
+      .: [1; 2; 3; 4; 5; 6; 7; 8];
+      :+ [4; "x"; "y"; "z"];
+      :- [0; 4];
+      :- [3; 4]
+    ]`).items,
+      ['x', 'y', 'z']
     )
-    equal(
-      runFromInterpreted(`
-      .+: [.: ["a"; "b"; "c"; "d"]; "-"]
-    `),
-      'a-b-c-d'
+    deepEqual(
+      runFromInterpreted(`|> [
+      .: [1; 2; 3; 4; 5; 6; 7; 8];
+      :+ [2; "x"; "y"; "z"];
+    ]`).items,
+      [1, 2, 'x', 'y', 'z', 3, 4, 5, 6, 7, 8]
+    )
+    deepEqual(
+      runFromInterpreted(`|> [
+      .: [1; 2; 3; 4; 5; 6; 7; 8];
+      :- [2; 4];
+    ]`).items,
+      [1, 2, 7, 8]
+    )
+    throws(
+      () => runFromInterpreted(`:- [ .: [1; 2; 3; 4; 5; 6; 7; 8]; 199; 2]`),
+      RangeError
+    )
+    throws(
+      () => runFromInterpreted(`:+ [ .: [1; 2; 3; 4; 5; 6; 7; 8]; 199; "x"]`),
+      RangeError
     )
   })
 })

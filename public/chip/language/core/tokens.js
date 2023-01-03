@@ -487,12 +487,46 @@ const tokens = {
       throw new TypeError('First argument of .:= must be an .: []')
     return array.append(evaluate(args[1], env))
   },
-  ['=.:']: (args, env) => {
-    if (args.length !== 2)
-      throw new TypeError('Invalid number of arguments to .:=')
+  [':+']: (args, env) => {
+    if (args.length < 3)
+      throw new TypeError('Invalid number of arguments to :+')
+    const [first, second, ...rest] = args
+    const array = evaluate(first, env)
+    if (!(array.constructor.name === 'Brrr'))
+      throw new TypeError('First argument of :+ must be an .: []')
+    const index = evaluate(second, env)
+    if (!Number.isInteger(index))
+      throw new TypeError('Second argument of :+ must be a number')
+    else if (!array.isInBounds(index))
+      throw new RangeError(
+        'Second argument of :+ must be withing the bounds of .: []'
+      )
+    return array.addAt(index, ...rest.map((item) => evaluate(item, env)))
+  },
+  [':-']: (args, env) => {
+    if (args.length !== 3)
+      throw new TypeError('Invalid number of arguments to :-')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
-      throw new TypeError('First argument of .:= must be an .: []')
+      throw new TypeError('First argument of :- must be an .: []')
+    const index = evaluate(args[1], env)
+    if (!Number.isInteger(index))
+      throw new TypeError('Second argument of :- must be a number')
+    else if (!array.isInBounds(index))
+      throw new RangeError(
+        'Second argument of :- must be withing the bounds of .: []'
+      )
+    const amount = evaluate(args[2], env)
+    if (!Number.isInteger(amount) || amount < 0)
+      throw new TypeError('Third argument of :- must be a number >= 0')
+    return array.removeFrom(index, amount)
+  },
+  ['=.:']: (args, env) => {
+    if (args.length !== 2)
+      throw new TypeError('Invalid number of arguments to =.:')
+    const array = evaluate(args[0], env)
+    if (!(array.constructor.name === 'Brrr'))
+      throw new TypeError('First argument of =.: must be an .: []')
     return array.prepend(evaluate(args[1], env))
   },
   ['.:!=']: (args, env) => {
@@ -505,10 +539,10 @@ const tokens = {
   },
   ['!=.:']: (args, env) => {
     if (args.length !== 1)
-      throw new TypeError('Invalid number of arguments to .:!=')
+      throw new TypeError('Invalid number of arguments to !=.:')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
-      throw new TypeError('First argument of .:!= must be an .: []')
+      throw new TypeError('First argument of !=.: must be an .: []')
     return array.tail()
   },
   ['|.']: (args, env) => {

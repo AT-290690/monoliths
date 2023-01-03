@@ -96,8 +96,13 @@ export const execute = async (CONSOLE) => {
         const selection = editor.getSelection()
         if (!selection) return exe('throw new Error("Nothing is selected")')
 
-        const out = `__debug_log[${selection}; ""]`
+        const out = `__debug_log[${
+          selection[selection.length - 1] === ';'
+            ? selection.substring(0, selection.length - 1)
+            : selection
+        }; ""]`
         editor.replaceSelection(out)
+
         exe(`:=[__debug_log; LOGGER[0]]; ${editor.getValue().trim()}`)
         editor.setValue(source)
         consoleEditor.focus()
