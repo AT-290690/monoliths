@@ -316,6 +316,29 @@ export const execute = async (CONSOLE) => {
       )
       consoleElement.value = ''
       break
+    case 'RENAME':
+    case '~':
+      consoleElement.value = ''
+      const rename = PARAMS[0]
+      if (rename && State.lastSelectedFile) {
+        fetch(
+          `${API}rename?dir=${State.dir}&filename=${State.lastSelectedFile}&rename=${rename}`,
+          {
+            method: 'PUT',
+            'Content-Type': 'application/json',
+            credentials: 'same-origin',
+          }
+        ).then(() => {
+          droneIntel(keyIcon)
+          droneButton.classList.remove('shake')
+          State.lastSelectedFile = rename
+          checkDir(rename)
+          consoleElement.setAttribute('placeholder', `. ${rename}`)
+        })
+      }
+      State.lastSelectedFile
+      break
+
     case 'SAVE':
     case '+':
       {
@@ -353,7 +376,7 @@ export const execute = async (CONSOLE) => {
     case '%':
       {
         const encoded = encodeURIComponent(encodeBase64(editor.getValue()))
-        const link = `${API}chip/preview.html?s=`
+        const link = `https://at-290690.github.io/monoliths/public/chip/preview.html?s=`
         if (encoded) window.open(link + encoded, '_blank').focus()
       }
       break

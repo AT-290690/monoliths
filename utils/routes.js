@@ -1,4 +1,12 @@
-import { writeFile, readFile, access, mkdir, readdir, lstat } from 'fs/promises'
+import {
+  writeFile,
+  readFile,
+  access,
+  mkdir,
+  readdir,
+  lstat,
+  unlink,
+} from 'fs/promises'
 import { constants, rm } from 'fs'
 import { brotliCompress } from 'zlib'
 import path from 'path'
@@ -120,7 +128,6 @@ router['POST /execute'] = async (
     res.end()
   }
 }
-
 router['GET /ls'] = async (req, res, { query, cookie }) => {
   if (!cookieJar.isCookieVerified(cookie, query.dir)) {
     res.writeHead(403, { 'Content-Type': 'text/html' })
@@ -184,7 +191,29 @@ router['POST /save'] = async (req, res, { query, cookie }) => {
     res.end()
   }
 }
+router['PUT /rename'] = async (req, res, { query, cookie }) => {
+  if (!cookieJar.isCookieVerified(cookie, query.dir)) {
+    res.writeHead(403, { 'Content-Type': 'text/html' })
+    res.end('403: Unauthorized!')
+    return
+  }
+  const dirpath = `${directoryName}/portals/${query.dir}/`
+  const filePath = `${dirpath}${query.filename}`
+  const renamePath = `${dirpath}${query.rename}`
 
+  try {
+    await access(filePath, constants.F_OK)
+    const stat = await lstat(filePath)
+    if (stat.isFile()) {
+      const content = await readFile(filePath)
+      await writeFile(renamePath, content)
+      await unlink(filePath)
+    }
+  } catch (err) {}
+
+  res.writeHead(200, { 'Content-Type': 'application/text' })
+  res.end()
+}
 router['POST /disconnect'] = async (req, res, { query, cookie }) => {
   if (!cookieJar.isCookieVerified(cookie, query.dir)) {
     res.writeHead(403, { 'Content-Type': 'text/html' })
@@ -196,8 +225,8 @@ router['POST /disconnect'] = async (req, res, { query, cookie }) => {
     await access(filepath, constants.F_OK)
     rm(filepath, { recursive: true }, () => {})
   } catch (err) {}
-  res.writeHead(200, { 'Content-Type': 'application/json' })
-  res.end()
+  // res.writeHead(200, { 'Content-Type': 'application/text' })
+  // res.end()
 }
 router['DELETE /del'] = async (req, res, { query, cookie }) => {
   if (!cookieJar.isCookieVerified(cookie, query.dir)) {
