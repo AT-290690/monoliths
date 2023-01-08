@@ -145,7 +145,8 @@ const dfs = (
     const { type, operator, args, value } = node
     if (type === 'import' && node.class === 'string') imports.add(value)
     // if (type === 'value' && node.class === 'string') excludes.add(value)
-    if (type === 'word' && !imports.has(node.name)) definitions.add(node.name)
+    if (type === 'word' && node.name.length > 1 && !imports.has(node.name))
+      definitions.add(node.name)
     if (
       type === 'apply' &&
       operator.type === 'word' &&

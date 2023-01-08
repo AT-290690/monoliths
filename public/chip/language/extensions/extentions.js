@@ -773,8 +773,8 @@ export const LIBRARY = {
       table.appendChild(tableBody)
       return table
     },
-    getid: (element) => element.getattribute('id'),
-    getattribute: (element, key) => element.getattribute(key),
+    getid: (element) => element.getAttribute('id'),
+    getattribute: (element, key) => element.getAttribute(key),
     setattribute: (element, key, value) => {
       element.setAttribute(key, value)
       return element

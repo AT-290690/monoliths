@@ -1,3 +1,4 @@
+import { DOCUMENTATION } from '../chip/language/extensions/doc.js'
 import {
   compress,
   decompress,
@@ -5,6 +6,7 @@ import {
 } from '../chip/language/misc/compression.js'
 import { removeNoCode } from '../chip/language/misc/helpers.js'
 import { LZUTF8 } from '../chip/language/misc/lz-utf8.js'
+import { compilePlain } from '../chip/language/misc/utils.js'
 import {
   autoComplete,
   consoleEditor,
@@ -124,7 +126,7 @@ export const execute = async (CONSOLE) => {
         consoleElement.value = ''
       }
       break
-    case 'BEAKON':
+    case 'BEACON':
     case '!':
       {
         const sub = PARAMS[0]
@@ -173,6 +175,9 @@ export const execute = async (CONSOLE) => {
           .catch((err) => console.log(err))
         consoleElement.value = ''
       }
+      break
+    case 'JS':
+      editor.setValue(compilePlain(editor.getValue()))
       break
     case 'COMPILE':
     case '$':
@@ -297,6 +302,14 @@ export const execute = async (CONSOLE) => {
       }
 
       break
+    case 'MANGLE':
+      editor.setValue(compress(removeNoCode(editor.getValue())))
+      consoleElement.value = ''
+      break
+    case 'DEMANGLE':
+      editor.setValue(decompress(editor.getValue()))
+      consoleElement.value = ''
+      break
     case 'COMPRESS':
       editor.setValue(
         LZUTF8.compress(compress(removeNoCode(editor.getValue())), {
@@ -414,7 +427,22 @@ export const execute = async (CONSOLE) => {
           })
       }
       break
+    case 'DOC':
+      {
+        const name = PARAMS[0]
+        const sub = PARAMS[1]
 
+        editor.setValue(
+          !name
+            ? Object.values(DOCUMENTATION)
+                .map((x) => Object.entries(x).join('\n'))
+                .join('\n')
+            : sub
+            ? DOCUMENTATION[name][sub]
+            : Object.entries(DOCUMENTATION[name]).join('\n')
+        )
+      }
+      break
     case 'HELP':
     case '?':
       State.cache = ''

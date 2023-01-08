@@ -25,7 +25,22 @@ const compile = () => {
                 : res
             })
             .join('')}})()`
-        case ':=':
+        case ':=': {
+          let name,
+            out = '(('
+          for (let i = 0, len = tree.args.length; i < len; ++i) {
+            if (i % 2 === 0) {
+              name = tree.args[i].name
+              locals.add(name)
+            } else
+              out += `${name}=${dfs(tree.args[i], locals)}${
+                i !== len - 1 ? ',' : ''
+              }`
+          }
+          out += `), ${name});`
+          return out
+        }
+
         case '~=': {
           const res = dfs(tree.args[1], locals)
           const name = tree.args[0].name

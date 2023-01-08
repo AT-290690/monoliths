@@ -1,12 +1,14 @@
-import { equal, deepEqual, throws } from 'assert'
+import { equal, deepEqual } from 'assert'
 import {
   runFromInterpreted,
   runFromCompiled,
 } from '../public/chip/language/misc/utils.js'
 describe('compilation should work as expected', () => {
   it('definitions', () => {
-    const source = `:= [x; 10]; := [y; 3]; := [temp; x]; = [x; y]; = [y; temp]; :: ["x"; x; "y"; y]`
-    deepEqual(runFromInterpreted(source), runFromCompiled(source))
+    const source1 = `:= [x; 10]; := [y; 3]; := [temp; x]; = [x; y]; = [y; temp]; :: ["x"; x; "y"; y]`
+    deepEqual(runFromInterpreted(source1), runFromCompiled(source1))
+    const source2 = `:= [x; 10; y; 23]; .: [x; y]`
+    deepEqual(runFromInterpreted(source2), runFromCompiled(source2))
   })
   it('simple math', () => {
     const source = `:= [x; 30]; := [result; + [: [* [+ [1; 2; 3]; 2]; % [4; 3]]; x]];`
@@ -38,7 +40,7 @@ describe('compilation should work as expected', () => {
          ][]]];
          .: [switch case ["mean"]; switch case [0]; switch case  ["knk"]];
      `
-    deepEqual(runFromInterpreted(source), runFromInterpreted(source))
+    deepEqual(runFromInterpreted(source), runFromCompiled(source))
   })
   it('fib sum', () => {
     const source = `;; calculating fib sequance

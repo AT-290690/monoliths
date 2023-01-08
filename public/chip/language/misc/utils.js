@@ -393,7 +393,14 @@ export const treeShake = (modules) => {
   lib += 'const LIBRARY = {' + dfs(modules, lib, STD.LIBRARY) + '}'
   return lib
 }
-
+export const compilePlain = (source) => {
+  const inlined = wrapInBody(removeNoCode(source))
+  const { top, program, modules } = compileToJs(parse(inlined))
+  const lib = treeShake(modules)
+  return `${lib};
+${top}
+${program}`
+}
 export const compileModule = (source) => {
   const inlined = wrapInBody(removeNoCode(source))
   const { top, program, modules } = compileToJs(parse(inlined))

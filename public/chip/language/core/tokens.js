@@ -151,19 +151,26 @@ const tokens = {
     return value
   },
   [':=']: (args, env) => {
-    if (!args.length || args.length > 2)
+    if (!args.length)
       throw new SyntaxError('Invalid number of arguments for := []')
-    if (args[0].type !== 'word')
-      throw new SyntaxError('First argument of := [] must be word')
-    const name = args[0].name
-    if (name.includes('.') || name.includes('-'))
-      throw new SyntaxError(
-        'Invalid use of operation := [] [variable name must not contain . or -]'
-      )
-    const value =
-      args.length === 1 ? VOID : evaluate(args[args.length - 1], env)
-    env[name] = value
-    return value
+    let name
+    for (let i = 0; i < args.length; ++i) {
+      if (i % 2 === 0) {
+        const word = args[i]
+        if (word.type !== 'word')
+          throw new SyntaxError(
+            `First argument of := [] must be word but got ${word.type ?? VOID}`
+          )
+        name = word.name
+        if (name.includes('.') || name.includes('-'))
+          throw new SyntaxError(
+            `Invalid use of operation := [] [variable name must not contain . or -] but got ${name}`
+          )
+      } else {
+        env[name] = evaluate(args[i], env)
+      }
+    }
+    return env[name]
   },
   ['->']: (args, env) => {
     if (!args.length) throw new SyntaxError('-> [] need a body')
@@ -818,6 +825,21 @@ const tokens = {
       throw new TypeError('First argument of .:? must be an .: []')
     return array.length
   },
+  ['~=']: (args, env) => {
+    if (!args.length || args.length > 2)
+      throw new SyntaxError('Invalid number of arguments for ~= []')
+    if (args[0].type !== 'word')
+      throw new SyntaxError('First argument of ~= [] must be word')
+    const name = args[0].name
+    if (name.includes('.') || name.includes('-'))
+      throw new SyntaxError(
+        'Invalid use of operation ~= [] [variable name must not contain . or -]'
+      )
+    const value =
+      args.length === 1 ? VOID : evaluate(args[args.length - 1], env)
+    env[name] = value
+    return value
+  },
 }
-tokens['~='] = tokens[':=']
+
 export { tokens }

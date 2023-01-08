@@ -8,6 +8,10 @@ describe('interpretation should work as expected', () => {
       ),
       10
     )
+    deepEqual(
+      runFromInterpreted(`:= [x; 10; y; 23]; .: [x; y]`).items,
+      [10, 23]
+    )
     throws(() => runFromInterpreted(`: [29; 0]`), RangeError)
   })
   it(':: ::. ::: ::* should work', () => {
