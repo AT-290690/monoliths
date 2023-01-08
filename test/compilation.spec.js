@@ -25,23 +25,7 @@ describe('compilation should work as expected', () => {
   `
     deepEqual(runFromInterpreted(source2), runFromCompiled(source2))
   })
-  it('switch case', () => {
-    const source = `
-      := [switch case; -> [matcher;
-           || [
-           . [:: [
-             "knk"; -> [..["who's there"]];
-             "mean"; -> [..[42]];
-             ;; add more cases here
-             ;; ...
-           ]; matcher];
-             ;; default case
-           -> ["not"]
-         ][]]];
-         .: [switch case ["mean"]; switch case [0]; switch case  ["knk"]];
-     `
-    deepEqual(runFromInterpreted(source), runFromCompiled(source))
-  })
+
   it('fib sum', () => {
     const source = `;; calculating fib sequance
       := [fib; -> [n; ? [

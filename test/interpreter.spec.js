@@ -96,26 +96,6 @@ describe('interpretation should work as expected', () => {
     )
   })
 
-  it('switch case', () => {
-    deepEqual(
-      runFromInterpreted(`
-      := [switch case; -> [matcher;
-        || [
-        . [:: [
-          "knk"; -> [..["who's there"]];
-          "life"; -> [..[42]];
-          ;; add more cases here
-          ;; ...
-        ]; matcher];
-          ;; default case
-        -> ["nothing matched"]
-      ][]]];
-      .: [switch case ["life"]; switch case [0]; switch case  ["knk"]];
-  `).items,
-      [42, 'nothing matched', "who's there"]
-    )
-  })
-
   it('fib sum', () => {
     equal(
       runFromInterpreted(`;; calculating fib sequance
@@ -361,6 +341,98 @@ describe('interpretation should work as expected', () => {
     throws(
       () => runFromInterpreted(`:+ [ .: [1; 2; 3; 4; 5; 6; 7; 8]; 199; "x"]`),
       RangeError
+    )
+  })
+
+  it('. .? .= .!= should work', () => {
+    equal(
+      runFromInterpreted(
+        `:= [obj; :: ["x"; :: ["y"; 0]]]; |> [obj; . ["x"]; . ["y"]]`
+      ),
+      0
+    )
+    throws(
+      () =>
+        runFromInterpreted(
+          `:= [obj; :: ["x"; :: ["y"; 0]]]; |> [obj; . ["x"]; . ["z"]]`
+        ),
+      RangeError
+    )
+    throws(
+      () =>
+        runFromInterpreted(
+          `:= [obj; :: ["x"; :: ["y"; 0]]]; |> [obj; . ["z"]; . ["y"]]`
+        ),
+      RangeError
+    )
+    equal(
+      runFromInterpreted(
+        `:= [obj; :: ["x"; :: ["y"; 0]]]; |> [obj; . ["x"]; .= ["y"; 1]]; |> [obj; . ["x"]; . ["y"]]`
+      ),
+      1
+    )
+    equal(
+      runFromInterpreted(
+        `:= [obj; :: ["x"; :: ["y"; 0]]]; |> [obj; . ["x"]; .= ["z"; 1]]; |> [obj; . ["x"]; . ["z"]]`
+      ),
+      1
+    )
+    throws(
+      () =>
+        runFromInterpreted(
+          `:= [obj; :: ["x"; :: ["y"; 0]]]; |> [obj; . ["x"]; . ["z"]; .= ["f"; 1]]`
+        ),
+      RangeError
+    )
+    throws(
+      () =>
+        runFromInterpreted(
+          `:= [obj; :: ["x"; :: ["y"; 0]]]; |> [obj; . ["z"]; .= ["y"; 1]]`
+        ),
+      RangeError
+    )
+
+    throws(
+      () =>
+        runFromInterpreted(
+          `:= [obj; :: ["x"; :: ["y"; 0]]]; .!= [obj; "x"; "z"; "f"]`
+        ),
+      RangeError
+    )
+    throws(
+      () =>
+        runFromInterpreted(
+          `:= [obj; :: ["x"; :: ["y"; 0]]]; .!= [obj; "z"; "y"]`
+        ),
+      RangeError
+    )
+    throws(
+      () =>
+        runFromInterpreted(
+          `:= [obj; :: ["x"; :: ["y"; 0]]];|> [obj; . ["x"]; . ["y"]; . ["m"]]`
+        ),
+      TypeError
+    )
+    throws(
+      () =>
+        runFromInterpreted(
+          `:= [obj; :: ["x"; :: ["y"; 0]]];|> [obj; . ["x"]; . ["y"]; .? ["m"]]`
+        ),
+      TypeError
+    )
+    throws(
+      () =>
+        runFromInterpreted(
+          `:= [obj; :: ["x"; :: ["y"; 0]]];|> [obj; . ["x"]; . ["y"]; .= ["m"; 4]]`
+        ),
+      TypeError
+    )
+    throws(
+      () =>
+        runFromInterpreted(
+          `:= [obj; :: ["x"; :: ["y"; 0]]];|> [obj; . ["x"]; . ["y"]; .!= ["m"]]`
+        ),
+      TypeError
     )
   })
 })

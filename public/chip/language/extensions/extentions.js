@@ -14,6 +14,10 @@ export const LIBRARY = {
       Promise.all(promises).then((res) =>
         Promise.all(res.map((r) => r.json()).then(callback))
       ),
+    getrequestmanytext: (callback, ...promises) =>
+      Promise.all(promises).then((res) =>
+        Promise.all(res.map((r) => r.text()).then(callback))
+      ),
     getrequestsinglejson: (url, callback) => {
       fetch(url)
         .then((data) => data.json())
@@ -69,6 +73,7 @@ export const LIBRARY = {
   },
   BITWISE: {
     NAME: 'BITWISE',
+    makebit: (dec) => (dec >>> 0).toString(2),
     and: (a, b) => a & b,
     not: (a) => ~a,
     or: (a, b) => a | b,
@@ -280,62 +285,9 @@ export const LIBRARY = {
         return result
       },
   },
-  LIST: {
-    reverse: (list) => {
-      let head = list // set a reference to head of linked list
-      if (head['=>'][0] === VOID) return
-
-      let currentNode = head
-      let prevNode = VOID
-      let nextNode = VOID
-
-      // traverse list and adjust links
-      while (currentNode) {
-        nextNode = currentNode['=>'][0]
-        currentNode['=>'][0] = prevNode
-        prevNode = currentNode
-        currentNode = nextNode
-        nextNode = VOID
-      }
-      head = prevNode
-      return head
-    },
-  },
-  DOUBLELIST: {
-    NAME: 'DOUBLELIST',
-    makedoublelist: (size) => LIBRARY.DOUBLELIST.range(0)(size),
-    node: (prev) => (next) => ({ '<-': prev, '->': next }),
-    prev: (n) => n['<-'],
-    next: (n) => n['->'],
-    range: (low) => (high) =>
-      low > high
-        ? VOID
-        : LIBRARY.DOUBLELIST.node(low)(LIBRARY.DOUBLELIST.range(low + 1)(high)),
-    map: (f) => (n) =>
-      n === VOID
-        ? VOID
-        : LIBRARY.DOUBLELIST.node(f(LIBRARY.DOUBLELIST.prev(n)))(
-            LIBRARY.DOUBLELIST.map(f)(LIBRARY.DOUBLELIST.next(n))
-          ),
-    listtoarray: (node) => {
-      const result = []
-      while (node !== VOID) {
-        result.push(LIBRARY.DOUBLELIST.prev(node))
-        node = LIBRARY.DOUBLELIST.next(node)
-      }
-      return result
-    },
-    arraytolist: (arrayLike) => {
-      let result = VOID
-      const array = Array.from(arrayLike)
-      for (let i = array.length; i >= 0; i--) {
-        result = LIBRARY.DOUBLELIST.node(array[i])(result)
-      }
-      return result
-    },
-  },
   ARRAY: {
     NAME: 'ARRAY',
+    from: (arr) => Brrr.from(arr),
     splitnewline: (str) => Brrr.from(str.split('\n')),
     splitspaces: (str) => Brrr.from(str.split(' ')),
     split: (str, separator) => Brrr.from(str.split(separator)),
@@ -516,67 +468,75 @@ export const LIBRARY = {
       tooltip.textContent = defaultLabel
       return tooltip
     },
-    maketable: (content) => {
+    maketable: () => {
       const table = document.createElement('table')
-      table.innerHTML = content
       return table
     },
-    maketablerow: (content) => {
+    maketablerow: () => {
       const table = document.createElement('tr')
-      table.innerHTML = content
       return table
     },
-    maketabledata: (content) => {
+    maketabledata: () => {
       const table = document.createElement('td')
-      table.innerHTML = content
       return table
     },
-    maketableheader: (content) => {
+    maketableheader: () => {
       const table = document.createElement('th')
-      table.innerHTML = content
       return table
     },
-    maketablecaption: (content) => {
+    maketablecaption: () => {
       const table = document.createElement('caption')
-      table.innerHTML = content
       return table
     },
-    maketablecolumn: (content) => {
+    maketablecolumn: () => {
       const table = document.createElement('col')
-      table.innerHTML = content
       return table
     },
-    maketablecolumngroup: (content) => {
+    maketablecolumngroup: () => {
       const table = document.createElement('colgroup')
-      table.innerHTML = content
       return table
     },
-    maketablehead: (content) => {
+    maketablehead: () => {
       const table = document.createElement('thead')
-      table.innerHTML = content
       return table
     },
-    maketablebody: (content) => {
+    maketablebody: () => {
       const table = document.createElement('tbody')
-      table.innerHTML = content
       return table
     },
-    maketablefooter: (content) => {
+    maketablefooter: () => {
       const table = document.createElement('tfoot')
-      table.innerHTML = content
       return table
     },
     makebutton: () => {
       const element = document.createElement('button')
       return element
     },
-    makelabel: (element, label) => {
+    addtextcontent: (element, label) => {
       element.textContent = label
       return element
     },
-    makeheader: (content, n = 1) => {
+    makelabel: (...elements) => {
+      const element = document.createElement('label')
+      const frag = document.createDocumentFragment()
+      elements.forEach((el) => frag.appendChild(el))
+      element.appendChild(frag)
+      return element
+    },
+    maketime: (format) => {
+      const element = document.createElement('time')
+      element.setAttribute('datetime', format)
+      return element
+    },
+    makeaside: (...elements) => {
+      const element = document.createElement('aside')
+      const frag = document.createDocumentFragment()
+      elements.forEach((el) => frag.appendChild(el))
+      element.appendChild(frag)
+      return element
+    },
+    makeheader: (n = 1) => {
       const element = document.createElement('h' + n)
-      element.textContent = content
       return element
     },
     makelist: (content) => {
@@ -593,24 +553,40 @@ export const LIBRARY = {
       return link
     },
     makeorderedlist: (...lists) => {
+      const frag = document.createDocumentFragment()
       const element = document.createElement('ol')
-      lists.forEach((l) => element.appendChild(l))
+      lists.forEach((l) => frag.appendChild(l))
+      element.appendChild(frag)
       return element
     },
     makeunorderedlist: (...lists) => {
       const element = document.createElement('ul')
-      lists.forEach((l) => element.appendChild(l))
+      const frag = document.createDocumentFragment()
+      lists.forEach((l) => frag.appendChild(l))
+      element.appendChild(frag)
       return element
     },
-    makeanchor: (content, href) => {
+    makefigure: (...elements) => {
+      const element = document.createElement('figure')
+      const frag = document.createDocumentFragment()
+      elements.forEach((element) => frag.appendChild(element))
+      element.appendChild(frag)
+      return element
+    },
+    makearticle: (...elements) => {
+      const element = document.createElement('article')
+      const frag = document.createDocumentFragment()
+      elements.forEach((element) => frag.appendChild(element))
+      element.appendChild(frag)
+      return element
+    },
+    makeanchor: (href) => {
       const element = document.createElement('a')
       element.href = href
-      element.textContent = content
       return element
     },
-    makepre: (content) => {
+    makepre: () => {
       const element = document.createElement('pre')
-      element.textContent = content
       return element
     },
     makenav: (inner) => {
@@ -618,14 +594,12 @@ export const LIBRARY = {
       element.appendChild(inner)
       return element
     },
-    makeparagraph: (content) => {
+    makeparagraph: () => {
       const element = document.createElement('p')
-      element.textContent = content
       return element
     },
-    makespan: (content) => {
+    makespan: () => {
       const element = document.createElement('span')
-      element.textContent = content
       return element
     },
     setid: (element, id) => {
@@ -635,7 +609,6 @@ export const LIBRARY = {
     maketablefrom: (tableData) => {
       const table = document.createElement('table')
       const tableBody = document.createElement('tbody')
-      console.log(tableData)
       tableData.forEach((rowData) => {
         const row = document.createElement('tr')
         rowData.forEach((cellData) => {
@@ -662,24 +635,44 @@ export const LIBRARY = {
       element.style = styles.join('')
       return element
     },
+    makeprogress: (value, max) => {
+      const element = document.createElement('progress')
+      element.setAttribute('value', value)
+      element.setAttribute('max', max)
+      return element
+    },
+    makeindeterminateprogress: (max) => {
+      const element = document.createElement('progress')
+      element.setAttribute('max', max)
+      return element
+    },
     makecontainer: (...elements) => {
+      const frag = document.createDocumentFragment()
       const div = document.createElement('div')
-      elements.forEach((element) => div.appendChild(element))
+      elements.forEach((element) => frag.appendChild(element))
+      div.appendChild(frag)
       document.body.appendChild(div)
       return div
     },
     makediv: (...elements) => {
+      const frag = document.createDocumentFragment()
       const div = document.createElement('div')
-      elements.forEach((element) => div.appendChild(element))
+      elements.forEach((element) => frag.appendChild(element))
+      div.appendChild(frag)
       return div
     },
-    makeitalictext: (content) => {
+    makeitalictext: () => {
       const element = document.createElement('i')
-      element.textContent = content
+      return element
+    },
+    makestrongtext: () => {
+      const element = document.createElement('strong')
       return element
     },
     insertintocontainer: (container, ...elements) => {
-      elements.forEach((element) => container.appendChild(element))
+      const frag = document.createDocumentFragment()
+      elements.forEach((element) => frag.appendChild(element))
+      container.appendChild(frag)
       return container
     },
     removeselffromcontainer: (...elements) =>
@@ -724,59 +717,6 @@ export const LIBRARY = {
     unitspixel: (value) => `${value}px`,
     unitspoint: (value) => `${value}pt`,
     backgroundcolor: (color) => `background-color: ${color};`,
-    resetcss: () => {
-      const element = document.createElement('style')
-      element.innerHTML = `html, body, div, span, applet, object, iframe,
-   h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-   a, abbr, acronym, address, big, cite, code,
-   del, dfn, em, img, ins, kbd, q, s, samp,
-   small, strike, strong, sub, sup, tt, var,
-   b, u, i, center,
-   dl, dt, dd, ol, ul, li,
-   fieldset, form, label, legend,
-   table, caption, tbody, tfoot, thead, tr, th, td,
-   article, aside, canvas, details, embed, 
-   figure, figcaption, footer, header, hgroup, 
-   menu, nav, output, ruby, section, summary,
-   time, mark, audio, video {
-     margin: 0;
-     padding: 0;
-     border: 0;
-     font-size: 100%;
-     font: inherit;
-     vertical-align: baseline;
-   }
-   /* HTML5 display-role reset for older browsers */
-   article, aside, details, figcaption, figure, 
-   footer, header, hgroup, menu, nav, section {
-     display: block;
-   }
-   body {
-     line-height: 1;
-   }
-   ol, ul {
-     list-style: none;
-   }
-   blockquote, q {
-     quotes: none;
-   }
-   blockquote:before, blockquote:after,
-   q:before, q:after {
-     content: '';
-     content: none;
-   }
-   table {
-     border-collapse: collapse;
-     border-spacing: 0;
-   }
-   a {
-    color: blue;
-    text-decoration: none; /* no underline */
-  }
-   `
-      document.body.appendChild(element)
-      return element
-    },
     cursorpointer: () => 'cursor: pointer;',
     fontfamily: (font) => `font-family: ${font};`,
     fontsize: (size) => `font-size: ${size};`,

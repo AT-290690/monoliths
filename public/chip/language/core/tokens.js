@@ -14,7 +14,8 @@ const dfs = (tree) => {
 const MAX_KEY = 10
 const tokens = {
   ['+']: (args, env) => {
-    if (args.length < 2) throw new TypeError('Invalid number of arguments to +')
+    if (args.length < 2)
+      throw new RangeError('Invalid number of arguments to +')
     const operands = args.map((a) => evaluate(a, env))
     if (operands.some((n) => typeof n !== 'number'))
       throw new TypeError('Invalid use of + (Not all args are numbers)')
@@ -22,7 +23,8 @@ const tokens = {
     return rest.reduce((acc, x) => (acc += x), first)
   },
   ['-']: (args, env) => {
-    if (args.length < 2) throw new TypeError('Invalid number of arguments to -')
+    if (args.length < 2)
+      throw new RangeError('Invalid number of arguments to -')
     const operands = args.map((a) => evaluate(a, env))
     if (operands.some((n) => typeof n !== 'number'))
       throw new TypeError('Invalid use of - (Not all args are numbers)')
@@ -30,7 +32,8 @@ const tokens = {
     return rest.reduce((acc, x) => (acc -= x), first)
   },
   ['*']: (args, env) => {
-    if (args.length < 2) throw new TypeError('Invalid number of arguments to *')
+    if (args.length < 2)
+      throw new RangeError('Invalid number of arguments to *')
     const operands = args.map((a) => evaluate(a, env))
     if (operands.some((n) => typeof n !== 'number'))
       throw new TypeError('Invalid use of * (Not all args are numbers)')
@@ -38,7 +41,8 @@ const tokens = {
     return rest.reduce((acc, x) => (acc *= x), first)
   },
   [':']: (args, env) => {
-    if (args.length < 2) throw new TypeError('Invalid number of arguments to :')
+    if (args.length < 2)
+      throw new RangeError('Invalid number of arguments to :')
     const operands = args.map((a) => evaluate(a, env))
     if (operands.some((n) => typeof n !== 'number'))
       throw new TypeError('Invalid use of : (Not all args are numbers)')
@@ -49,7 +53,7 @@ const tokens = {
   },
   ['%']: (args, env) => {
     if (args.length !== 2)
-      throw new TypeError('Invalid number of arguments to %')
+      throw new RangeError('Invalid number of arguments to %')
     const operands = args.map((a) => evaluate(a, env))
     if (operands.some((n) => typeof n !== 'number'))
       throw new TypeError('Invalid use of % (Not all args are numbers)')
@@ -58,7 +62,7 @@ const tokens = {
   },
   ['|']: (args, env) => {
     if (!args.length || args.length > 2)
-      throw new TypeError('Invalid number of arguments to |')
+      throw new RangeError('Invalid number of arguments to |')
     const rounder = args.length === 1 ? 0 : evaluate(args[1], env)
     const operand = evaluate(args[0], env)
     if (typeof operand !== 'number' || typeof rounder !== 'number')
@@ -66,7 +70,8 @@ const tokens = {
     return +operand.toFixed(rounder)
   },
   ['~']: (args, env) => {
-    if (args.length < 2) throw new TypeError('Invalid number of arguments to ~')
+    if (args.length < 2)
+      throw new RangeError('Invalid number of arguments to ~')
     const operands = args.map((a) => evaluate(a, env))
     if (operands.some((n) => typeof n !== 'string'))
       throw new TypeError('Invalid use of ` (Not all args are strings)')
@@ -75,53 +80,55 @@ const tokens = {
   },
   ['?']: (args, env) => {
     if (args.length > 3 || args.length <= 1)
-      throw new TypeError('Invalid number of arguments to ?')
+      throw new RangeError('Invalid number of arguments to ?')
     if (!!evaluate(args[0], env)) return evaluate(args[1], env)
     else if (args[2]) return evaluate(args[2], env)
     else return 0
   },
   ['!']: (args, env) => {
     if (args.length !== 1)
-      throw new TypeError('Invalid number of arguments to !')
+      throw new RangeError('Invalid number of arguments to !')
     return +!extract(args[0], env)
   },
   ['==']: (args, env) => {
     if (args.length < 2)
-      throw new TypeError('Invalid number of arguments to ==')
+      throw new RangeError('Invalid number of arguments to ==')
     const [first, ...rest] = args.map((a) => evaluate(a, env))
     return +rest.every((x) => first === x)
   },
   ['!=']: (args, env) => {
     if (args.length < 2)
-      throw new TypeError('Invalid number of arguments to !=')
+      throw new RangeError('Invalid number of arguments to !=')
     const [first, ...rest] = args.map((a) => evaluate(a, env))
     return +rest.every((x) => first !== x)
   },
   ['>']: (args, env) => {
-    if (args.length < 2) throw new TypeError('Invalid number of arguments to >')
+    if (args.length < 2)
+      throw new RangeError('Invalid number of arguments to >')
     const [first, ...rest] = args.map((a) => evaluate(a, env))
     return +rest.every((x) => first > x)
   },
   ['<']: (args, env) => {
-    if (args.length < 2) throw new TypeError('Invalid number of arguments to <')
+    if (args.length < 2)
+      throw new RangeError('Invalid number of arguments to <')
     const [first, ...rest] = args.map((a) => evaluate(a, env))
     return +rest.every((x) => first < x)
   },
   ['>=']: (args, env) => {
     if (args.length < 2)
-      throw new TypeError('Invalid number of arguments to >=')
+      throw new RangeError('Invalid number of arguments to >=')
     const [first, ...rest] = args.map((a) => evaluate(a, env))
     return +rest.every((x) => first >= x)
   },
   ['<=']: (args, env) => {
     if (args.length < 2)
-      throw new TypeError('Invalid number of arguments to <=')
+      throw new RangeError('Invalid number of arguments to <=')
     const [first, ...rest] = args.map((a) => evaluate(a, env))
     return +rest.every((x) => first <= x)
   },
   ['&&']: (args, env) => {
     if (args.length === 0)
-      throw new TypeError('Invalid number of arguments to &&')
+      throw new RangeError('Invalid number of arguments to &&')
     for (let i = 0; i < args.length - 1; ++i)
       if (!!evaluate(args[i], env)) continue
       else return evaluate(args[i], env)
@@ -129,7 +136,7 @@ const tokens = {
   },
   ['||']: (args, env) => {
     if (args.length === 0)
-      throw new TypeError('Invalid number of arguments  to ||')
+      throw new RangeError('Invalid number of arguments  to ||')
     for (let i = 0; i < args.length - 1; ++i)
       if (!!evaluate(args[i], env)) return evaluate(args[i], env)
       else continue
@@ -184,7 +191,7 @@ const tokens = {
   },
   ['=']: (args, env) => {
     if (args.length !== 2)
-      throw new TypeError('Invalid number of arguments for = []')
+      throw new RangeError('Invalid number of arguments for = []')
     if (args[0].type !== 'word')
       throw new TypeError('Argument for = [] must be words')
     const entityName = args[0].name
@@ -200,7 +207,7 @@ const tokens = {
   },
   ['>-']: (args, env) => {
     if (args.length !== 2)
-      throw new TypeError('Invalid number of arguments to >-')
+      throw new RangeError('Invalid number of arguments to >-')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of >- must be an .: []')
@@ -211,7 +218,7 @@ const tokens = {
   },
   ['>_']: (args, env) => {
     if (args.length !== 3)
-      throw new TypeError('Invalid number of arguments to >_')
+      throw new RangeError('Invalid number of arguments to >_')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of >_ must be an .: []')
@@ -222,7 +229,7 @@ const tokens = {
   },
   ['_<']: (args, env) => {
     if (args.length !== 3)
-      throw new TypeError('Invalid number of arguments to _<')
+      throw new RangeError('Invalid number of arguments to _<')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of _< must be an .: []')
@@ -233,7 +240,7 @@ const tokens = {
   },
   ['>>']: (args, env) => {
     if (args.length !== 2)
-      throw new TypeError('Invalid number of arguments to >>')
+      throw new RangeError('Invalid number of arguments to >>')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of >> must be an .: []')
@@ -244,7 +251,7 @@ const tokens = {
   },
   ['>>.']: (args, env) => {
     if (args.length !== 2)
-      throw new TypeError('Invalid number of arguments to >>.')
+      throw new RangeError('Invalid number of arguments to >>.')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of >>. must be an .: []')
@@ -258,7 +265,7 @@ const tokens = {
   },
   ['>>_']: (args, env) => {
     if (args.length !== 2)
-      throw new TypeError('Invalid number of arguments to >>.')
+      throw new RangeError('Invalid number of arguments to >>.')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of >>. must be an .: []')
@@ -269,7 +276,7 @@ const tokens = {
   },
   ['<<']: (args, env) => {
     if (args.length !== 2)
-      throw new TypeError('Invalid number of arguments to <<')
+      throw new RangeError('Invalid number of arguments to <<')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of << must be an .: []')
@@ -280,7 +287,7 @@ const tokens = {
   },
   ['.<<']: (args, env) => {
     if (args.length !== 2)
-      throw new TypeError('Invalid number of arguments to .<<')
+      throw new RangeError('Invalid number of arguments to .<<')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of .<< must be an .: []')
@@ -295,7 +302,7 @@ const tokens = {
   },
   ['~::']: (args, env) => {
     if (args.length !== 2)
-      throw new TypeError('Invalid number of arguments to ~::')
+      throw new RangeError('Invalid number of arguments to ~::')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of ~:: must be an .: []')
@@ -306,7 +313,7 @@ const tokens = {
   },
   ['*::']: (args, env) => {
     if (args.length !== 2)
-      throw new TypeError('Invalid number of arguments to *::')
+      throw new RangeError('Invalid number of arguments to *::')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of *:: must be an .: []')
@@ -317,7 +324,7 @@ const tokens = {
   },
   ['.::']: (args, env) => {
     if (args.length !== 2)
-      throw new TypeError('Invalid number of arguments to .::')
+      throw new RangeError('Invalid number of arguments to .::')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of .:: must be an .: []')
@@ -328,7 +335,7 @@ const tokens = {
   },
   ['.:@']: (args, env) => {
     if (args.length !== 3)
-      throw new TypeError('Invalid number of arguments to .:@')
+      throw new RangeError('Invalid number of arguments to .:@')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of .:@ must be an .: []')
@@ -342,7 +349,7 @@ const tokens = {
   },
   ['_.']: (args, env) => {
     if (args.length !== 2)
-      throw new TypeError('Invalid number of arguments to _.')
+      throw new RangeError('Invalid number of arguments to _.')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of _. must be an .: []')
@@ -353,7 +360,7 @@ const tokens = {
   },
   ['.:*']: (args, env) => {
     if (args.length !== 3)
-      throw new TypeError('Invalid number of arguments to .:*')
+      throw new RangeError('Invalid number of arguments to .:*')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of .:* must be an .: []')
@@ -367,7 +374,7 @@ const tokens = {
   },
   ['@']: (args, env) => {
     if (args.length !== 2)
-      throw new TypeError('Invalid number of arguments to @')
+      throw new RangeError('Invalid number of arguments to @')
     const n = evaluate(args[0], env)
     if (typeof n !== 'number')
       throw new TypeError('First argument of @ must be a number')
@@ -380,7 +387,7 @@ const tokens = {
   },
   ['><>']: (args, env) => {
     if (args.length !== 2)
-      throw new TypeError('Invalid number of arguments to ><>')
+      throw new RangeError('Invalid number of arguments to ><>')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of ><> must be an .: []')
@@ -391,7 +398,7 @@ const tokens = {
   },
   ['<><']: (args, env) => {
     if (args.length !== 2)
-      throw new TypeError('Invalid number of arguments to <><')
+      throw new RangeError('Invalid number of arguments to <><')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of <>< must be an .: []')
@@ -402,7 +409,7 @@ const tokens = {
   },
   ['|:|']: (args, env) => {
     if (args.length !== 2)
-      throw new TypeError('Invalid number of arguments to |:|')
+      throw new RangeError('Invalid number of arguments to |:|')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of |:| must be an .: []')
@@ -413,7 +420,7 @@ const tokens = {
   },
   ['|.|']: (args, env) => {
     if (args.length !== 2)
-      throw new TypeError('Invalid number of arguments to |.|')
+      throw new RangeError('Invalid number of arguments to |.|')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of |.| must be an .: []')
@@ -424,7 +431,7 @@ const tokens = {
   },
   ['.>']: (args, env) => {
     if (args.length !== 1)
-      throw new TypeError('Invalid number of arguments to .>')
+      throw new RangeError('Invalid number of arguments to .>')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of .> must be an .: []')
@@ -432,7 +439,7 @@ const tokens = {
   },
   ['.<']: (args, env) => {
     if (args.length !== 1)
-      throw new TypeError('Invalid number of arguments to .<')
+      throw new RangeError('Invalid number of arguments to .<')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of .< must be an .: []')
@@ -440,7 +447,7 @@ const tokens = {
   },
   [':.']: (args, env) => {
     if (args.length !== 2)
-      throw new TypeError('Invalid number of arguments to :.')
+      throw new RangeError('Invalid number of arguments to :.')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of :. must be an .: []')
@@ -455,7 +462,7 @@ const tokens = {
   },
   ['^=']: (args, env) => {
     if (args.length !== 3)
-      throw new TypeError('Invalid number of arguments to ^=')
+      throw new RangeError('Invalid number of arguments to ^=')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of  ^= must be an .: []')
@@ -469,7 +476,7 @@ const tokens = {
     return array.set(index, evaluate(args[2], env))
   },
   ['...']: (args, env) => {
-    if (!args.length) throw new TypeError('Invalid number of arguments to ...')
+    if (!args.length) throw new RangeError('Invalid number of arguments to ...')
     const [first, ...rest] = args
     const toSpread = evaluate(first, env)
     if (!Brrr.isBrrr(toSpread))
@@ -478,7 +485,7 @@ const tokens = {
   },
   ['.:=']: (args, env) => {
     if (args.length !== 2)
-      throw new TypeError('Invalid number of arguments to .:=')
+      throw new RangeError('Invalid number of arguments to .:=')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of .:= must be an .: []')
@@ -486,7 +493,7 @@ const tokens = {
   },
   [':+']: (args, env) => {
     if (args.length < 3)
-      throw new TypeError('Invalid number of arguments to :+')
+      throw new RangeError('Invalid number of arguments to :+')
     const [first, second, ...rest] = args
     const array = evaluate(first, env)
     if (!(array.constructor.name === 'Brrr'))
@@ -502,7 +509,7 @@ const tokens = {
   },
   [':-']: (args, env) => {
     if (args.length !== 3)
-      throw new TypeError('Invalid number of arguments to :-')
+      throw new RangeError('Invalid number of arguments to :-')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of :- must be an .: []')
@@ -520,7 +527,7 @@ const tokens = {
   },
   ['=.:']: (args, env) => {
     if (args.length !== 2)
-      throw new TypeError('Invalid number of arguments to =.:')
+      throw new RangeError('Invalid number of arguments to =.:')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of =.: must be an .: []')
@@ -528,7 +535,7 @@ const tokens = {
   },
   ['.:!=']: (args, env) => {
     if (args.length !== 1)
-      throw new TypeError('Invalid number of arguments to .:!=')
+      throw new RangeError('Invalid number of arguments to .:!=')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of .:!= must be an .: []')
@@ -536,7 +543,7 @@ const tokens = {
   },
   ['!=.:']: (args, env) => {
     if (args.length !== 1)
-      throw new TypeError('Invalid number of arguments to !=.:')
+      throw new RangeError('Invalid number of arguments to !=.:')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of !=.: must be an .: []')
@@ -544,7 +551,7 @@ const tokens = {
   },
   ['|.']: (args, env) => {
     if (args.length !== 1)
-      throw new TypeError('Invalid number of arguments to |.')
+      throw new RangeError('Invalid number of arguments to |.')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of |. must be an .: []')
@@ -552,7 +559,7 @@ const tokens = {
   },
   ['.|']: (args, env) => {
     if (args.length !== 1)
-      throw new TypeError('Invalid number of arguments to .|')
+      throw new RangeError('Invalid number of arguments to .|')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of .| must be an .: []')
@@ -581,154 +588,126 @@ const tokens = {
   },
   ['.?']: (args, env) => {
     const prop = []
+    const entityName = args[0].name
     for (let i = 1; i < args.length; ++i) {
       const arg = args[i]
-      prop.push(extract(arg, env)?.toString() ?? VOID)
+      const p = extract(arg, env)
+      if (p == undefined)
+        throw new TypeError(`Void key for accesing :: ${entityName}`)
+      prop.push(extract(arg, env).toString())
     }
-    const entityName = args[0].name
     for (let scope = env; scope; scope = Object.getPrototypeOf(scope))
       if (Object.prototype.hasOwnProperty.call(scope, entityName)) {
-        if (prop.length === 1) {
-          return +scope[entityName].has(prop[0])
-        } else {
-          let temp = scope[entityName]
-          if (!(temp instanceof Map))
-            throw new TypeError(
-              `. can only be used on a ::[] - getting ${entityName}`
-            )
-          const last = prop.pop()
-          prop.forEach((item) => (temp = temp.get(item)))
-          return +temp.has(last)
-        }
+        if (
+          scope[entityName] == undefined ||
+          !(scope[entityName] instanceof Map)
+        )
+          throw new TypeError(`:: ${scope[entityName]} is not a instance of ::`)
+        return +scope[entityName].has(prop[0])
       }
   },
   ['.']: (args, env) => {
+    if (args.length !== 2)
+      throw new RangeError('Invalid number of arguments for . []')
     const prop = []
     for (let i = 1; i < args.length; ++i) {
       const arg = args[i]
-      prop.push(extract(arg, env)?.toString() ?? VOID)
+      const p = extract(arg, env)
+      if (p == undefined)
+        throw new TypeError(`Void key for accesing :: ${args[0].name}`)
+      prop.push(extract(arg, env).toString())
     }
     if (args[0].type === 'apply' || args[0].type === 'value') {
       const entity = evaluate(args[0], env)
-      if (prop.length === 1) {
-        const entityProperty = entity.get(prop[0])
-        if (typeof entityProperty === 'function') {
-          const caller = entity
-          const fn = entityProperty
-          return fn.bind(caller)
-        } else return entityProperty ?? VOID
-      } else {
-        let temp = entity
-        if (!(temp instanceof Map))
-          throw new TypeError(
-            `. can only be used on a ::[] - getting ${entity}`
-          )
-        const last = prop.pop()
-        prop.forEach((item) => (temp = temp.get(item)))
-        const entityProperty = temp.get(last)
-        if (typeof entityProperty === 'function') {
-          const caller = temp
-          const fn = entityProperty
-          return fn.bind(caller)
-        } else return entityProperty ?? VOID
-      }
+      if (entity == undefined || !entity.has(prop[0]))
+        throw new RangeError(`:: ${entity.name} doesnt have a . of ${prop[0]}`)
+      const entityProperty = entity.get(prop[0])
+      if (typeof entityProperty === 'function') {
+        const caller = entity
+        const fn = entityProperty
+        return fn.bind(caller)
+      } else return entityProperty ?? VOID
     } else {
       const entityName = args[0].name
       for (let scope = env; scope; scope = Object.getPrototypeOf(scope))
         if (Object.prototype.hasOwnProperty.call(scope, entityName)) {
-          if (prop.length === 1) {
-            const entityProperty = scope[entityName].get(prop[0])
-            if (typeof entityProperty === 'function') {
-              const caller = scope[entityName]
-              const fn = entityProperty
-              return fn.bind(caller)
-            } else return entityProperty ?? VOID
-          } else {
-            let temp = scope[entityName]
-            if (!(temp instanceof Map))
-              throw new TypeError(
-                `. can only be used on a ::[] - getting ${entityName}`
-              )
-            const last = prop.pop()
-            prop.forEach((item) => (temp = temp.get(item)))
-            const entityProperty = temp.get(last)
-            if (typeof entityProperty === 'function') {
-              const caller = temp
-              const fn = entityProperty
-              return fn.bind(caller)
-            } else return entityProperty ?? VOID
-          }
+          if (
+            scope[entityName] == undefined ||
+            !(scope[entityName] instanceof Map)
+          )
+            throw new TypeError(
+              `:: ${scope[entityName]} is not a instance of ::`
+            )
+          if (!scope[entityName].has(prop[0]))
+            throw new RangeError(
+              `:: ${entityName} doesnt have a . of ${prop[0]}`
+            )
+          const entityProperty = scope[entityName].get(prop[0])
+          if (typeof entityProperty === 'function') {
+            const caller = scope[entityName]
+            const fn = entityProperty
+            return fn.bind(caller)
+          } else return entityProperty ?? VOID
         }
     }
   },
   ['.=']: (args, env) => {
+    if (args.length !== 3)
+      throw new RangeError('Invalid number of arguments for .= []')
     const main = args[0]
     const last = args[args.length - 1]
     const prop = []
     for (let i = 1; i < args.length - 1; ++i) {
       const arg = args[i]
-      prop.push(extract(arg, env)?.toString() ?? VOID)
+      const p = extract(arg, env)
+      if (p == undefined)
+        throw new TypeError(`Void key for accesing :: ${args[0].name}`)
+      prop.push(extract(arg, env).toString())
     }
     const value = evaluate(last, env)
     if (main.type === 'apply') {
       const entity = evaluate(main, env)
-      if (prop.length === 1) entity.set(prop[0], value)
-      else {
-        let temp = entity
-        const last = prop.pop()
-        prop.forEach((item) => (temp = temp.get(item)))
-        temp.set(last, value)
-      }
+      if (entity == undefined || !(entity instanceof Map))
+        throw new TypeError(`:: ${main.name} is not a instance of ::`)
+      entity.set(prop[0], value)
       return entity
     } else if (main.type === 'word') {
       const entityName = main.name
       for (let scope = env; scope; scope = Object.getPrototypeOf(scope))
         if (Object.prototype.hasOwnProperty.call(scope, entityName)) {
           const entity = scope[entityName]
-          if (prop.length === 1) entity.set(prop[0], value)
-          else {
-            let temp = entity
-            const last = prop.pop()
-            prop.forEach((item) => (temp = temp.get(item)))
-            temp.set(last, value)
-          }
+          if (entity == undefined || !(entity instanceof Map))
+            throw new TypeError(`:: ${entityName} is not a instance of ::`)
+          entity.set(prop[0], value)
           return entity
         }
     }
   },
   ['.!=']: (args, env) => {
+    if (args.length !== 2)
+      throw new RangeError('Invalid number of arguments for .!= []')
     const prop = []
+    const entityName = args[0].name
+
     for (let i = 1; i < args.length; ++i) {
       const arg = args[i]
-      prop.push(extract(arg, env)?.toString() ?? VOID)
+      const p = extract(arg, env)
+      if (p == undefined)
+        throw new TypeError(`Void key for accesing :: ${entityName}`)
+      prop.push(extract(arg, env).toString())
     }
-    const entityName = args[0].name
     for (let scope = env; scope; scope = Object.getPrototypeOf(scope))
       if (Object.prototype.hasOwnProperty.call(scope, entityName)) {
-        if (prop.length === 1) {
-          let temp = scope[entityName]
-          temp.delete(prop[0])
-          return temp
-        } else {
-          let temp = scope[entityName]
-          const last = prop.pop()
-          prop.forEach((item) => {
-            if (item instanceof Map) temp = temp.get(item)
-            else {
-              throw new TypeError(
-                `path of ${prop.join(
-                  '->'
-                )} -> ${last} doesn't exist in :: ${entityName}`
-              )
-            }
-          })
-          temp.delete(last)
-          return scope[entityName]
-        }
+        let temp = scope[entityName]
+        if (temp == undefined || !(temp instanceof Map))
+          throw new TypeError(`:: ${entityName} is not a instance of ::`)
+        temp.delete(prop[0])
+        return temp
       }
   },
   ['#']: (args, env) => {
-    if (!args.length) throw new SyntaxError('Invalid use of operation #')
+    if (!args.length)
+      throw new TypeErorr('Invalid number of arguments for # []')
     args.forEach(({ name, type }) => {
       if (type !== 'word')
         throw new SyntaxError(
@@ -744,7 +723,7 @@ const tokens = {
   },
   [':::']: (args, env) => {
     if (args.length !== 1)
-      throw new TypeError('Invalid number of arguments to :::')
+      throw new RangeError('Invalid number of arguments to :::')
     const map = evaluate(args[0], env)
     if (!(map.constructor.name === 'Map'))
       throw new TypeError('First argument of ::: must be an :: []')
@@ -752,7 +731,7 @@ const tokens = {
   },
   ['::.']: (args, env) => {
     if (args.length !== 1)
-      throw new TypeError('Invalid number of arguments to ::.')
+      throw new RangeError('Invalid number of arguments to ::.')
     const map = evaluate(args[0], env)
     if (!(map.constructor.name === 'Map'))
       throw new TypeError('First argument of ::. must be an :: []')
@@ -760,7 +739,7 @@ const tokens = {
   },
   ['::*']: (args, env) => {
     if (args.length !== 1)
-      throw new TypeError('Invalid number of arguments to ::* ')
+      throw new RangeError('Invalid number of arguments to ::* ')
     const map = evaluate(args[0], env)
     if (!(map.constructor.name === 'Map'))
       throw new TypeError('First argument of ::* must be an :: []')
@@ -791,7 +770,7 @@ const tokens = {
   },
   ['.-:']: (args, env) => {
     if (args.length !== 2)
-      throw new TypeError('Invalid number of arguments to .-:')
+      throw new RangeError('Invalid number of arguments to .-:')
     const string = evaluate(args[0], env)
     if (typeof string !== 'string')
       throw new TypeError('First argument of .-: must be a string')
@@ -802,7 +781,7 @@ const tokens = {
   },
   ['.+:']: (args, env) => {
     if (args.length !== 2)
-      throw new TypeError('Invalid number of arguments to .+:')
+      throw new RangeError('Invalid number of arguments to .+:')
     const array = evaluate(args[0], env)
     if (!Brrr.isBrrr(array))
       throw new TypeError('First argument of .+: must be an .: []')
@@ -813,7 +792,7 @@ const tokens = {
   },
   [':+:']: (args, env) => {
     if (args.length !== 2)
-      throw new TypeError('Invalid number of arguments to :+:')
+      throw new RangeError('Invalid number of arguments to :+:')
     const array = evaluate(args[0], env)
     if (!Brrr.isBrrr(array))
       throw new TypeError('First argument of :+: must be an .: []')
@@ -824,7 +803,7 @@ const tokens = {
   },
   [':..']: (args, env) => {
     if (args.length < 1)
-      throw new TypeError('Invalid number of arguments to :..')
+      throw new RangeError('Invalid number of arguments to :..')
     const dimensions = args.map((arg) => evaluate(arg, env))
     if (dimensions.some((d) => !Number.isInteger(d)))
       throw new TypeError('Argument of :.. must be integers')
@@ -832,7 +811,7 @@ const tokens = {
   },
   ['.:?']: (args, env) => {
     if (args.length !== 1)
-      throw new TypeError('Invalid number of arguments to .:?')
+      throw new RangeError('Invalid number of arguments to .:?')
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of .:? must be an .: []')
@@ -840,7 +819,7 @@ const tokens = {
   },
   ['::?']: (args, env) => {
     if (args.length !== 1)
-      throw new TypeError('Invalid number of arguments to ::?')
+      throw new RangeError('Invalid number of arguments to ::?')
     const map = evaluate(args[0], env)
     if (!(map.constructor.name === 'Map'))
       throw new TypeError('First argument of ::? must be an :: []')
