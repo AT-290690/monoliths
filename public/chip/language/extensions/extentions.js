@@ -14,14 +14,16 @@ export const LIBRARY = {
       Promise.all(promises).then((res) =>
         Promise.all(res.map((r) => r.json()).then(callback))
       ),
-    getrequestsinglejson: (url, callback) =>
+    getrequestsinglejson: (url, callback) => {
       fetch(url)
         .then((data) => data.json())
-        .then(callback),
-    getrequestsingletext: (url, callback) =>
+        .then(callback)
+    },
+    getrequestsingletext: (url, callback) => {
       fetch(url)
         .then((data) => data.text())
-        .then(callback),
+        .then(callback)
+    },
   },
   STORAGE: {
     NAME: 'STORAGE',
@@ -207,58 +209,13 @@ export const LIBRARY = {
     isnumber: (number) => +(typeof number === 'number'),
     isnotstring: (string) => +!(typeof string === 'string'),
     isnotnumber: (number) => +!(typeof number === 'number'),
-    isnotarray: (array) => +!Array.isArray(array),
-    isnotobject: (object) =>
-      +!(typeof object === 'object' && !Array.isArray(array)),
-
-    is: (a, b) => Object.is(a, b),
+    isnotarray: (array) => +!Brrr.isBrrr(array),
+    isarray: (array) => +Brrr.isBrrr(array),
+    ismap: (map) => +(map instanceof Map),
+    isnotmap: (map) => +!(map instanceof Map),
     istrue: (bol) => +(!!bol === true),
     isfalse: (bol) => +(!!bol === false),
-    isequal: (a, b) => Brrr.isEqual(a, b),
-    issimilar: (a, b) => {
-      const typeA = typeof a,
-        typeB = typeof b
-      if (typeA !== typeB) return 0
-      if (typeA === 'number' || typeA === 'string' || typeA === 'boolean') {
-        return +(a === b)
-      }
-      if (typeA === 'object') {
-        const isArrayA = Array.isArray(a),
-          isArrayB = Array.isArray(b)
-        if (isArrayA !== isArrayB) return 0
-        if (isArrayA && isArrayB) {
-          return a.length < b.length
-            ? +a.every((item, index) => LIBRARY.LOGIC.issimilar(item, b[index]))
-            : +b.every((item, index) => LIBRARY.LOGIC.issimilar(item, a[index]))
-        } else {
-          if (a === undefined || a === null || b === undefined || b === null)
-            return +(a === b)
-          const less = Object.keys(a) > Object.keys(b) ? b : a
-          for (const key in less) {
-            if (!LIBRARY.LOGIC.issimilar(a[key], b[key])) {
-              return 0
-            }
-          }
-          return 1
-        }
-      }
-    },
-    isnotvoid: (item) => (item === VOID ? 0 : 1),
-    isvoid: (item) => (item === VOID ? 1 : 0),
-    makeboolean: (item) => Boolean(item),
-    and: (entity, other) => entity && other,
-    or: (entity, other) => entity || other,
-    isempty: (item) => (Object.keys(item).length === 0 ? 1 : 0),
-    TRUE: 1,
-    FALSE: 0,
-    iseven: (arg) => (arg % 2 === 0 ? 1 : 0),
-    isodd: (arg) => (arg % 2 !== 0 ? 1 : 0),
-    invert: (val) => +!val,
-    ishaving: (obj, ...props) => +props.every((x) => x in obj),
-    areequal: (item, ...args) =>
-      +args.every((current) => LIBRARY.LOGIC.isequal(item, current)),
-    isoftype: (entity, type) =>
-      entity.constructor.name.toUpperCase() === type.toUpperCase(),
+    isequal: (a, b) => +Brrr.of(a).isEqual(Brrr.of(b)),
   },
   LOOP: {
     NAME: 'LOOP',
@@ -656,6 +613,11 @@ export const LIBRARY = {
       element.textContent = content
       return element
     },
+    makenav: (inner) => {
+      const element = document.createElement('nav')
+      element.appendChild(inner)
+      return element
+    },
     makeparagraph: (content) => {
       const element = document.createElement('p')
       element.textContent = content
@@ -673,6 +635,7 @@ export const LIBRARY = {
     maketablefrom: (tableData) => {
       const table = document.createElement('table')
       const tableBody = document.createElement('tbody')
+      console.log(tableData)
       tableData.forEach((rowData) => {
         const row = document.createElement('tr')
         rowData.forEach((cellData) => {

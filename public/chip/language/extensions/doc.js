@@ -1,4 +1,26 @@
 export const DOCUMENTATION = {
+  HTTP: {
+    NAME: 'HTTP',
+    getrequestmanyjson: `[callback, ...promises] -> responsews`,
+    getrequestsinglejson: `[url, callback] -> void`,
+    getrequestsingletext: `[url, callback] -> void`,
+  },
+  LOGIC: {
+    LOGIC: {
+      NAME: 'LOGIC',
+      isstring: `[uknown] -> 0|1`,
+      isnumber: `[uknown] -> 0|1`,
+      isnotstring: `[uknown] -> 0|1`,
+      isnotnumber: `[uknown] -> 0|1`,
+      isnotarray: `[uknown] -> 0|1`,
+      isarray: `[uknown] -> 0|1`,
+      ismap: `[uknown] -> 0|1`,
+      isnotmap: `[uknown] -> 0|1`,
+      istrue: `[uknown] -> 0|1`,
+      isfalse: `[uknown] -> 0|1`,
+      isequal: `[uknown] -> 0|1`,
+    },
+  },
   CANVAS: {
     NAME: 'CANVAS',
     quickcanvas: `[w; h; border] -> ctx`,
@@ -113,5 +135,14 @@ export const DOCUMENTATION = {
     onmouseover: `[element, callback] -> element`,
     onkeydown: `[element, callback] -> element`,
     onkeyup: `[element, callback] -> element`,
+  },
+  COLOR: {
+    NAME: 'COLOR',
+    makergbcolor: `[r, g, b] -> string`,
+    makergbalphacolor: `[r, g, b, a] -> string`,
+    randomcolor: `[] -> string`,
+    randomlightcolor: `[] -> string`,
+    rgbtohex: `[color] -> string`,
+    inverthexcolor: `[hex] -> string`,
   },
 }
