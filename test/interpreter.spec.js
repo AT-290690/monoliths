@@ -14,7 +14,7 @@ describe('interpretation should work as expected', () => {
     )
     throws(() => runFromInterpreted(`: [29; 0]`), RangeError)
   })
-  it(':: ::. ::: ::* should work', () => {
+  it(':: ::. ::: ::* ::? .? should work', () => {
     deepEqual(runFromInterpreted(`::: [:: ["x"; 10; "y"; 23; "z"; 4]]`).items, [
       ['x', 10],
       ['y', 23],
@@ -28,6 +28,12 @@ describe('interpretation should work as expected', () => {
     deepEqual(
       runFromInterpreted(`::* [:: ["x"; 10; "y"; 23; "z"; 4]]`).items,
       [10, 23, 4]
+    )
+    deepEqual(
+      runFromInterpreted(
+        `:= [obj; :: ["x"; 3; "y"; 4]]; .: [.? [obj; "z"]; .? [obj; "x"]; ::? [obj]]`
+      ).items,
+      [0, 1, 2]
     )
   })
   //   it('handles prototype polution', () => {
@@ -94,7 +100,7 @@ describe('interpretation should work as expected', () => {
     deepEqual(
       runFromInterpreted(`
       := [switch case; -> [matcher;
-        ?? [
+        || [
         . [:: [
           "knk"; -> [..["who's there"]];
           "life"; -> [..[42]];
@@ -166,7 +172,7 @@ describe('interpretation should work as expected', () => {
             "right"; right]]];
 
       := [sum; -> [item;
-        ? [== [item; void];
+        ? [== [item; 0];
           0;
           + [. [item; "value"];
              sum [. [item; "left"]];
@@ -175,11 +181,11 @@ describe('interpretation should work as expected', () => {
       := [myTree;
         node [1;
           node [2;
-            node [4; void; void];
-            node [6; void; void]];
+            node [4; 0; 0];
+            node [6; 0; 0]];
         node [3;
-          node [5; void; void];
-          node [7; void; void]]]];
+          node [5; 0; 0];
+          node [7; 0; 0]]]];
           sum [myTree]
       `),
       28
@@ -189,9 +195,8 @@ describe('interpretation should work as expected', () => {
   it('import should work', () => {
     deepEqual(
       runFromInterpreted(`<- ["MATH"; "ARRAY"] [LIBRARY];
-      <- ["map"] [ARRAY];
       <- ["floor"] [MATH];
-      map [.: [1.123; 3.14; 4.9]; floor];
+      >>. [.: [1.123; 3.14; 4.9]; floor];
       `).items,
       [1, 3, 4]
     )

@@ -85,7 +85,6 @@ const compile = () => {
               .join(symbols[tree.operator.name] ?? tree.operator.name) +
             ')'
           )
-        case '??':
         case '&&':
         case '||':
           return (
@@ -205,6 +204,8 @@ const compile = () => {
           )});`
         case '.:?':
           return `_length(${dfs(tree.args[0], locals)});`
+        case '::?':
+          return `_mapSize(${dfs(tree.args[0], locals)});`
         case 'tco':
           return '_tco(' + dfs(tree.args[0], locals) + ');'
         case '...':
@@ -261,6 +262,11 @@ const compile = () => {
             tree.args[tree.args.length - 1].name
           });`
         }
+        case '.?':
+          return `_mapHas(${dfs(tree.args[0], locals)}, ${dfs(
+            tree.args[1],
+            locals
+          )})`
         case '.':
           return `_mapGet(${dfs(tree.args[0], locals)}, ${dfs(
             tree.args[1],
@@ -380,14 +386,7 @@ const compile = () => {
           }
         }
       }
-    } else if (tree.type === 'word')
-      switch (tree.name) {
-        case 'void':
-        case 'VOID':
-          return 'undefined'
-        default:
-          return tree.name
-      }
+    } else if (tree.type === 'word') return tree.name
     else if (tree.type === 'value')
       return tree.class === 'string' ? `"${tree.value}"` : tree.value
   }

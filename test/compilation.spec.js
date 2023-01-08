@@ -28,7 +28,7 @@ describe('compilation should work as expected', () => {
   it('switch case', () => {
     const source = `
       := [switch case; -> [matcher;
-           ?? [
+           || [
            . [:: [
              "knk"; -> [..["who's there"]];
              "mean"; -> [..[42]];
@@ -87,7 +87,7 @@ describe('compilation should work as expected', () => {
             "left"; left;
             "right"; right]]];
       := [sum; -> [item;
-        ? [== [item; void];
+        ? [== [item; 0];
           0;
           + [. [item; "value"];
              sum [. [item; "left"]];
@@ -95,11 +95,11 @@ describe('compilation should work as expected', () => {
       := [myTree;
         node [1;
           node [2;
-            node [4; void; void];
-            node [6; void; void]];
+            node [4; 0; 0];
+            node [6; 0; 0]];
         node [3;
-          node [5; void; void];
-          node [7; void; void]]]];
+          node [5; 0; 0];
+          node [7; 0; 0]]]];
           sum [myTree]
       `
     equal(runFromInterpreted(source), runFromCompiled(source))
@@ -114,9 +114,8 @@ describe('compilation should work as expected', () => {
   })
   it('import should work', () => {
     const source = `<- ["MATH"; "ARRAY"] [LIBRARY];
-      <- ["map"] [ARRAY];
       <- ["floor"] [MATH];
-      map [.: [1.123; 3.14; 4.9]; floor];
+      >>. [.: [1.123; 3.14; 4.9]; floor];
       `
     deepEqual(runFromInterpreted(source), runFromCompiled(source))
   })
@@ -199,7 +198,7 @@ describe('compilation should work as expected', () => {
     deepEqual(runFromInterpreted(source1), runFromCompiled(source2))
     deepEqual(runFromInterpreted(source2), runFromCompiled(source2))
   })
-  it(':: ::. ::: ::* should work', () => {
+  it(':: ::. ::: ::* .? ::? should work', () => {
     const source1 = `::: [:: ["x"; 10; "y"; 23; "z"; 4]]`
     const source2 = `::. [:: ["x"; 10; "y"; 23; "z"; 4]]`
     const source3 = `::* [:: ["x"; 10; "y"; 23; "z"; 4]]`
@@ -231,8 +230,10 @@ describe('compilation should work as expected', () => {
       .: [1; 2; 3; 4; 5; 6; 7; 8];
       :- [2; 4];
     ]`
+    const source4 = `:= [obj; :: ["x"; 3; "y"; 4]]; .: [.? [obj; "z"]; .? [obj; "x"]; ::? [obj]]`
     deepEqual(runFromInterpreted(source1), runFromCompiled(source1))
     deepEqual(runFromInterpreted(source2), runFromCompiled(source2))
     deepEqual(runFromInterpreted(source3), runFromCompiled(source3))
+    deepEqual(runFromInterpreted(source4), runFromCompiled(source4))
   })
 })

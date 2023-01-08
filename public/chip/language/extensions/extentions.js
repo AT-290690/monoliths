@@ -205,9 +205,6 @@ export const LIBRARY = {
     NAME: 'LOGIC',
     isstring: (string) => +(typeof string === 'string'),
     isnumber: (number) => +(typeof number === 'number'),
-    isarray: (array) => +Array.isArray(array),
-    isobject: (object) =>
-      +(typeof object === 'object' && !Array.isArray(array)),
     isnotstring: (string) => +!(typeof string === 'string'),
     isnotnumber: (number) => +!(typeof number === 'number'),
     isnotarray: (array) => +!Array.isArray(array),
@@ -217,31 +214,7 @@ export const LIBRARY = {
     is: (a, b) => Object.is(a, b),
     istrue: (bol) => +(!!bol === true),
     isfalse: (bol) => +(!!bol === false),
-    isequal: (a, b) => {
-      const typeA = typeof a,
-        typeB = typeof b
-      if (typeA !== typeB) return 0
-      if (typeA === 'number' || typeA === 'string' || typeA === 'boolean')
-        return +(a === b)
-      if (typeA === 'object') {
-        const isArrayA = Array.isArray(a),
-          isArrayB = Array.isArray(b)
-        if (isArrayA !== isArrayB) return 0
-        if (isArrayA && isArrayB) {
-          if (a.length !== b.length) return 0
-          return +a.every((item, index) =>
-            LIBRARY.LOGIC.isequal(item, b[index])
-          )
-        } else {
-          if (a === undefined || a === null || b === undefined || b === null)
-            return +(a === b)
-          if (Object.keys(a).length !== Object.keys(b).length) return 0
-          for (const key in a)
-            if (!LIBRARY.LOGIC.isequal(a[key], b[key])) return 0
-          return 1
-        }
-      }
-    },
+    isequal: (a, b) => Brrr.isEqual(a, b),
     issimilar: (a, b) => {
       const typeA = typeof a,
         typeB = typeof b
@@ -406,80 +379,10 @@ export const LIBRARY = {
   },
   ARRAY: {
     NAME: 'ARRAY',
-    compact: (arr) => {
-      return arr.compact(Boolean)
-    },
-    makearray: (...items) => {
-      return items
-    },
-    makematrix: (...dimensions) => Brrr.matrix(...dimensions),
-    unique: (entity) => entity.unique(),
-    indexediteration: (entity, fn) => entity.forEach((x, i, arr) => fn(i)),
-    forof: (entity, fn) => entity.forEach((x, i, arr) => fn(x)),
-    each: (entity, fn) => entity.forEach((x, i, arr) => fn(x, i)),
-    from: (items) => Array.from(items),
-    transform: (entity, callback) => {
-      for (let i = 0; i < entity.length; ++i)
-        entity[i] = callback(entity[i], i, entity)
-      return entity
-    },
-    tail: (entity) => entity.tail(),
-    head: (entity) => entity.head(),
-    map: (entity, callback) => entity.map(callback),
-    filter: (entity, callback) => entity.filter(callback),
-    reduce: (entity, callback, out) => entity.reduce(callback, out),
-    every: (entity, callback) => +entity.every(callback),
-    some: (entity, callback) => +entity.some(callback),
-    find: (entity, callback) => entity.find(callback),
-    foreach: (entity, callback) => entity.forEach(callback),
-    reverse: (entity) => entity.reverse(),
-    insertatend: (entity, ...args) => {
-      entity.push(...args)
-      return entity
-    },
-    removefromend: (entity) => {
-      entity.pop()
-      return entity
-    },
-    put: (entity, item) => {
-      entity.push(item)
-      return item
-    },
-    push: (entity, ...args) => entity.push(...args),
-    pop: (entity) => entity.pop(),
-    prepend: (entity, item) => {
-      entity.unshift(item)
-      return entity
-    },
-    append: (entity, item) => {
-      entity.push(item)
-      return entity
-    },
-    tail: (entity) => {
-      entity.pop()
-      return entity
-    },
-    head: (entity) => {
-      entity.shift()
-      return entity
-    },
-    includes: (entity, arg) => +entity.includes(arg),
-    isarray: (entity) => +Array.isArray(entity),
-    unshift: (entity, ...args) => entity.unshift(...args),
-    shift: (entity) => entity.shift(),
-    fill: (entity, filling) => entity.fill(filling),
-    findindex: (entity, callback) => entity.findIndex(callback),
-    indexof: (entity, item) => entity.indexOf(item),
     splitnewline: (str) => Brrr.from(str.split('\n')),
     splitspaces: (str) => Brrr.from(str.split(' ')),
     split: (str, separator) => Brrr.from(str.split(separator)),
     join: (entity, separator) => entity.join(separator),
-    flat: (entity, level) => entity.flat(level),
-    flatMap: (entity, callback) => entity.flatMap(callback),
-    sort: (entity, callback) => entity.sort(callback),
-    slice: (entity, start, end) => entity.slice(start, end),
-    splice: (entity, ...args) => entity.splice(...args),
-    partition: (entity, groups = 1) => entity.partition(groups),
     shuffle: (array) => {
       array = array.toArray()
       for (let i = array.length - 1; i > 0; i--) {
@@ -497,9 +400,6 @@ export const LIBRARY = {
       else for (let i = start; i <= end; i += 1) arr.append(i * step)
       return arr.balance()
     },
-    at: (entity, index) => entity.at(index),
-    first: (entity) => entity.at(0),
-    last: (entity) => entity.at(entity.length - 1),
   },
   CANVAS: {
     NAME: 'CANVAS',
@@ -561,6 +461,18 @@ export const LIBRARY = {
     },
     lineto: (ctx, x, y) => {
       ctx.lineTo(x, y)
+      return ctx
+    },
+    arc: (ctx, x, y, radius, startAngle, endAngle, counterclockwise) => {
+      ctx.arc(x, y, radius, startAngle, endAngle, counterclockwise)
+      return ctx
+    },
+    fill: (ctx) => {
+      ctx.fill()
+      return ctx
+    },
+    stroke: (ctx) => {
+      ctx.stroke()
       return ctx
     },
   },

@@ -292,8 +292,13 @@ router['GET *'] = async (req, res, { pathname }) => {
     res.writeHead(200, { 'Content-Type': type, 'Content-Encoding': 'br' })
     res.end(await compress(await readFile(filePath)))
   } catch (err) {
-    res.writeHead(404, { 'Content-Type': 'text/html' })
-    res.end('404: File not found')
+    res.writeHead(404, {
+      'Content-Type': 'text/html',
+      'Content-Encoding': 'br',
+    })
+    res.end(
+      await compress(await readFile(path.join(root, '404.html'), 'utf-8'))
+    )
   }
 }
 

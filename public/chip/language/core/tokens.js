@@ -1,6 +1,6 @@
 import evaluate from './interpreter.js'
 import Brrr from '../extensions/Brrr.js'
-export const VOID = undefined
+export const VOID = 0
 export const pipe =
   (...fns) =>
   (x) =>
@@ -134,16 +134,6 @@ const tokens = {
       if (!!evaluate(args[i], env)) return evaluate(args[i], env)
       else continue
     return evaluate(args[args.length - 1], env)
-  },
-  ['??']: (args, env) => {
-    if (args.length === 0)
-      throw new TypeError('Invalid number of arguments  to ?? []')
-    const resolve = (arg, count) => {
-      const val = evaluate(arg, env)
-      if (val !== VOID) return val
-      else return resolve(args[count], ++count)
-    }
-    return resolve(args[0], 0)
   },
   ['..']: (args, env) => {
     let value = VOID
@@ -589,6 +579,29 @@ const tokens = {
       return acc
     }, new Map())
   },
+  ['.?']: (args, env) => {
+    const prop = []
+    for (let i = 1; i < args.length; ++i) {
+      const arg = args[i]
+      prop.push(extract(arg, env)?.toString() ?? VOID)
+    }
+    const entityName = args[0].name
+    for (let scope = env; scope; scope = Object.getPrototypeOf(scope))
+      if (Object.prototype.hasOwnProperty.call(scope, entityName)) {
+        if (prop.length === 1) {
+          return +scope[entityName].has(prop[0])
+        } else {
+          let temp = scope[entityName]
+          if (!(temp instanceof Map))
+            throw new TypeError(
+              `. can only be used on a ::[] - getting ${entityName}`
+            )
+          const last = prop.pop()
+          prop.forEach((item) => (temp = temp.get(item)))
+          return +temp.has(last)
+        }
+      }
+  },
   ['.']: (args, env) => {
     const prop = []
     for (let i = 1; i < args.length; ++i) {
@@ -824,6 +837,14 @@ const tokens = {
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of .:? must be an .: []')
     return array.length
+  },
+  ['::?']: (args, env) => {
+    if (args.length !== 1)
+      throw new TypeError('Invalid number of arguments to ::?')
+    const map = evaluate(args[0], env)
+    if (!(map.constructor.name === 'Map'))
+      throw new TypeError('First argument of ::? must be an :: []')
+    return map.size
   },
   ['~=']: (args, env) => {
     if (!args.length || args.length > 2)

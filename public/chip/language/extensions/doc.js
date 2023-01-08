@@ -23,6 +23,9 @@ export const DOCUMENTATION = {
     makepath: `[ctx] -> ctx`,
     moveto: `[ctx, x, y] -> ctx`,
     lineto: `[ctx, x, y] -> ctx`,
+    arc: `[ctx, x, y, radius, start angle, end angle, counter clockwise] -> ctx`,
+    fill: `[ctx] -> ctx`,
+    stroke: `[ctx] -> ctx`,
   },
   DOM: {
     NAME: 'DOM',

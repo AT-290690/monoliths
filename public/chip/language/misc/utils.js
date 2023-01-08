@@ -11,8 +11,8 @@ _spreadArr = (args) => {
     return first.merge(...rest)
   } else return args.reduce((acc, item) => ({ ...acc, ...item }), {})
 },
-_mapEntries = (map) => Brrr.from([...map.entries()].map(Brrr.from)), _mapKeys = (map) => Brrr.from([...map.keys()]), _mapValues = (map) => Brrr.from([...map.values()]), _mapGet = (map, key) => map.get(key), 
-_mapRemove = (map, key) => { map.delete(key); return map }, _mapSet = (map, key, value) => { map.set(key, value); return map }, _scanLeft = (a, cb) => { for (let i = 0; i < a.length; ++i) cb(a[i], i, a); return a },
+_mapEntries = (map) => Brrr.from([...map.entries()].map(Brrr.from)), _mapKeys = (map) => Brrr.from([...map.keys()]), _mapValues = (map) => Brrr.from([...map.values()]), _mapGet = (map, key) => map.get(key), _mapSize = (map) => map.size,
+_mapRemove = (map, key) => { map.delete(key); return map }, _mapSet = (map, key, value) => { map.set(key, value); return map }, _mapHas = (map, key) => map.has(key), _scanLeft = (a, cb) => { for (let i = 0; i < a.length; ++i) cb(a[i], i, a); return a },
 _scanRight = (a, cb) => {  for (let i = a.length - 1; i >= 0; --i) cb(a[i], i, a); return a }, _mapLeft = (a, cb, copy = new Brrr()) => { for (let i = 0; i < a.length; ++i) copy.set(i, cb(a.at(i), i, a)); return a.balance() },
 _mapRight = (a, cb, copy = new Brrr()) => {  for (let i = a.length - 1; i >= 0; --i) copy.set(i, cb(a.at(i), i, a)); return a.balance() } , _filter = (a, cb) => a.filter(cb) , _reduceLeft = (a, cb, out = []) => a.reduce(cb, out),
 _reduceRight = (a, cb, out = []) => a.reduceRight(cb, out), _findLeft = (a, cb) => a.find(cb), _findRight = (a, cb) => a.findLast(cb), _repeat = (n, cb) => { let out; for (let i = 0; i < n; ++i) out = cb(); return out }, 
@@ -405,7 +405,7 @@ export const compileModule = (source) => {
   const inlined = wrapInBody(removeNoCode(source))
   const { top, program, modules } = compileToJs(parse(inlined))
   const lib = treeShake(modules)
-  return `const VOID = null;
+  return `const VOID = 0;
 ${Brrr.toString()}
 ${brrrHelpers}
 ${languageUtilsString}
@@ -416,7 +416,7 @@ export const compileBuild = (source) => {
   const inlined = wrapInBody(removeNoCode(source))
   const { top, program, modules } = compileToJs(parse(inlined))
   const lib = treeShake(modules)
-  return `const VOID = null;
+  return `const VOID = 0;
 ${languageUtilsString}
 ${lib};
 ${top}async function entry(){${program.substring(6, program.length - 4)}}`
@@ -431,7 +431,7 @@ ${scripts}
 <script>
 ${Brrr.toString()}
 ${brrrHelpers}
-const VOID = null;
+const VOID = 0;
 ${languageUtilsString}
 </script>
 <script>${lib}</script>
@@ -446,7 +446,7 @@ export const compileHtmlModule = (source) => {
 <style>body { background: #0e0e0e } </style><body>
 <script type="module">
   import Brrr from '../../chip/language/extensions/Brrr.js'; 
-  const VOID = null;
+  const VOID = 0;
   ${languageUtilsString};
   ${lib};
   (() => { ${top}${program} })()
@@ -482,7 +482,7 @@ export const compileExecutable = (source, ctx) => {
   const { AST } = cell(ENV, false)(inlined)
   const { top, program, modules } = compileToJs(AST, ctx)
   const lib = treeShake(modules)
-  return `const VOID = null;
+  return `const VOID = 0;
   ${Brrr.toString()}
   ${brrrHelpers}
   ${languageUtilsString}
