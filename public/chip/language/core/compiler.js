@@ -340,10 +340,10 @@ const compile = () => {
             locals
           )});`
         case '>-':
-          return `_filter(${dfs(tree.args[0], locals)}}, ${dfs(
+          return `_filter(${dfs(tree.args[0], locals)}, ${dfs(
             tree.args[1],
             locals
-          )}});`
+          )});`
         case '>_': {
           const [array, callback, out] = tree.args.map((x) => dfs(x, locals))
           return `_reduceLeft(${array}, ${callback}, ${out});`
