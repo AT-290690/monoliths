@@ -2,7 +2,7 @@ import { removeNoCode, wrapInBody } from './helpers.js'
 import { parse } from '../core/parser.js'
 import { LZUTF8 } from './lz-utf8.js'
 import { STD } from '../extensions/extentions.js'
-
+import words from './words.js'
 export const ABC = [
   'a',
   'b',
@@ -56,56 +56,21 @@ export const ABC = [
   'X',
   'Y',
   'Z',
-  // 'а',
-  // 'б',
-  // 'в',
-  // 'г',
-  // 'д',
-  // 'е',
-  // 'ж',
-  // 'з',
-  // 'и',
-  // 'й',
-  // 'к',
-  // 'л',
-  // 'м',
-  // 'н',
-  // 'о',
-  // 'п',
-  // 'р',
-  // 'с',
-  // 'т',
-  // 'щ',
-  // 'ц',
-  // 'ч',
-  // 'ь',
-  // 'ю',
-  // 'я',
-  // 'А',
-  // 'Б',
-  // 'В',
-  // 'Г',
-  // 'Д',
-  // 'Е',
-  // 'Ж',
-  // 'З',
-  // 'И',
-  // 'Й',
-  // 'К',
-  // 'Л',
-  // 'М',
-  // 'Н',
-  // 'О',
-  // 'П',
-  // 'Р',
-  // 'С',
-  // 'Т',
-  // 'Щ',
-  // 'Ц',
-  // 'Ч',
-  // 'Ю',
-  // 'Я',
 ]
+const generateCommonWords = () => {
+  let index = 0
+  let count = 0
+  return words.map((full) => {
+    const short = count + ABC[index]
+    ++index
+    if (index === ABC.length) {
+      index = 0
+      ++count
+    }
+    return { full, short }
+  })
+}
+const commonWords = generateCommonWords()
 export const generateCompressedModules = () => {
   const { NAME, ...lib } = STD.LIBRARY
   const modules = new Set([NAME])
@@ -138,16 +103,17 @@ export const shortModules = generateCompressedModules()
 const dfs = (
   tree,
   definitions = new Set(),
-  imports = new Set()
+  imports = new Set(),
+  words = new Set()
   // excludes = new Set()
 ) => {
   for (const node of tree) {
     const { type, operator, args, value } = node
     if (type === 'import' && node.class === 'string') imports.add(value)
     // if (type === 'value' && node.class === 'string') excludes.add(value)
-    if (type === 'word' && node.name.length > 1 && !imports.has(node.name))
+    else if (type === 'word' && node.name.length > 1 && !imports.has(node.name))
       definitions.add(node.name)
-    if (
+    else if (
       type === 'apply' &&
       operator.type === 'word' &&
       args[0]?.name?.length > 2 &&
@@ -157,15 +123,16 @@ const dfs = (
     if (Array.isArray(args)) dfs(args, definitions, imports)
     if (Array.isArray(operator?.args)) dfs(operator.args, definitions, imports)
   }
-  return { definitions, imports }
+  return { definitions, imports, words }
 }
 export const compress = (source) => {
   const value = removeNoCode(source)
   const AST = parse(wrapInBody(value))
-  const { definitions, imports } = dfs(
+  const { definitions, imports, words } = dfs(
     AST.args,
     new Set(),
-    new Set(['LIBRARY'])
+    new Set(['LIBRARY']),
+    new Set()
   )
 
   // imports.forEach(value => {
@@ -219,6 +186,9 @@ export const compress = (source) => {
     })
   for (const { full, short } of shortDefinitions)
     result = result.replaceAll(new RegExp(`\\b${full}\\b`, 'g'), short)
+
+  for (const { full, short } of commonWords)
+    result = result.replaceAll(new RegExp(`\\b${full}\\b`, 'g'), short)
   return result
 }
 export const decompress = (source) => {
@@ -228,6 +198,9 @@ export const decompress = (source) => {
     source
   )
   for (const { full, short } of shortModules)
+    result = result.replaceAll(new RegExp(`\\b${short}\\b`, 'g'), full)
+
+  for (const { full, short } of commonWords)
     result = result.replaceAll(new RegExp(`\\b${short}\\b`, 'g'), full)
   return result
 }

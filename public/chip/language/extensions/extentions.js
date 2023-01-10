@@ -150,6 +150,7 @@ export const LIBRARY = {
   },
   STRING: {
     NAME: 'STRING',
+    tocapitalcase: (string) => string[0].toUpperCase() + string.substring(1),
     fromcharcode: (code) => String.fromCharCode(code),
     interpolate: (...args) => {
       return args.reduce((acc, item) => {
