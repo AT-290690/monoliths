@@ -2,7 +2,7 @@ import { removeNoCode, wrapInBody } from './helpers.js'
 import { parse } from '../core/parser.js'
 import { LZUTF8 } from './lz-utf8.js'
 import { STD } from '../extensions/extentions.js'
-import words from './words.js'
+
 export const ABC = [
   'a',
   'b',
@@ -57,20 +57,7 @@ export const ABC = [
   'Y',
   'Z',
 ]
-const generateCommonWords = () => {
-  let index = 0
-  let count = 0
-  return words.map((full) => {
-    const short = count + ABC[index]
-    ++index
-    if (index === ABC.length) {
-      index = 0
-      ++count
-    }
-    return { full, short }
-  })
-}
-const commonWords = generateCommonWords()
+
 export const generateCompressedModules = () => {
   const { NAME, ...lib } = STD.LIBRARY
   const modules = new Set([NAME])
@@ -103,8 +90,7 @@ export const shortModules = generateCompressedModules()
 const dfs = (
   tree,
   definitions = new Set(),
-  imports = new Set(),
-  words = new Set()
+  imports = new Set()
   // excludes = new Set()
 ) => {
   for (const node of tree) {
@@ -123,16 +109,15 @@ const dfs = (
     if (Array.isArray(args)) dfs(args, definitions, imports)
     if (Array.isArray(operator?.args)) dfs(operator.args, definitions, imports)
   }
-  return { definitions, imports, words }
+  return { definitions, imports }
 }
 export const compress = (source) => {
   const value = removeNoCode(source)
   const AST = parse(wrapInBody(value))
-  const { definitions, imports, words } = dfs(
+  const { definitions, imports } = dfs(
     AST.args,
     new Set(),
-    new Set(['LIBRARY']),
-    new Set()
+    new Set(['LIBRARY'])
   )
 
   // imports.forEach(value => {
@@ -186,9 +171,6 @@ export const compress = (source) => {
     })
   for (const { full, short } of shortDefinitions)
     result = result.replaceAll(new RegExp(`\\b${full}\\b`, 'g'), short)
-
-  for (const { full, short } of commonWords)
-    result = result.replaceAll(new RegExp(`\\b${full}\\b`, 'g'), short)
   return result
 }
 export const decompress = (source) => {
@@ -198,9 +180,6 @@ export const decompress = (source) => {
     source
   )
   for (const { full, short } of shortModules)
-    result = result.replaceAll(new RegExp(`\\b${short}\\b`, 'g'), full)
-
-  for (const { full, short } of commonWords)
     result = result.replaceAll(new RegExp(`\\b${short}\\b`, 'g'), full)
   return result
 }
