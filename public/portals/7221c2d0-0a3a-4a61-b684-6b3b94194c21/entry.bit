@@ -1,0 +1,4 @@
+<- ["DOM"] [LIBRARY];
+<- ["makevideo"; "makeiframe"; "makecontainer"] [DOM];
+
+make container[make video ["blob:https://www.facebook.com/066ccf2e-993f-4455-86fc-43b8494bfad9"]];

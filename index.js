@@ -4,7 +4,7 @@ import { constants, mkdirSync, rm } from 'fs'
 import url from 'url'
 import { parseCookies } from './utils/cookies.js'
 import { router, match, root } from './utils/routes.js'
-const PORT = process.env.PORT ?? 8181
+const PORT = process.env.PORT ?? 8182
 const server = http.createServer(async (req, res) => {
   const URL = url.parse(req.url, true)
   const { query, pathname } = URL

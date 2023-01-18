@@ -415,29 +415,29 @@ export const LIBRARY = {
     },
     makeelement: (type, settings) => {
       const element = document.createElement(type)
-      for (const setting in settings) {
-        element.setAttribute(setting, settings[setting])
+      for (const [key, value] of settings) {
+        element.setAttribute(key, value)
       }
       return element
     },
     makecanvas: (settings) => {
       const element = document.createElement('canvas')
-      for (const setting in settings) {
-        element.setAttribute(setting, settings[setting])
+      for (const [key, value] of settings) {
+        element.setAttribute(key, value)
       }
       return element
     },
     makeinput: (settings) => {
       const element = document.createElement('input')
-      for (const setting in settings) {
-        element.setAttribute(setting, settings[setting])
+      for (const [key, value] of settings) {
+        element.setAttribute(key, value)
       }
       return element
     },
     maketextarea: (settings) => {
       const element = document.createElement('textarea')
-      for (const setting in settings) {
-        element.setAttribute(setting, settings[setting])
+      for (const [key, value] of settings) {
+        element.setAttribute(key, value)
       }
       return element
     },
@@ -450,8 +450,8 @@ export const LIBRARY = {
       const element = document.createElement('input')
       element.type = 'range'
 
-      for (const setting in settings) {
-        element.setAttribute(setting, settings[setting])
+      for (const [key, value] of settings) {
+        element.setAttribute(key, value)
       }
       return element
     },
@@ -634,6 +634,11 @@ export const LIBRARY = {
     },
     setstyle: (element, ...styles) => {
       element.style = styles.join('')
+      return element
+    },
+    makevideo: (src) => {
+      const element = document.createElement('video')
+      element.setAttribute('src', src)
       return element
     },
     makeprogress: (value, max) => {
