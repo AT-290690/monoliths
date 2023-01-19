@@ -10,20 +10,20 @@ export const LIBRARY = {
   NAME: 'LIBRARY',
   HTTP: {
     NAME: 'HTTP',
-    getrequestmanyjson: (callback, ...promises) =>
+    get_request_many_json: (callback, ...promises) =>
       Promise.all(promises).then((res) =>
         Promise.all(res.map((r) => r.json()).then(callback))
       ),
-    getrequestmanytext: (callback, ...promises) =>
+    get_request_many_text: (callback, ...promises) =>
       Promise.all(promises).then((res) =>
         Promise.all(res.map((r) => r.text()).then(callback))
       ),
-    getrequestsinglejson: (url, callback) => {
+    get_request_single_json: (url, callback) => {
       fetch(url)
         .then((data) => data.json())
         .then(callback)
     },
-    getrequestsingletext: (url, callback) => {
+    get_request_single_text: (url, callback) => {
       fetch(url)
         .then((data) => data.text())
         .then(callback)
@@ -31,32 +31,32 @@ export const LIBRARY = {
   },
   STORAGE: {
     NAME: 'STORAGE',
-    setinstorage: (key, value) => sessionStorage.setItem(key, value),
-    getfromstorage: (key) => sessionStorage.getItem(key),
-    removefromstorage: (key) => sessionStorage.removeItem(key),
-    clearstorage: () => sessionStorage.clear(),
+    set_in_storage: (key, value) => sessionStorage.setItem(key, value),
+    get_from_storage: (key) => sessionStorage.getItem(key),
+    remove_from_storage: (key) => sessionStorage.removeItem(key),
+    clear_storage: () => sessionStorage.clear(),
   },
   DATE: {
     NAME: 'DATE',
-    formattolocal: (date, format) => date.toLocaleDateString(format),
-    makenewdate: () => new Date(),
-    makedate: (date) => new Date(date),
-    gethours: (date) => date.getHours(),
-    getminutes: (date) => date.getMinutes(),
-    getseconds: (date) => date.getSeconds(),
-    gettime: (date) => date.getTime(),
+    format_to_local: (date, format) => date.toLocaleDateString(format),
+    make_new_date: () => new Date(),
+    make_date: (date) => new Date(date),
+    get_hours: (date) => date.getHours(),
+    get_minutes: (date) => date.getMinutes(),
+    get_seconds: (date) => date.getSeconds(),
+    get_time: (date) => date.getTime(),
   },
   COLOR: {
     NAME: 'COLOR',
-    makergbcolor: (r, g, b) => `rgb(${r}, ${g}, ${b})`,
-    makergbalphacolor: (r, g, b, a = 1) => `rgba(${r}, ${g}, ${b}, ${a})`,
-    randomcolor: () => `#${Math.floor(Math.random() * 16777215).toString(16)}`,
-    randomlightcolor: () =>
+    make_rgb_color: (r, g, b) => `rgb(${r}, ${g}, ${b})`,
+    make_rgba_color: (r, g, b, a = 1) => `rgba(${r}, ${g}, ${b}, ${a})`,
+    random_color: () => `#${Math.floor(Math.random() * 16777215).toString(16)}`,
+    random_light_color: () =>
       '#' +
       (
         '00000' + Math.floor(Math.random() * Math.pow(16, 6)).toString(16)
       ).slice(-6),
-    rgbtohex: (color) => {
+    rgb_to_hex: (color) => {
       const [r, g, b] = color.split('(')[1].split(')')[0].split(',').map(Number)
       function componentToHex(c) {
         var hex = c.toString(16)
@@ -64,7 +64,7 @@ export const LIBRARY = {
       }
       return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b)
     },
-    inverthexcolor: (hex) =>
+    invert_hex_color: (hex) =>
       '#' +
       (Number(`0x1${hex.split('#')[1]}`) ^ 0xffffff)
         .toString(16)
@@ -73,14 +73,14 @@ export const LIBRARY = {
   },
   BITWISE: {
     NAME: 'BITWISE',
-    makebit: (dec) => (dec >>> 0).toString(2),
+    make_bit: (dec) => (dec >>> 0).toString(2),
     and: (a, b) => a & b,
     not: (a) => ~a,
     or: (a, b) => a | b,
     xor: (a, b) => a ^ b,
-    leftshift: (a, b) => a << b,
-    rightshift: (a, b) => a >> b,
-    unrightshift: (a, b) => a >>> b,
+    left_shift: (a, b) => a << b,
+    right_shift: (a, b) => a >> b,
+    un_right_shift: (a, b) => a >>> b,
   },
   MATH: {
     NAME: 'MATH',
@@ -102,7 +102,7 @@ export const LIBRARY = {
     floor: (n) => Math.floor(n),
     round: (n) => Math.round(n),
     random: () => Math.random(),
-    randomint: (min, max) => Math.floor(Math.random() * (max - min + 1) + min),
+    random_int: (min, max) => Math.floor(Math.random() * (max - min + 1) + min),
     max: (...args) => Math.max(...args),
     min: (...args) => Math.min(...args),
     sin: (n) => Math.sin(n),
@@ -145,13 +145,13 @@ export const LIBRARY = {
     LOG10E: Math.LOG10E,
     SQRT1_2: Math.SQRT1_2,
     SQRT2: Math.SQRT2,
-    parseint: (number, base) => parseInt(number.toString(), base),
+    parse_int: (number, base) => parseInt(number.toString(), base),
     number: (string) => Number(string),
   },
   STRING: {
     NAME: 'STRING',
-    tocapitalcase: (string) => string[0].toUpperCase() + string.substring(1),
-    fromcharcode: (code) => String.fromCharCode(code),
+    to_capital_case: (string) => string[0].toUpperCase() + string.substring(1),
+    from_char_code: (code) => String.fromCharCode(code),
     interpolate: (...args) => {
       return args.reduce((acc, item) => {
         return (acc += item.toString())
@@ -159,15 +159,15 @@ export const LIBRARY = {
     },
     includes: (string, target) => string.includes(target),
     string: (thing) => thing.toString(),
-    uppercase: (string) => string.toUpperCase(),
-    lowercase: (string) => string.toLowerCase(),
+    upper_case: (string) => string.toUpperCase(),
+    lower_case: (string) => string.toLowerCase(),
     trim: (string) => string.trim(),
-    trimstart: (string) => string.trimStart(),
-    trimend: (string) => string.trimEnd(),
+    trim_start: (string) => string.trimStart(),
+    trim_end: (string) => string.trimEnd(),
     substring: (string, start, end) =>
       string.substring(start, end ?? end.length),
     replace: (string, match, replace) => string.replace(match, replace),
-    replaceall: (string, match, replace) => string.replaceAll(match, replace),
+    replace_all: (string, match, replace) => string.replaceAll(match, replace),
     sp: ' ',
   },
   CONVERT: {
@@ -206,22 +206,22 @@ export const LIBRARY = {
     },
   },
   CONSOLE: {
-    consolelog: (thing) => console.log(thing),
+    console_log: (thing) => console.log(thing),
     NAME: 'CONSOLE',
   },
   LOGIC: {
     NAME: 'LOGIC',
-    isstring: (string) => +(typeof string === 'string'),
-    isnumber: (number) => +(typeof number === 'number'),
-    isnotstring: (string) => +!(typeof string === 'string'),
-    isnotnumber: (number) => +!(typeof number === 'number'),
-    isnotarray: (array) => +!Brrr.isBrrr(array),
-    isarray: (array) => +Brrr.isBrrr(array),
-    ismap: (map) => +(map instanceof Map),
-    isnotmap: (map) => +!(map instanceof Map),
-    istrue: (bol) => +(!!bol === true),
-    isfalse: (bol) => +(!!bol === false),
-    isequal: (a, b) => +Brrr.of(a).isEqual(Brrr.of(b)),
+    is_string: (string) => +(typeof string === 'string'),
+    is_number: (number) => +(typeof number === 'number'),
+    is_not_string: (string) => +!(typeof string === 'string'),
+    is_not_number: (number) => +!(typeof number === 'number'),
+    is_not_array: (array) => +!Brrr.isBrrr(array),
+    is_array: (array) => +Brrr.isBrrr(array),
+    is_map: (map) => +(map instanceof Map),
+    is_not_map: (map) => +!(map instanceof Map),
+    is_true: (bol) => +(!!bol === true),
+    is_false: (bol) => +(!!bol === false),
+    is_equal: (a, b) => +Brrr.of(a).isEqual(Brrr.of(b)),
   },
   LOOP: {
     NAME: 'LOOP',
@@ -254,7 +254,7 @@ export const LIBRARY = {
       }
       return iterable
     },
-    forofevery: (iterable, callback) => {
+    for_of_every: (iterable, callback) => {
       for (const x of iterable) {
         callback(x)
       }
@@ -268,7 +268,7 @@ export const LIBRARY = {
     loop: (start, end, callback) => {
       for (let i = start; i < end; ++i) callback(i)
     },
-    whiletrue: (condition, callback) => {
+    while_true: (condition, callback) => {
       let out = VOID
       while (condition()) out = callback()
       return out
@@ -278,7 +278,7 @@ export const LIBRARY = {
       for (let i = 0; i < times; ++i) out = callback(i)
       return out
     },
-    tailcalloptimisedrecursion:
+    tail_call_optimised_recursion:
       (func) =>
       (...args) => {
         let result = func(...args)
@@ -289,8 +289,8 @@ export const LIBRARY = {
   ARRAY: {
     NAME: 'ARRAY',
     from: (arr) => Brrr.from(arr),
-    splitnewline: (str) => Brrr.from(str.split('\n')),
-    splitspaces: (str) => Brrr.from(str.split(' ')),
+    split_new_line: (str) => Brrr.from(str.split('\n')),
+    split_spaces: (str) => Brrr.from(str.split(' ')),
     split: (str, separator) => Brrr.from(str.split(separator)),
     join: (entity, separator) => entity.join(separator),
     shuffle: (array) => {
@@ -313,7 +313,7 @@ export const LIBRARY = {
   },
   CANVAS: {
     NAME: 'CANVAS',
-    quickcanvas: (w = 300, h = 300, border = 'none') => {
+    quick_canvas: (w = 300, h = 300, border = 'none') => {
       const canvas = document.createElement('canvas')
       canvas.width = w
       canvas.height = h
@@ -322,11 +322,11 @@ export const LIBRARY = {
       document.body.appendChild(canvas)
       return ctx
     },
-    clearrect: (ctx, x, y, width, height) => {
+    clear_rect: (ctx, x, y, width, height) => {
       ctx.clearRect(x, y, width, height)
       return ctx
     },
-    drawimage: (
+    draw_image: (
       ctx,
       image,
       sx,
@@ -341,35 +341,35 @@ export const LIBRARY = {
       ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
       return ctx
     },
-    setfillstyle: (ctx, color) => {
+    set_fill_style: (ctx, color) => {
       ctx.fillStyle = color
       return ctx
     },
-    makefilledrect: (ctx, x, y, w, h) => {
+    make_filled_rect: (ctx, x, y, w, h) => {
       ctx.fillRect(x, y, w, h)
       return ctx
     },
-    setstrokestyle: (ctx, color) => {
+    set_stroke_style: (ctx, color) => {
       ctx.strokeStyle = color
       return ctx
     },
-    setlinewidth: (ctx, width) => {
+    set_line_width: (ctx, width) => {
       ctx.lineWidth = width
       return ctx
     },
-    makestroke: (ctx) => {
+    make_stroke: (ctx) => {
       ctx.stroke()
       return ctx
     },
-    makepath: (ctx) => {
+    make_path: (ctx) => {
       ctx.beginPath()
       return ctx
     },
-    moveto: (ctx, x, y) => {
+    move_to: (ctx, x, y) => {
       ctx.moveTo(x, y)
       return ctx
     },
-    lineto: (ctx, x, y) => {
+    line_to: (ctx, x, y) => {
       ctx.lineTo(x, y)
       return ctx
     },
@@ -388,65 +388,65 @@ export const LIBRARY = {
   },
   DOM: {
     NAME: 'DOM',
-    appendchild: (parent, child) => {
+    append_child: (parent, child) => {
       parent.appendChild(child)
       return parent
     },
-    getbody: () => document.body,
-    getparentnode: (element) => element.parentNode,
-    makefragment: () => document.createDocumentFragment(),
-    getelementbyid: (id) => document.getElementById(id),
-    getelementsbyclassname: (tag) => document.getElementsByClassName(tag),
-    getelementsbytagname: (tag) => document.getElementsByTagName(tag),
-    makeuserinterface: () => {
+    get_body: () => document.body,
+    get_parent_node: (element) => element.parentNode,
+    make_fragment: () => document.createDocumentFragment(),
+    get_element_by_id: (id) => document.getElementById(id),
+    get_elements_by_class_name: (tag) => document.getElementsByClassName(tag),
+    get_elements_by_tag_name: (tag) => document.getElementsByTagName(tag),
+    make_user_interface: () => {
       const div = document.createElement('div')
       document.body.appendChild(div)
       return div
     },
-    makeimage: (src) => {
+    make_image: (src) => {
       const img = document.createElement('img')
       img.src = src
       return img
     },
-    makeiframe: (src) => {
+    make_iframe: (src) => {
       const element = document.createElement('iframe')
       element.setAttribute('src', src)
       return element
     },
-    makeelement: (type, settings) => {
+    make_element: (type, settings) => {
       const element = document.createElement(type)
       for (const [key, value] of settings) {
         element.setAttribute(key, value)
       }
       return element
     },
-    makecanvas: (settings) => {
+    make_canvas: (settings) => {
       const element = document.createElement('canvas')
       for (const [key, value] of settings) {
         element.setAttribute(key, value)
       }
       return element
     },
-    makeinput: (settings) => {
+    make_input: (settings) => {
       const element = document.createElement('input')
       for (const [key, value] of settings) {
         element.setAttribute(key, value)
       }
       return element
     },
-    maketextarea: (settings) => {
+    make_text_area: (settings) => {
       const element = document.createElement('textarea')
       for (const [key, value] of settings) {
         element.setAttribute(key, value)
       }
       return element
     },
-    makecheckbox: () => {
+    make_checkbox: () => {
       const checkbox = document.createElement('input')
       checkbox.type = 'checkbox'
       return checkbox
     },
-    makeslider: (settings) => {
+    make_slider: (settings) => {
       const element = document.createElement('input')
       element.type = 'range'
 
@@ -456,96 +456,96 @@ export const LIBRARY = {
       return element
     },
 
-    copyfromelement: (copyElement) => {
+    copy_from_element: (copyElement) => {
       copyElement.select()
       copyElement.setSelectionRange(0, 99999)
       navigator.clipboard.writeText(copyElement.value)
     },
-    copyfromtext: (val) => {
+    copy_from_text: (val) => {
       navigator.clipboard.writeText(val)
     },
-    maketooltip: (defaultLabel) => {
+    make_tooltip: (defaultLabel) => {
       const tooltip = document.createElement('span')
       tooltip.textContent = defaultLabel
       return tooltip
     },
-    maketable: () => {
+    make_table: () => {
       const table = document.createElement('table')
       return table
     },
-    maketablerow: () => {
+    make_table_row: () => {
       const table = document.createElement('tr')
       return table
     },
-    maketabledata: () => {
+    make_table_data: () => {
       const table = document.createElement('td')
       return table
     },
-    maketableheader: () => {
+    make_table_header: () => {
       const table = document.createElement('th')
       return table
     },
-    maketablecaption: () => {
+    make_table_caption: () => {
       const table = document.createElement('caption')
       return table
     },
-    maketablecolumn: () => {
+    make_table_column: () => {
       const table = document.createElement('col')
       return table
     },
-    maketablecolumngroup: () => {
+    make_table_column_group: () => {
       const table = document.createElement('colgroup')
       return table
     },
-    maketablehead: () => {
+    make_table_head: () => {
       const table = document.createElement('thead')
       return table
     },
-    maketablebody: () => {
+    make_table_body: () => {
       const table = document.createElement('tbody')
       return table
     },
-    maketablefooter: () => {
+    make_table_footer: () => {
       const table = document.createElement('tfoot')
       return table
     },
-    makebutton: () => {
+    make_button: () => {
       const element = document.createElement('button')
       return element
     },
-    addtextcontent: (element, label) => {
+    add_text_content: (element, label) => {
       element.textContent = label
       return element
     },
-    makelabel: (...elements) => {
+    make_label: (...elements) => {
       const element = document.createElement('label')
       const frag = document.createDocumentFragment()
       elements.forEach((el) => frag.appendChild(el))
       element.appendChild(frag)
       return element
     },
-    maketime: (format) => {
+    make_time: (format) => {
       const element = document.createElement('time')
       element.setAttribute('datetime', format)
       return element
     },
-    makeaside: (...elements) => {
+    make_aside: (...elements) => {
       const element = document.createElement('aside')
       const frag = document.createDocumentFragment()
       elements.forEach((el) => frag.appendChild(el))
       element.appendChild(frag)
       return element
     },
-    makeheader: (n = 1) => {
+    make_header: (n = 1) => {
       const element = document.createElement('h' + n)
       return element
     },
-    makelist: (content) => {
+    make_list: (content) => {
       const element = document.createElement('li')
       element.appendChild(content)
       return element
     },
-    makecsslink: (href) => {
+    make_css_link: (href) => {
       const link = document.createElement('link')
       link.rel = 'stylesheet'
       link.href = href
@@ -553,61 +553,61 @@ export const LIBRARY = {
       document.head.appendChild(link)
       return link
     },
-    makeorderedlist: (...lists) => {
+    make_ordered_list: (...lists) => {
       const frag = document.createDocumentFragment()
       const element = document.createElement('ol')
       lists.forEach((l) => frag.appendChild(l))
       element.appendChild(frag)
       return element
     },
-    makeunorderedlist: (...lists) => {
+    make_unordered_list: (...lists) => {
       const element = document.createElement('ul')
       const frag = document.createDocumentFragment()
       lists.forEach((l) => frag.appendChild(l))
       element.appendChild(frag)
       return element
     },
-    makefigure: (...elements) => {
+    make_figure: (...elements) => {
       const element = document.createElement('figure')
       const frag = document.createDocumentFragment()
       elements.forEach((element) => frag.appendChild(element))
       element.appendChild(frag)
       return element
     },
-    makearticle: (...elements) => {
+    make_article: (...elements) => {
       const element = document.createElement('article')
       const frag = document.createDocumentFragment()
       elements.forEach((element) => frag.appendChild(element))
       element.appendChild(frag)
       return element
     },
-    makeanchor: (href) => {
+    make_anchor: (href) => {
       const element = document.createElement('a')
       element.href = href
       return element
     },
-    makepre: () => {
+    make_pre: () => {
       const element = document.createElement('pre')
       return element
     },
-    makenav: (inner) => {
+    make_nav: (inner) => {
       const element = document.createElement('nav')
       element.appendChild(inner)
       return element
     },
-    makeparagraph: () => {
+    make_paragraph: () => {
       const element = document.createElement('p')
       return element
     },
-    makespan: () => {
+    make_span: () => {
       const element = document.createElement('span')
       return element
     },
-    setid: (element, id) => {
+    set_id: (element, id) => {
       element.setAttribute('id', id)
       return element
     },
-    maketablefrom: (tableData) => {
+    make_table_from: (tableData) => {
       const table = document.createElement('table')
       const tableBody = document.createElement('tbody')
       tableData.forEach((rowData) => {
@@ -622,37 +622,37 @@ export const LIBRARY = {
       table.appendChild(tableBody)
       return table
     },
-    getid: (element) => element.getAttribute('id'),
-    getattribute: (element, key) => element.getAttribute(key),
-    setattribute: (element, key, value) => {
+    get_id: (element) => element.getAttribute('id'),
+    get_attribute: (element, key) => element.getAttribute(key),
+    set_attribute: (element, key, value) => {
       element.setAttribute(key, value)
       return element
     },
-    settextcontent: (element, content) => {
+    set_text_content: (element, content) => {
       element.textContent = content
       return element
     },
-    setstyle: (element, ...styles) => {
+    set_style: (element, ...styles) => {
       element.style = styles.join('')
       return element
     },
-    makevideo: (src) => {
+    make_video: (src) => {
       const element = document.createElement('video')
       element.setAttribute('src', src)
       return element
     },
-    makeprogress: (value, max) => {
+    make_progress: (value, max) => {
       const element = document.createElement('progress')
       element.setAttribute('value', value)
       element.setAttribute('max', max)
       return element
     },
-    makeindeterminateprogress: (max) => {
+    make_indeterminate_progress: (max) => {
       const element = document.createElement('progress')
       element.setAttribute('max', max)
       return element
     },
-    makecontainer: (...elements) => {
+    make_container: (...elements) => {
       const frag = document.createDocumentFragment()
       const div = document.createElement('div')
       elements.forEach((element) => frag.appendChild(element))
@@ -660,33 +660,33 @@ export const LIBRARY = {
       document.body.appendChild(div)
       return div
     },
-    makediv: (...elements) => {
+    make_div: (...elements) => {
       const frag = document.createDocumentFragment()
       const div = document.createElement('div')
       elements.forEach((element) => frag.appendChild(element))
       div.appendChild(frag)
       return div
     },
-    makeitalictext: () => {
+    make_italic_text: () => {
       const element = document.createElement('i')
       return element
     },
-    makestrongtext: () => {
+    make_strong_text: () => {
       const element = document.createElement('strong')
       return element
     },
-    insertintocontainer: (container, ...elements) => {
+    insert_into_container: (container, ...elements) => {
       const frag = document.createDocumentFragment()
       elements.forEach((element) => frag.appendChild(element))
       container.appendChild(frag)
       return container
     },
-    removeselffromcontainer: (...elements) =>
+    remove_self_from_container: (...elements) =>
       elements.forEach((element) => element.parentNode.removeChild(element)),
   },
   STYLE: {
     NAME: 'STYLE',
-    makestyle: (...styles) => {
+    make_style: (...styles) => {
       const element = document.createElement('style')
       element.innerHTML = styles.reduce((acc, [selector, ...style]) => {
         acc += `${selector}{${style.join(';')}}`
@@ -695,12 +695,12 @@ export const LIBRARY = {
       document.body.appendChild(element)
       return element
     },
-    addclass: (element, ...classlist) => {
+    add_class: (element, ...classlist) => {
       classlist.forEach((cls) => element.classList.add(cls))
       return element
     },
-    noborder: () => 'border: none;',
-    borderradius: (value) => `border-radius: ${value};`,
+    no_border: () => 'border: none;',
+    border_radius: (value) => `border-radius: ${value};`,
     border: (options) =>
       `border: ${options.get('size') ?? ''} ${options.get('type') ?? ''} ${
         options.get('color') ?? ''
@@ -719,38 +719,38 @@ export const LIBRARY = {
           display
         ]
       };`,
-    unitspercent: (value) => `${value}%`,
-    unitspixel: (value) => `${value}px`,
-    unitspoint: (value) => `${value}pt`,
-    backgroundcolor: (color) => `background-color: ${color};`,
-    cursorpointer: () => 'cursor: pointer;',
-    fontfamily: (font) => `font-family: ${font};`,
-    fontsize: (size) => `font-size: ${size};`,
-    displayshow: (element) => {
+    units_percent: (value) => `${value}%`,
+    units_pixel: (value) => `${value}px`,
+    units_point: (value) => `${value}pt`,
+    background_color: (color) => `background-color: ${color};`,
+    cursor_pointer: () => 'cursor: pointer;',
+    font_family: (font) => `font-family: ${font};`,
+    font_size: (size) => `font-size: ${size};`,
+    display_show: (element) => {
       element.style.display = 'block'
       return element
     },
-    displayhide: (element) => {
+    display_hide: (element) => {
       element.style.display = 'none'
       return element
     },
-    textcolor: (color) => `color:${color};`,
-    textalign: (align = 'c') =>
+    text_color: (color) => `color:${color};`,
+    text_align: (align = 'c') =>
       `text-align:${{ c: 'center', l: 'left', r: 'right' }[align]};`,
-    makeclass: (name, attr) => {
+    make_class: (name, attr) => {
       let out = ''
       for (const a in attr) {
         out += `${a}: ${attr[a]};`
       }
       return `.${name} {\n${out}\n}`
     },
-    makesvgstyle: (entity, props) => {
+    make_svg_style: (entity, props) => {
       for (const prop in props) {
         entity.renderer.elem.style[prop] = props[prop]
       }
       return entity.renderer.elem
     },
-    styleoption: (attr) => {
+    style_option: (attr) => {
       let out = ''
       for (const a in attr) out += `${a}: ${attr[a]};`
       return out
@@ -758,29 +758,29 @@ export const LIBRARY = {
   },
   TIME: {
     NAME: 'TIME',
-    settimeout: (callback, time) => setTimeout(callback, time),
-    setinterval: (callback, time = 1000) => setInterval(callback, time),
-    setanimation: (callback) => requestAnimationFrame(callback),
+    set_timeout: (callback, time) => setTimeout(callback, time),
+    set_interval: (callback, time = 1000) => setInterval(callback, time),
+    set_animation: (callback) => requestAnimationFrame(callback),
   },
   EVENT: {
     NAME: 'EVENT',
-    oninputchange: (element, callback) => {
+    on_input_change: (element, callback) => {
       element.addEventListener('change', (e) => callback(e.target))
       return element
     },
-    onmouseclick: (element, callback) => {
+    on_mouse_click: (element, callback) => {
       element.addEventListener('click', (e) => callback(e.target))
       return element
     },
-    onmouseover: (element, callback) => {
+    on_mouse_over: (element, callback) => {
       element.addEventListener('mouseover', (e) => callback(e.target))
       return element
     },
-    onkeydown: (element, callback) => {
+    on_key_down: (element, callback) => {
       element.addEventListener('keydown', (e) => callback(e.key))
       return element
     },
-    onkeyup: (element, callback) => {
+    on_key_up: (element, callback) => {
       element.addEventListener('keyup', (e) => callback(e.key))
       return element
     },
@@ -793,7 +793,7 @@ export const STD = {
   void: VOID,
   VOID,
   _: VOID,
-  printout: (...args) => console.log(...args),
+  print_out: (...args) => console.log(...args),
   // IMP: module => {
   //   console.log(
   //     `<- [${Object.keys(module)

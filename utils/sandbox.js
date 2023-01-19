@@ -124,6 +124,16 @@ process.on('message', async ({ portal, files, dir, type, target, payload }) => {
         break
       case 'js':
         {
+          const script = (
+            await Promise.all(
+              files
+                .filter((f) => path.extname(f).slice(1) === 'bit')
+                .sort((a, b) =>
+                  parseInt(a.match(/^\d+/)) > parseInt(b.match(/^\d+/)) ? 1 : -1
+                )
+                .map((file) => readFile(dir + sanitizePath(file), 'utf-8'))
+            )
+          ).join('\n')
           runInNewContext(compileExecutable(script), {
             stringify: (data) => JSON.stringify(data),
             read: (path, callback) =>

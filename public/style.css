@@ -14,19 +14,19 @@
   --progress: #42c6ff;
   --font-family: 'Fantastic';
   --font-primary: 'Fantastic';
-  --drone1: #6c3ea8;
-  --drone2: #be66e4;
-  --drone3: #e6adf4;
+  --drone1: #63379c;
+  --drone2: #9b57cf;
+  --drone3: #b495f7;
   --drone4: #282828;
   --hover: #2eff85;
 
   --comment: #546a90;
-  --operator: #e6b673;
+  --operator: #f8ca76;
   --icons: #546a90;
 
   --number: #42c6ff;
-  --keyword: #dadbdb;
-  --string: #ff73d3;
+  --keyword: #acb0fd;
+  --string: #96f2a9;
   --bracket: #546a90;
   --color-primary: #acb0fd;
   --color-secondary: #42c6ff;
