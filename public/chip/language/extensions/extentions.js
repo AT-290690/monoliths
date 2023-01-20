@@ -1,4 +1,5 @@
 import { VOID } from '../core/tokens.js'
+import { LZUTF8 } from '../misc/lz-utf8.js'
 import Brrr from './Brrr.js'
 export const protolessModule = (methods) => {
   const env = Object.create(null)
@@ -150,6 +151,13 @@ export const LIBRARY = {
   },
   STRING: {
     NAME: 'STRING',
+    lzutf8_compress: (string) =>
+      LZUTF8.compress(string, { outputEncoding: 'StorageBinaryString' }),
+    lzutf8_decompress: (source) =>
+      LZUTF8.decompress(source.trim(), {
+        inputEncoding: 'StorageBinaryString',
+        outputEncoding: 'String',
+      }),
     to_capital_case: (string) => string[0].toUpperCase() + string.substring(1),
     from_char_code: (code) => String.fromCharCode(code),
     interpolate: (...args) => {
