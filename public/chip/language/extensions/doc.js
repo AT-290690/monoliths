@@ -113,6 +113,7 @@ export const DOCUMENTATION = {
     article: `[elements] -> element`,
     make_list: `[] -> element`,
     make_css_link: `[href] -> element`,
+    load_bulma: `[v_number_1, v_number_2, v_number_3] -> element`,
     make_ordered_list: `[...lists] -> element`,
     make_unordered_list: `[...lists] -> element`,
     make_anchor: `[href] -> element`,
