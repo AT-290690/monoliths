@@ -793,8 +793,6 @@ export const LIBRARY = {
       return element
     },
   },
-  void: VOID,
-  VOID,
 }
 
 export const STD = {

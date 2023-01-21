@@ -454,6 +454,7 @@ export const execute = async (CONSOLE) => {
  Enter a command in the console
  ---------[COMMANDS]---------
  HELP: list these commands
+ DOC: list documentation for modules
  RUN: run code 
  CLEAR: clears the editor content
  X: clears search, log and canvas pannels
