@@ -435,7 +435,7 @@ const tokens = {
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of .> must be an .: []')
-    return array.at(0)
+    return array.first
   },
   ['.<']: (args, env) => {
     if (args.length !== 1)
@@ -443,7 +443,7 @@ const tokens = {
     const array = evaluate(args[0], env)
     if (!(array.constructor.name === 'Brrr'))
       throw new TypeError('First argument of .< must be an .: []')
-    return array.at(-1)
+    return array.last
   },
   [':.']: (args, env) => {
     if (args.length !== 2)

@@ -92,7 +92,7 @@ const compile = () => {
             tree.args
               .map((x) => `(${dfs(x, locals)})`)
               .join(symbols[tree.operator.name] ?? tree.operator.name) +
-            ')'
+            ');'
           )
         case '%':
           return (
@@ -105,7 +105,7 @@ const compile = () => {
         case '|':
           return `(${dfs(tree.args[0], locals)}.toFixed(
           ${tree.args.length === 1 ? 0 : dfs(tree.args[1], locals)}
-        ))`
+        ));`
         case '!':
           return '!' + dfs(tree.args[0], locals)
 
@@ -126,27 +126,27 @@ const compile = () => {
           return `_repeat(${dfs(tree.args[0], locals)},${dfs(
             tree.args[1],
             locals
-          )})`
+          )});`
         case '><>':
           return `_findLeft(${dfs(tree.args[0], locals)}, ${dfs(
             tree.args[1],
             locals
-          )})`
+          )});`
         case '<><':
           return `_findRight(${dfs(tree.args[0], locals)}, ${dfs(
             tree.args[1],
             locals
-          )})`
+          )});`
         case '|:|':
           return `_every(${dfs(tree.args[0], locals)}, ${dfs(
             tree.args[1],
             locals
-          )})`
+          )});`
         case '|.|':
           return `_some(${dfs(tree.args[0], locals)}, ${dfs(
             tree.args[1],
             locals
-          )})`
+          )});`
         case '.>':
           return `_at(${dfs(tree.args[0], locals)}, 0);`
         case '.<':
@@ -159,7 +159,7 @@ const compile = () => {
         case ':..':
           return `Brrr.matrix(${tree.args
             .map((x) => dfs(x, locals))
-            .join(',')})`
+            .join(',')});`
         case '.:':
           return (
             'Brrr.of(' + tree.args.map((x) => dfs(x, locals)).join(',') + ')'
@@ -266,39 +266,39 @@ const compile = () => {
           return `_mapHas(${dfs(tree.args[0], locals)}, ${dfs(
             tree.args[1],
             locals
-          )})`
+          )});`
         case '.':
           return `_mapGet(${dfs(tree.args[0], locals)}, ${dfs(
             tree.args[1],
             locals
-          )})`
+          )});`
         case '.=':
           return `_mapSet(${dfs(tree.args[0], locals)}, ${dfs(
             tree.args[1],
             locals
-          )}, ${dfs(tree.args[2], locals)})`
+          )}, ${dfs(tree.args[2], locals)});`
         case '.!=':
           return `_mapRemove(${dfs(tree.args[0], locals)}, ${dfs(
             tree.args[1],
             locals
-          )})`
+          )});`
         case ':::':
-          return `_mapEntries(${dfs(tree.args[0], locals)})`
+          return `_mapEntries(${dfs(tree.args[0], locals)});`
         case ':+': {
           const [first, second, ...rest] = tree.args.map((item) =>
             dfs(item, locals)
           )
-          return `_addAt(${first}, ${second}, ${rest})`
+          return `_addAt(${first}, ${second}, ${rest});`
         }
         case ':-':
           return `_removeFrom(${dfs(tree.args[0], locals)}, ${dfs(
             tree.args[1],
             locals
-          )}, ${dfs(tree.args[2], locals)})`
+          )}, ${dfs(tree.args[2], locals)});`
         case '::*':
-          return `_mapValues(${dfs(tree.args[0], locals)})`
+          return `_mapValues(${dfs(tree.args[0], locals)});`
         case '::.':
-          return `_mapKeys(${dfs(tree.args[0], locals)})`
+          return `_mapKeys(${dfs(tree.args[0], locals)});`
         case '.:@':
           return `_rot(${dfs(tree.args[0], locals)}, ${dfs(
             tree.args[1],
@@ -381,7 +381,7 @@ const compile = () => {
             } else {
               return `(${dfs(tree.operator, locals)})(${tree.args
                 .map((x) => dfs(x, locals))
-                .join(',')})`
+                .join(',')});`
             }
           }
         }

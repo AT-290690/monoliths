@@ -2,7 +2,7 @@ import evaluate from './interpreter.js'
 const tailCallOpt = (children, name, parent) => {
   for (let i = 0; i < children.length; ++i)
     if (children[i].args)
-      if (children[i]?.operator?.name === name) {
+      if (name in children[i]?.operator && children[i].operator.name === name) {
         children[i].operator.name = '__tail_' + name
         children[i] = {
           args: [children[i]],

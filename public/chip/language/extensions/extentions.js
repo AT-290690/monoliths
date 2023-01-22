@@ -233,6 +233,18 @@ export const LIBRARY = {
   },
   LOOP: {
     NAME: 'LOOP',
+    for_of: (iterable, callback) => {
+      for (const [, value] of iterable) {
+        callback(value, iterable)
+      }
+      return iterable
+    },
+    iterate: (iterable, callback) => {
+      for (const [key, value] of iterable) {
+        callback(key, value, iterable)
+      }
+      return iterable
+    },
     generator: (entity = [], index = 0) => {
       return function* () {
         while (true) {
@@ -250,18 +262,7 @@ export const LIBRARY = {
     next: (entity) => {
       return entity.next().value
     },
-    iterate: (iterable, callback) => {
-      for (const i in iterable) {
-        callback(i, iterable)
-      }
-      return iterable
-    },
-    inside: (iterable, callback) => {
-      for (const i in iterable) {
-        callback(i)
-      }
-      return iterable
-    },
+
     for_of_every: (iterable, callback) => {
       for (const x of iterable) {
         callback(x)
@@ -800,6 +801,282 @@ export const LIBRARY = {
       element.addEventListener('keyup', (e) => callback(e.key))
       return element
     },
+  },
+
+  SKETCH: {
+    NAME: 'SKETCH',
+    COMMANDS: {
+      NAME: 'COMMANDS',
+      MOVE: () => Two.Commands.move,
+      CURVE: () => Two.Commands.curve,
+      LINE: () => Two.Commands.line,
+    },
+    ANCHOR: {
+      NAME: 'ANCHOR',
+      anchor: (p1, p2, p3, p4, p5, p6, p7) =>
+        new Two.Anchor(p1, p2, p3, p4, p5, p6, p7),
+    },
+    PATH: {
+      NAME: 'PATH',
+      path_from: (points) => {
+        const path = LIBRARY.SKETCH.engine.makePath(...points)
+        path.closed = false
+        return path
+      },
+      make_path: (...points) => {
+        const path = LIBRARY.SKETCH.engine.makePath(...points)
+        path.closed = false
+        return path
+      },
+      path: (anchors, a, b, c) => new Two.Path(anchors, a, b, c),
+    },
+    VECTOR: {
+      NAME: 'VECTOR',
+      make_vector: (...args) => new Two.Vector(...args),
+      ZERO: () => Two.Vector.zero,
+      LEFT: () => Two.Vector.left,
+      RIGHT: () => Two.Vector.right,
+      UP: () => Two.Vector.up,
+      DOWN: () => Two.Vector.down,
+      add: (a, b) => Two.Vector.add(a, b),
+      sub_tract: (a, b) => Two.Vector.subtract(a, b),
+      multiply: (a, b) => Two.Vector.add(a, b),
+      divide: (a, b) => a.divide(b),
+      dot: (a, b) => a.dot(b),
+      normalize: (vec) => vec.normalize(),
+      ratio_between: (a, b) => Two.Vector.ratioBetween(a, b),
+      angle_between: (a, b) => Two.Vector.angleBetween(a, b),
+      distance_between: (a, b) => Two.Vector.distanceBetween(a, b),
+      distance_between_squared: (a, b) =>
+        Two.Vector.distanceBetweenSquared(a, b),
+      distance_to: (a, b, e) => a.distanceTo(b, e),
+      distance_to_squared: (a, b, e) => a.distanceToSquared(b, e),
+      get_x: (vec) => vec.x,
+      get_y: (vec) => vec.y,
+      copy: (vec, d) => vec.copy(d),
+      clear: (vec) => vec.clear(),
+      clone: (vec) => vec.clone(),
+      lerp: (vec, d, t) => vec.lerp(d, t),
+      addself: (vec, a) => vec.addSelf(a),
+      subtract_self: (vec, a) => vec.subtractSelf(a),
+      multiply_self: (vec, a) => vec.multiplySelf(a),
+      multiply_scalar: (vec, scalar) => vec.multiplyScalar(scalar),
+      divide_scalar: (vec, scalar) => vec.divideScalar(scalar),
+      set_length: (vec, len) => vec.setLength(len),
+      length: (vec) => vec.length(),
+      rotate: (vec, angle) => vec.rotate(angle),
+    },
+    background: (color = 'var(--background-primary)') =>
+      (LIBRARY.SKETCH.CANVAS_CONTAINER.firstChild.style.background = color),
+    request_animation_frame: (fn) => (animation = requestAnimationFrame(fn)),
+    destroy_composition: () => {
+      LIBRARY.SKETCH.CANVAS_CONTAINER.style.background =
+        'var(--background-primary)'
+      LIBRARY.SKETCH.CANVAS_CONTAINER.innerHTML = ''
+      LIBRARY.SKETCH.engine?.removeEventListener('update')
+    },
+    make_scene: (width = 100, height = 100, callback) => {
+      LIBRARY.SKETCH.engine?.removeEventListener('update')
+      let container = document.getElementById('canvas-container')
+      if (!container) {
+        container = document.createElement('div')
+        container.setAttribute('id', 'canvas-container')
+        document.body.appendChild(container)
+      }
+      LIBRARY.SKETCH.CANVAS_CONTAINER = container
+      LIBRARY.SKETCH.engine = new Two({
+        width,
+        height,
+      }).appendTo(LIBRARY.SKETCH.CANVAS_CONTAINER)
+      callback()
+      return 'Scene created!'
+    },
+    insert_into_group: (group, ...items) => {
+      group.add(...items)
+      return group
+    },
+    insert_into_group_by_partitions: (group, ...partitions) => {
+      partitions.forEach((items) => group.add(...items))
+      return group
+    },
+    remove_from_group: (item) => {
+      item.parent.remove(item)
+      LIBRARY.SKETCH.engine.add(item)
+      return item
+    },
+    remove_from_scene: (item) => {
+      item.remove()
+      return VOID
+    },
+    group_additions: (group) => group.additions,
+    group_children: (group) => group.children,
+    width: (ratio = 1) => LIBRARY.SKETCH.engine.width * ratio,
+    height: (ratio = 1) => LIBRARY.SKETCH.engine.height * ratio,
+    add: (...elements) => LIBRARY.SKETCH.engine.add(...elements),
+    clear: () => LIBRARY.SKETCH.engine.clear(),
+    ignore: (...args) => LIBRARY.SKETCH.engine.ignore(...args),
+    interpret: (index) =>
+      LIBRARY.SKETCH.engine.interpret(document.getElementById(index)),
+    listen: (...args) => LIBRARY.SKETCH.engine.listen(...args),
+    load: (...args) => LIBRARY.SKETCH.engine.load(...args),
+    make_arc_segment: (...args) =>
+      LIBRARY.SKETCH.engine.makeArcSegment(...args),
+    make_arrow: (...args) => LIBRARY.SKETCH.engine.makeArrow(...args),
+    make_circle: (x, y, r) => LIBRARY.SKETCH.engine.makeCircle(x, y, r),
+    make_curve: (...points) => LIBRARY.SKETCH.engine.makeCurve(...points),
+    make_ellipse: (...args) => LIBRARY.SKETCH.engine.makeEllipse(...args),
+    make_group: (...args) => LIBRARY.SKETCH.engine.makeGroup(...args),
+    make_image_sequence: (...args) =>
+      LIBRARY.SKETCH.engine.makeImageSequence(...args),
+    make_line: (x1, y1, x2, y2, color = 'white') => {
+      const line = LIBRARY.SKETCH.engine.makeLine(x1, y1, x2, y2)
+      line.stroke = color
+      return line
+    },
+    make_linear_gradient: (...args) =>
+      LIBRARY.SKETCH.engine.makeLinearGradient(...args),
+    make_path: (...args) => LIBRARY.SKETCH.engine.makePath(...args),
+    make_points: (...args) => LIBRARY.SKETCH.engine.makePoints(...args),
+    make_polygon: (...args) => LIBRARY.SKETCH.engine.makePolygon(...args),
+    make_radial_gradient: (...args) =>
+      LIBRARY.SKETCH.engine.makeRadialGradient(...args),
+    make_rectangle: (x, y, w, h) =>
+      LIBRARY.SKETCH.engine.makeRectangle(x, y, w, h),
+    make_rounded_rectangle: (...args) =>
+      LIBRARY.SKETCH.engine.makeRoundedRectangle(...args),
+    make_sprite: (...args) => LIBRARY.SKETCH.engine.makeSprite(...args),
+    make_star: (...args) => LIBRARY.SKETCH.engine.makeStar(...args),
+    make_text: (...args) => LIBRARY.SKETCH.engine.makeText(...args),
+    make_texture: (...args) => LIBRARY.SKETCH.engine.makeTexture(...args),
+    on: (...args) => LIBRARY.SKETCH.engine.on(...args),
+    off: (...args) => LIBRARY.SKETCH.engine.off(...args),
+    pause: (...args) => {
+      LIBRARY.SKETCH.engine.pause(...args)
+      return 'Paused!'
+    },
+    play: (...args) => {
+      LIBRARY.SKETCH.engine.play(...args)
+      return 'Playing!'
+    },
+    release: (...args) => LIBRARY.SKETCH.engine.release(...args),
+    remove: (...args) => LIBRARY.SKETCH.engine.remove(...args),
+    set_playing: (...args) => LIBRARY.SKETCH.engine.setPlaying(...args),
+    trigger: (...args) => LIBRARY.SKETCH.engine.trigger(...args),
+    update: (...args) => {
+      LIBRARY.SKETCH.engine.update(...args)
+      return 'Updated!'
+    },
+    no_fill: (entity) => {
+      entity.noFill()
+      return entity
+    },
+    no_stroke: (entity) => {
+      entity.noStroke()
+      return entity
+    },
+    draw: (lifespan, callback) => {
+      if (callback && typeof callback === 'function') {
+        LIBRARY.SKETCH.engine.bind('update', callback)
+        setTimeout(() => {
+          LIBRARY.SKETCH.engine.unbind('update', callback)
+          LIBRARY.SKETCH.engine.removeEventListener('update')
+        }, 1000 * lifespan)
+      }
+    },
+
+    set_screen_size: (w, h, showBorder = true) => {
+      const svg = LIBRARY.SKETCH.CANVAS_CONTAINER.firstChild
+      svg.setAttribute('width', w)
+      svg.setAttribute('height', h)
+      if (showBorder) svg.style.border = '1px solid lime'
+    },
+    set_offset_start: (entity) => {
+      entity.position.x = entity.position.x + entity.width * 0.5
+      entity.position.y = entity.position.y + entity.height * 0.5
+      return entity
+    },
+    set_fill: (entity, fill) => {
+      entity.fill = fill
+      return entity
+    },
+    set_stroke: (entity, stroke) => {
+      entity.stroke = stroke
+      return entity
+    },
+    set_dashes: (entity, dashes) => {
+      entity.dashes = dashes
+      return entity
+    },
+    set_line_width: (entity, linewidth) => {
+      entity.linewidth = linewidth
+      return entity
+    },
+    offset_by: (entity, x, y) => {
+      entity.additions
+        ? entity.additions.forEach((item) => {
+            item.position.set(item.position.x - x, item.position.y - y)
+          })
+        : entity.origin.set(x, y)
+
+      entity.position.set(x, y)
+      return entity
+    },
+    set_position: (entity, x, y) => {
+      entity.position.set(x, y)
+      return entity
+    },
+    set_position_x: (entity, x) => {
+      entity.position.x = x
+      return entity
+    },
+    set_position_y: (entity, y) => {
+      entity.position.y = y
+      return entity
+    },
+    set_scale: (entity, s) => {
+      entity.scale = s
+      return entity
+    },
+    set_opacity: (entity, opacity) => {
+      entity.opacity = opacity
+      return entity
+    },
+    set_rotation: (entity, a) => {
+      entity.rotation = a
+      return entity
+    },
+    set_width: (entity, w) => {
+      entity.width = w
+      return entity
+    },
+    set_height: (entity, h) => {
+      entity.height = h
+      return entity
+    },
+    set_origin: (entity, x, y) => {
+      entity.additions
+        ? entity.additions.forEach((item) => {
+            item.position.set(item.position.x - x, item.position.y - y)
+          })
+        : entity.origin.set(x, y)
+      return entity
+    },
+    close_path: (path) => {
+      path.closed = true
+      return path
+    },
+    make: (prop, ...args) => new Two[prop](...args),
+    get_width: () => document.body.getBoundingClientRect().width,
+    get_height: () => document.body.getBoundingClientRect().height,
+    get_from_group: (group, index) => group.additions[index],
+    get_origin: (entity) => entity.origin,
+    get_opacity: (entity) => entity.opacity,
+    get_dashes: (entity) => entity.dashes,
+    get_position: (entity) => entity.position,
+    get_rotation: (entity) => entity.rotation,
+    get_scale: (entity) => entity.scale,
+    get_translation: (entity) => entity.translation,
+    get_bounds: (entity) => entity.getBoundingClientRect(),
   },
 }
 

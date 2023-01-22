@@ -12,16 +12,15 @@ _spreadArr = (args) => {
   } else return args.reduce((acc, item) => ({ ...acc, ...item }), {})
 },
 _mapEntries = (map) => Brrr.from([...map.entries()].map(Brrr.from)), _mapKeys = (map) => Brrr.from([...map.keys()]), _mapValues = (map) => Brrr.from([...map.values()]), _mapGet = (map, key) => map.get(key), _mapSize = (map) => map.size,
-_mapRemove = (map, key) => { map.delete(key); return map }, _mapSet = (map, key, value) => { map.set(key, value); return map }, _mapHas = (map, key) => map.has(key), _scanLeft = (a, cb) => { for (let i = 0; i < a.length; ++i) cb(a[i], i, a); return a },
-_scanRight = (a, cb) => {  for (let i = a.length - 1; i >= 0; --i) cb(a[i], i, a); return a }, _mapLeft = (a, cb, copy = new Brrr()) => { for (let i = 0; i < a.length; ++i) copy.set(i, cb(a.at(i), i, a)); return a.balance() },
+_mapRemove = (map, key) => { map.delete(key); return map }, _mapSet = (map, key, value) => { map.set(key, value); return map }, _mapHas = (map, key) => map.has(key), _scanLeft = (a, cb) => { for (let i = 0; i < a.length; ++i) cb(a.get(i), i, a); return a },
+_scanRight = (a, cb) => {  for (let i = a.length - 1; i >= 0; --i) cb(a.get(i), i, a); return a }, _mapLeft = (a, cb, copy = new Brrr()) => { for (let i = 0; i < a.length; ++i) copy.set(i, cb(a.at(i), i, a)); return a.balance() },
 _mapRight = (a, cb, copy = new Brrr()) => {  for (let i = a.length - 1; i >= 0; --i) copy.set(i, cb(a.at(i), i, a)); return a.balance() } , _filter = (a, cb) => a.filter(cb) , _reduceLeft = (a, cb, out = []) => a.reduce(cb, out),
 _reduceRight = (a, cb, out = []) => a.reduceRight(cb, out), _findLeft = (a, cb) => a.find(cb), _findRight = (a, cb) => a.findLast(cb), _repeat = (n, cb) => { let out; for (let i = 0; i < n; ++i) out = cb(); return out }, 
-_every = (a, cb) => a.every(cb), _some = (a, cb) => a.some(cb), _append = (a, value) => a.append(value), _prepemd = (a, value) => a.prepend(value), _head = (a) => a.head(), _tail = (a) => a.tail(), _cut = (a) => a.cut(), 
+_every = (a, cb) => a.every(cb), _some = (a, cb) => a.some(cb), _append = (a, value) => a.append(value), _prepend = (a, value) => a.prepend(value), _head = (a) => a.head(), _tail = (a) => a.tail(), _cut = (a) => a.cut(), 
 _chop = (a) => a.chop(), _slice = (a, n1, n2) => a.slice(n1, n2), _length = (a) => a.length, _split = (string, separator) => Brrr.from(string.split(separator)), _join = (arr, separator) => arr.join(separator), _at = (a, i) => a.at(i), _set = (a, i, value) => a.set(i, value), 
 _partition = (a, parts) => a.partition(parts), _mSort = (a, cb) => a.mergeSort(cb), _qSort = (a, dir) => a.quickSort(dir), _grp = (a, cb) => a.group(cb), _rot = (a, n, dir) => a.rotate(n, dir), _flatMap = (a, cb) => a.flatten(cb), 
 _flat = (a, n) => a.flat(n), call = (x, fn) => fn(x), printout = (...args) => console.log(...args), protolessModule = methods => { const env = Object.create(null); for (const method in methods) env[method] = methods[method]; return env }, _addAt = (a, i, v) => a.addAt(i, ...v), _removeFrom = (a, i, n) => a.removeFrom(i, n);`
 export const brrrHelpers = `
-
 /**  Helper functions */
 /** 
   If Type(x) is different from Type(y), return false.
@@ -421,7 +420,15 @@ ${languageUtilsString}
 ${lib};
 ${top}async function entry(){${program.substring(6, program.length - 4)}}`
 }
-export const compileHtml = (source, scripts = '') => {
+export const compileHtml = (
+  source,
+  scripts = `<script
+src="https://cdnjs.cloudflare.com/ajax/libs/two.js/0.8.10/two.min.js"
+integrity="sha512-D9pUm3+gWPkv/Wl6vd45vRLjdkdEKGje7BxOxYG0N6m4UlEUB7RSljBwpmJNAOuf6txLLtlaRchoKfzngr/bQg=="
+crossorigin="anonymous"
+referrerpolicy="no-referrer"
+></script>`
+) => {
   const inlined = wrapInBody(removeNoCode(source))
   const { top, program, modules } = compileToJs(parse(inlined))
   const lib = treeShake(modules)
@@ -438,12 +445,21 @@ ${languageUtilsString}
 <script> (() => { ${top}${program} })()</script>
 </body>`
 }
-export const compileHtmlModule = (source) => {
+export const compileHtmlModule = (
+  source,
+  scripts = `<script
+src="https://cdnjs.cloudflare.com/ajax/libs/two.js/0.8.10/two.min.js"
+integrity="sha512-D9pUm3+gWPkv/Wl6vd45vRLjdkdEKGje7BxOxYG0N6m4UlEUB7RSljBwpmJNAOuf6txLLtlaRchoKfzngr/bQg=="
+crossorigin="anonymous"
+referrerpolicy="no-referrer"
+></script>`
+) => {
   const inlined = wrapInBody(removeNoCode(source))
   const { top, program, modules } = compileToJs(parse(inlined))
   const lib = treeShake(modules)
   return `
 <style>body { background: #0e0e0e } </style><body>
+${scripts}
 <script type="module">
   import Brrr from '../../chip/language/extensions/Brrr.js'; 
   const VOID = 0;
@@ -456,7 +472,12 @@ export const compileHtmlModule = (source) => {
 export const interpredHtml = (
   source,
   utils = '../language/misc/utils.js',
-  scripts = ''
+  scripts = `<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/two.js/0.8.10/two.min.js"
+  integrity="sha512-D9pUm3+gWPkv/Wl6vd45vRLjdkdEKGje7BxOxYG0N6m4UlEUB7RSljBwpmJNAOuf6txLLtlaRchoKfzngr/bQg=="
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"
+  ></script>`
 ) => {
   const inlined = wrapInBody(removeNoCode(source))
   return `<style>body { background: black } </style>

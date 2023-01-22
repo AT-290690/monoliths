@@ -229,4 +229,16 @@ describe('compilation should work as expected', () => {
     deepEqual(runFromInterpreted(source3), runFromCompiled(source3))
     deepEqual(runFromInterpreted(source4), runFromCompiled(source4))
   })
+  it('~= should work', () => {
+    const source = `:= [arr; .: []];
+    ~= [loop1; -> [i;  .. [
+      =.: [arr; .:[]];
+      := [current; .> [arr]];
+      ~= [loop2; -> [j;  .. [
+       =.: [current; + [j; i]];
+      ? [> [j; 0]; loop2 [= [j; - [j; 1]]]]]]][10];
+    ? [> [i; 0]; loop1 [= [i; - [i; 1]]]]]]][10];
+    arr`
+    deepEqual(runFromInterpreted(source), runFromCompiled(source))
+  })
 })
