@@ -14,21 +14,21 @@
   --progress: #42c6ff;
   --font-family: 'Fantastic';
   --font-primary: 'Fantastic';
-  --drone1: #63379c;
-  --drone2: #9b57cf;
-  --drone3: #b495f7;
+  --drone1: #4e5058;
+  --drone2: #a0a4b0;
+  --drone3: #d8ddef;
   --drone4: #282828;
   --hover: #2eff85;
 
   --comment: #546a90;
-  --operator: #f8ca76;
+  --operator: #fbd692;
   --icons: #546a90;
 
-  --number: #42c6ff;
-  --keyword: #acb0fd;
-  --string: #96f2a9;
+  --number: #95d8f5;
+  --keyword: #e3e6ef;
+  --string: #bbe7c4;
   --bracket: #546a90;
-  --color-primary: #acb0fd;
+  --color-primary: #9fb2f8;
   --color-secondary: #42c6ff;
   --color-thirdly: #acb0fd;
   --color-fourtly: #75ff91;
@@ -94,6 +94,7 @@ body {
 #editor-container {
   z-index: 1;
   border-top: solid 1px var(--border);
+  border-bottom: solid 1px var(--border);
 }
 @keyframes fadeOutOpacity {
   0% {
@@ -131,7 +132,8 @@ body {
 }
 iframe {
   background: transparent;
-  border: solid 1px var(--border);
+  border: none;
+  border-top: solid 1px var(--border);
 }
 .header-buttons {
   /* margin-left: 20px; */

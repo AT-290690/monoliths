@@ -241,4 +241,9 @@ describe('compilation should work as expected', () => {
     arr`
     deepEqual(runFromInterpreted(source), runFromCompiled(source))
   })
+  it(':: should work', () => {
+    const source = `:= [d; :: ["x"; 10; "y"; 23]];
+    :: ["y"; 5; "m"; :: ["x"; :: ["x"; 10; "y"; d]; "y"; 23];]`
+    deepEqual(runFromInterpreted(source), runFromCompiled(source))
+  })
 })
