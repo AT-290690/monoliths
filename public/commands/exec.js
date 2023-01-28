@@ -58,6 +58,108 @@ export const execute = async (CONSOLE) => {
         State.fileTree = { ['']: Object.create(null) }
       })
       break
+    case 'SKETCH':
+      {
+        consoleElement.value = ''
+        State.cache = ''
+        const sub = PARAMS[0]
+          ? PARAMS[0][PARAMS[0].length - 1] !== '/'
+            ? PARAMS[0] + '/'
+            : PARAMS[0]
+          : ''
+        const source = `<- ["SKETCH"; "COLOR"] [LIBRARY];
+<- ["make_scene"; "set_stroke"; "no_fill"; "make_group"; "background"; "get_rotation";"width"; "height";
+  "no_stroke"; "update"; "make_rectangle"; "set_fill"; "set_opacity"; "set_position"; "insert_into_group";
+  "set_scale"; "set_rotation"; "set_screen_size"; "set_origin"; "make_group"; "UTILS"] [SKETCH];
+<- ["make_rgb_color"] [COLOR];
+<- ["make_grid"] [UTILS];
+
+:= [make_shape; -> [x; y; .. [
+  make_rectangle [x; y; 50; 50]
+  ]]];
+make_scene [300; 300; -> [.. [
+make_shape [width [0.5]; height [0.5]];
+set_screen_size [300; 300];
+update []]]];
+make_grid[]`
+        const filename = sub + '0_sketch.bit'
+        fetch(`${API}save?dir=${State.dir}&filename=${filename}`, {
+          method: 'POST',
+          'Content-Type': 'application/json',
+          credentials: 'same-origin',
+          body: JSON.stringify(matchDiff(State.cache, source)),
+        }).then(() => {
+          droneIntel(keyIcon)
+          droneButton.classList.remove('shake')
+          State.cache = source
+          State.lastSelectedFile = filename
+          checkDir(filename)
+          editor.setValue(source)
+          consoleElement.setAttribute('placeholder', `. ${filename}`)
+        })
+      }
+      break
+    case 'SKETCH_PACK':
+      {
+        consoleElement.value = ''
+        State.cache = ''
+        const sub = PARAMS[0]
+          ? PARAMS[0][PARAMS[0].length - 1] !== '/'
+            ? PARAMS[0] + '/'
+            : PARAMS[0]
+          : ''
+        Promise.all([
+          fetch(`${API}save?dir=${State.dir}&filename=${sub}0_imports.bit`, {
+            method: 'POST',
+            'Content-Type': 'application/json',
+            credentials: 'same-origin',
+            body: JSON.stringify(
+              matchDiff(
+                State.cache,
+                `<- ["SKETCH"; "COLOR"] [LIBRARY];
+<- ["make_scene"; "set_stroke"; "no_fill"; "make_group"; "background"; "get_rotation";"width"; "height";
+    "no_stroke"; "update"; "make_rectangle"; "set_fill"; "set_opacity"; "set_position"; "insert_into_group";
+    "set_scale"; "set_rotation"; "set_screen_size"; "set_origin"; "make_group"; "UTILS"] [SKETCH];
+<- ["make_rgb_color"] [COLOR];
+<- ["make_grid"] [UTILS];`
+              )
+            ),
+          }),
+          fetch(`${API}save?dir=${State.dir}&filename=${sub}1_shape.bit`, {
+            method: 'POST',
+            'Content-Type': 'application/json',
+            credentials: 'same-origin',
+            body: JSON.stringify(
+              matchDiff(
+                State.cache,
+                `:= [make_shape; -> [x; y; .. [
+  make_rectangle [x; y; 50; 50]
+]]];`
+              )
+            ),
+          }),
+          fetch(`${API}save?dir=${State.dir}&filename=${sub}2_scene.bit`, {
+            method: 'POST',
+            'Content-Type': 'application/json',
+            credentials: 'same-origin',
+            body: JSON.stringify(
+              matchDiff(
+                State.cache,
+                `make_scene [300; 300; -> [.. [
+make_shape [width [0.5]; height [0.5]];
+set_screen_size [300; 300];
+update []]]];
+make_grid[];
+`
+              )
+            ),
+          }),
+        ]).then(() => {
+          droneIntel(keyIcon)
+          droneButton.classList.remove('shake')
+        })
+      }
+      break
     case 'RUN':
     case '':
       run()

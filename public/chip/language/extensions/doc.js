@@ -44,34 +44,6 @@ export const DOCUMENTATION = {
       is_equal: `[uknown] -> 0|1`,
     },
   },
-  CANVAS: {
-    NAME: 'CANVAS',
-    quick_canvas: `[w; h; border] -> ctx`,
-    clear_rect: `[ctx; x; y; width; height] -> ctx`,
-    draw_image: `[
-    ctx;
-    image;
-    sx;
-    sy;
-    sWidth;
-    sHeight;
-    dx;
-    dy;
-    dWidth;
-    dHeight
-  ] -> ctx`,
-    set_fill_style: `[ctx; color] -> ctx`,
-    make_filled_rect: `[ctx, x, y, w, h] -> ctx`,
-    set_stroke_style: `[ctx, color] -> ctx`,
-    set_line_width: `[ctx, width] -> ctx`,
-    make_stroke: `[ctx] -> ctx`,
-    make_path: `[ctx] -> ctx`,
-    move_to: `[ctx, x, y] -> ctx`,
-    line_to: `[ctx, x, y] -> ctx`,
-    arc: `[ctx, x, y, radius, start angle, end angle, counter clockwise] -> ctx`,
-    fill: `[ctx] -> ctx`,
-    stroke: `[ctx] -> ctx`,
-  },
   DOM: {
     NAME: 'DOM',
     append_child: `[parent, child] -> parent`,
@@ -244,24 +216,24 @@ export const DOCUMENTATION = {
     ignore: `[...args] -> void`,
     listen: `[...args] -> void`,
     load: `[...args] -> void`,
-    make_arc_segment: `[...args] -> element`,
-    make_arrow: `[...args] -> element`,
+    make_arc_segment: `[x, y, innerRadius, outerRadius, startAngle, endAngle, resolution] -> element`,
+    make_arrow: `[x1, y1, x2, y2] -> element`,
     make_circle: `[x, y, r] -> element`,
     make_curve: `[...points] -> element`,
-    make_ellipse: `[...args] -> element`,
+    make_ellipse: `[x, y,	rx,	ry,	resolution] -> element`,
     make_group: `[...args] -> element`,
     make_image_sequence: `[...args] -> element`,
     make_line: `[x1, y1, x2, y2, color] -> element`,
     make_linear_gradient: `[...args] -> element`,
     make_path: `[...args] -> element`,
     make_points: `[...args] -> element`,
-    make_polygon: `[...args] -> element`,
+    make_polygon: `[x, y, radius, sides] -> element`,
     make_radial_gradient: `[...args] -> element`,
     make_rectangle: `[x, y, w, h] -> element`,
     make_rounded_rectangle: `[...args] -> element`,
-    make_sprite: `[...args] -> element`,
-    make_star: `[...args] -> element`,
-    make_text: `[...args] -> element`,
+    make_sprite: `[src, x, y, columns, rows, frameRate, autostart] -> element`,
+    make_star: `[x, y, outerRadius, innerRadius, sides] -> element`,
+    make_text: `[x, y, styles] -> element`,
     make_texture: `[...args] -> element`,
     on: `[...args] -> string`,
     off: `[...args] -> string`,

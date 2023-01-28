@@ -320,81 +320,6 @@ export const LIBRARY = {
       return arr.balance()
     },
   },
-  CANVAS: {
-    NAME: 'CANVAS',
-    quick_canvas: (w = 300, h = 300, border = 'none') => {
-      const canvas = document.createElement('canvas')
-      canvas.width = w
-      canvas.height = h
-      canvas.style.border = border
-      const ctx = canvas.getContext('2d')
-      document.body.appendChild(canvas)
-      return ctx
-    },
-    clear_rect: (ctx, x, y, width, height) => {
-      ctx.clearRect(x, y, width, height)
-      return ctx
-    },
-    draw_image: (
-      ctx,
-      image,
-      sx,
-      sy,
-      sWidth,
-      sHeight,
-      dx,
-      dy,
-      dWidth,
-      dHeight
-    ) => {
-      ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
-      return ctx
-    },
-    set_fill_style: (ctx, color) => {
-      ctx.fillStyle = color
-      return ctx
-    },
-    make_filled_rect: (ctx, x, y, w, h) => {
-      ctx.fillRect(x, y, w, h)
-      return ctx
-    },
-    set_stroke_style: (ctx, color) => {
-      ctx.strokeStyle = color
-      return ctx
-    },
-    set_line_width: (ctx, width) => {
-      ctx.lineWidth = width
-      return ctx
-    },
-    make_stroke: (ctx) => {
-      ctx.stroke()
-      return ctx
-    },
-    make_path: (ctx) => {
-      ctx.beginPath()
-      return ctx
-    },
-    move_to: (ctx, x, y) => {
-      ctx.moveTo(x, y)
-      return ctx
-    },
-    line_to: (ctx, x, y) => {
-      ctx.lineTo(x, y)
-      return ctx
-    },
-    arc: (ctx, x, y, radius, startAngle, endAngle, counterclockwise) => {
-      ctx.arc(x, y, radius, startAngle, endAngle, counterclockwise)
-      return ctx
-    },
-    fill: (ctx) => {
-      ctx.fill()
-      return ctx
-    },
-    stroke: (ctx) => {
-      ctx.stroke()
-      return ctx
-    },
-  },
   DOM: {
     NAME: 'DOM',
     append_child: (parent, child) => {
@@ -805,6 +730,29 @@ export const LIBRARY = {
 
   SKETCH: {
     NAME: 'SKETCH',
+    UTILS: {
+      NAME: 'UTILS',
+      CANVAS: () => Two.Types.canvas,
+      SVG: () => Two.Types.svg,
+      WEBGL: () => Two.Types.webgl,
+      make_grid: (size = 30, linewidth = 1, color = '#6b84b0') => {
+        const two = new Two({
+          type: Two.Types.canvas,
+          width: LIBRARY.SKETCH.engine.width,
+          height: LIBRARY.SKETCH.engine.height,
+        })
+        const a = two.makeLine(two.width / 2, 0, two.width / 2, two.height)
+        const b = two.makeLine(0, two.height / 2, two.width, two.height / 2)
+        a.stroke = b.stroke = color
+        a.linewidth = b.linewidth = linewidth
+        two.update()
+
+        const imageData = two.renderer.domElement.toDataURL('image/png')
+        LIBRARY.SKETCH.CANVAS_CONTAINER.firstChild.style.backgroundImage = `url(${imageData})`
+        LIBRARY.SKETCH.CANVAS_CONTAINER.firstChild.style.backgroundSize = `${size}px`
+      },
+    },
+
     COMMANDS: {
       NAME: 'COMMANDS',
       MOVE: () => Two.Commands.move,
@@ -875,7 +823,8 @@ export const LIBRARY = {
       LIBRARY.SKETCH.CANVAS_CONTAINER.innerHTML = ''
       LIBRARY.SKETCH.engine?.removeEventListener('update')
     },
-    make_scene: (width = 100, height = 100, callback) => {
+
+    make_scene: (width = 100, height = 100, callback, type) => {
       LIBRARY.SKETCH.engine?.removeEventListener('update')
       let container = document.getElementById('canvas-container')
       if (!container) {
@@ -885,8 +834,10 @@ export const LIBRARY = {
       }
       LIBRARY.SKETCH.CANVAS_CONTAINER = container
       LIBRARY.SKETCH.engine = new Two({
+        type,
         width,
         height,
+        autostart: true,
       }).appendTo(LIBRARY.SKETCH.CANVAS_CONTAINER)
       callback()
       return 'Scene created!'
@@ -912,19 +863,38 @@ export const LIBRARY = {
     group_children: (group) => group.children,
     width: (ratio = 1) => LIBRARY.SKETCH.engine.width * ratio,
     height: (ratio = 1) => LIBRARY.SKETCH.engine.height * ratio,
-    add: (...elements) => LIBRARY.SKETCH.engine.add(...elements),
+    insert_into_to_scene: (...elements) =>
+      LIBRARY.SKETCH.engine.add(...elements),
     clear: () => LIBRARY.SKETCH.engine.clear(),
     ignore: (...args) => LIBRARY.SKETCH.engine.ignore(...args),
     interpret: (index) =>
       LIBRARY.SKETCH.engine.interpret(document.getElementById(index)),
     listen: (...args) => LIBRARY.SKETCH.engine.listen(...args),
     load: (...args) => LIBRARY.SKETCH.engine.load(...args),
-    make_arc_segment: (...args) =>
-      LIBRARY.SKETCH.engine.makeArcSegment(...args),
-    make_arrow: (...args) => LIBRARY.SKETCH.engine.makeArrow(...args),
+    make_arc_segment: (
+      x,
+      y,
+      innerRadius,
+      outerRadius,
+      startAngle,
+      endAngle,
+      resolution
+    ) =>
+      LIBRARY.SKETCH.engine.makeArcSegment(
+        x,
+        y,
+        innerRadius,
+        outerRadius,
+        startAngle,
+        endAngle,
+        resolution
+      ),
+    make_arrow: (x1, y1, x2, y2) =>
+      LIBRARY.SKETCH.engine.makeArrow(x1, y1, x2, y2),
     make_circle: (x, y, r) => LIBRARY.SKETCH.engine.makeCircle(x, y, r),
     make_curve: (...points) => LIBRARY.SKETCH.engine.makeCurve(...points),
-    make_ellipse: (...args) => LIBRARY.SKETCH.engine.makeEllipse(...args),
+    make_ellipse: (x, y, rx, ry, resolution) =>
+      LIBRARY.SKETCH.engine.makeEllipse(x, y, rx, ry, resolution),
     make_group: (...args) => LIBRARY.SKETCH.engine.makeGroup(...args),
     make_image_sequence: (...args) =>
       LIBRARY.SKETCH.engine.makeImageSequence(...args),
@@ -937,17 +907,29 @@ export const LIBRARY = {
       LIBRARY.SKETCH.engine.makeLinearGradient(...args),
     make_path: (...args) => LIBRARY.SKETCH.engine.makePath(...args),
     make_points: (...args) => LIBRARY.SKETCH.engine.makePoints(...args),
-    make_polygon: (...args) => LIBRARY.SKETCH.engine.makePolygon(...args),
+    make_polygon: (x, y, radius, sides) =>
+      LIBRARY.SKETCH.engine.makePolygon(x, y, radius, sides),
     make_radial_gradient: (...args) =>
       LIBRARY.SKETCH.engine.makeRadialGradient(...args),
     make_rectangle: (x, y, w, h) =>
       LIBRARY.SKETCH.engine.makeRectangle(x, y, w, h),
     make_rounded_rectangle: (...args) =>
       LIBRARY.SKETCH.engine.makeRoundedRectangle(...args),
-    make_sprite: (...args) => LIBRARY.SKETCH.engine.makeSprite(...args),
-    make_star: (...args) => LIBRARY.SKETCH.engine.makeStar(...args),
-    make_text: (...args) => LIBRARY.SKETCH.engine.makeText(...args),
-    make_texture: (...args) => LIBRARY.SKETCH.engine.makeTexture(...args),
+    make_sprite: (src, x, y, columns, rows, frameRate, autostart = true) =>
+      LIBRARY.SKETCH.engine.makeSprite(
+        src,
+        x,
+        y,
+        columns,
+        rows,
+        frameRate,
+        autostart
+      ),
+    make_star: (x, y, outerRadius, innerRadius, sides) =>
+      LIBRARY.SKETCH.engine.makeStar(x, y, outerRadius, innerRadius, sides),
+    make_text: (x, y, styles) => LIBRARY.SKETCH.engine.makeText(x, y, styles),
+    make_texture: (src, callback) =>
+      LIBRARY.SKETCH.engine.makeTexture(src, callback),
     on: (...args) => LIBRARY.SKETCH.engine.on(...args),
     off: (...args) => LIBRARY.SKETCH.engine.off(...args),
     pause: (...args) => {
@@ -957,6 +939,10 @@ export const LIBRARY = {
     play: (...args) => {
       LIBRARY.SKETCH.engine.play(...args)
       return 'Playing!'
+    },
+    sprite_play: (sprite, firstFrame, lastFrame, onLastFrame) => {
+      sprite.play(firstFrame, lastFrame, onLastFrame)
+      return sprite
     },
     release: (...args) => LIBRARY.SKETCH.engine.release(...args),
     remove: (...args) => LIBRARY.SKETCH.engine.remove(...args),
