@@ -184,7 +184,7 @@ export const DOCUMENTATION = {
     clear: `[v] -> vector`,
     clone: `[v] -> vector`,
     lerp: `[v, d, t] -> vector`,
-    addself: `[v, a] -> vector`,
+    add_self: `[v, a] -> vector`,
     subtract_self: `[v, a] -> vector`,
     multiply_self: `[v, a] -> vector`,
     multiply_scalar: `[v, scalar] -> vector`,

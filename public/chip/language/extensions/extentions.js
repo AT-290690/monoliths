@@ -805,7 +805,7 @@ export const LIBRARY = {
       clear: (vec) => vec.clear(),
       clone: (vec) => vec.clone(),
       lerp: (vec, d, t) => vec.lerp(d, t),
-      addself: (vec, a) => vec.addSelf(a),
+      add_self: (vec, a) => vec.addSelf(a),
       subtract_self: (vec, a) => vec.subtractSelf(a),
       multiply_self: (vec, a) => vec.multiplySelf(a),
       multiply_scalar: (vec, scalar) => vec.multiplyScalar(scalar),
@@ -942,6 +942,14 @@ export const LIBRARY = {
     },
     sprite_play: (sprite, firstFrame, lastFrame, onLastFrame) => {
       sprite.play(firstFrame, lastFrame, onLastFrame)
+      return sprite
+    },
+    sprite_stop: (sprite) => {
+      sprite.stop()
+      return sprite
+    },
+    sprite_pause: (sprite) => {
+      sprite.pause()
       return sprite
     },
     release: (...args) => LIBRARY.SKETCH.engine.release(...args),
