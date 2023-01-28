@@ -97,15 +97,19 @@ const dfs = (
     const { type, operator, args, value } = node
     if (type === 'import' && node.class === 'string') imports.add(value)
     // if (type === 'value' && node.class === 'string') excludes.add(value)
-    else if (type === 'word' && node.name.length > 1 && !imports.has(node.name))
-      definitions.add(node.name)
     else if (
-      type === 'apply' &&
-      operator.type === 'word' &&
-      args[0]?.name?.length > 2 &&
-      args[0].name[0] !== '_'
+      type === 'word' &&
+      node.name.length > 1 &&
+      node.name[0] !== '_' &&
+      !imports.has(node.name)
     )
-      args.forEach(({ name }) => definitions.add(name))
+      definitions.add(node.name)
+    else if (type === 'apply' && operator.type === 'word')
+      args.forEach(({ name }) => {
+        if (name && name.length > 2 && name[0] !== '_') {
+          definitions.add(name)
+        }
+      })
     if (Array.isArray(args)) dfs(args, definitions, imports)
     if (Array.isArray(operator?.args)) dfs(operator.args, definitions, imports)
   }
