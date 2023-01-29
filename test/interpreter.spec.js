@@ -187,8 +187,8 @@ describe('interpretation should work as expected', () => {
       runFromInterpreted(`
         |> [
           10;
-          call [-> [x; * [x; 3]]];
-          call [-> [x; * [x; 10]]]
+          ^ [-> [x; * [x; 3]]];
+          ^ [-> [x; * [x; 10]]]
         ]`),
       300
     )
@@ -459,6 +459,26 @@ describe('interpretation should work as expected', () => {
         [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
         [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
       ]
+    )
+  })
+  it('^ should work', () => {
+    equal(
+      runFromInterpreted(`:= [x; 11; y; 23];
+    |> [x; 
+        + [y; 23; 4];
+        * [2];
+        ^ [-> [x;
+          * [x; x]
+        ]];
+       ];
+    `),
+      14884
+    )
+    equal(
+      runFromInterpreted(`|> [0; 
+        + [2];
+        ^ [-> [x; * [x; x]]]];`),
+      4
     )
   })
 })

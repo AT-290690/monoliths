@@ -764,6 +764,14 @@ export const LIBRARY = {
       anchor: (p1, p2, p3, p4, p5, p6, p7) =>
         new Two.Anchor(p1, p2, p3, p4, p5, p6, p7),
     },
+    // MATRIX: {
+    //   NAME: 'MATRIX',
+    //   make_matrix: (a, b, c, d, e, f, g, h, i) =>
+    //     new Two.Matrix(a, b, c, d, e, f, g, h, i),
+    //   get_identity: (matrix) => Two.Matrix.Identity(matrix),
+    //   multiply: (matrix, b, c) => Two.Matrix.multiply(matrix, b, c),
+    //   get_elements: (matrix) => matrix.elements,
+    // },
     PATH: {
       NAME: 'PATH',
       path_from: (points) => {
@@ -1087,7 +1095,6 @@ export const STD = {
   //       .join(';')}] [${module.NAME}];\n`
   //   )
   // },
-  call: (x, callback) => callback(x),
   tco:
     (func) =>
     (...args) => {

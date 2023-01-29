@@ -18,7 +18,7 @@ _mapRight = (a, cb, copy = new Brrr()) => {  for (let i = a.length - 1; i >= 0; 
 _reduceRight = (a, cb, out = []) => a.reduceRight(cb, out), _findLeft = (a, cb) => a.find(cb), _findRight = (a, cb) => a.findLast(cb), _repeat = (n, cb) => { let out; for (let i = 0; i < n; ++i) out = cb(); return out }, 
 _every = (a, cb) => a.every(cb), _some = (a, cb) => a.some(cb), _append = (a, value) => a.append(value), _prepend = (a, value) => a.prepend(value), _head = (a) => a.head(), _tail = (a) => a.tail(), _cut = (a) => a.cut(), 
 _chop = (a) => a.chop(), _slice = (a, n1, n2) => a.slice(n1, n2), _length = (a) => a.length, _split = (string, separator) => Brrr.from(string.split(separator)), _join = (arr, separator) => arr.join(separator), _at = (a, i) => a.at(i), _set = (a, i, value) => a.set(i, value), 
-_partition = (a, parts) => a.partition(parts), _mSort = (a, cb) => a.mergeSort(cb), _qSort = (a, dir) => a.quickSort(dir), _grp = (a, cb) => a.group(cb), _rot = (a, n, dir) => a.rotate(n, dir), _flatMap = (a, cb) => a.flatten(cb), 
+_partition = (a, parts) => a.partition(parts), _mSort = (a, cb) => a.mergeSort(cb), _qSort = (a, dir) => a.quickSort(dir), _grp = (a, cb) => a.group(cb), _rot = (a, n, dir) => a.rotate(n, dir), _flatMap = (a, cb) => a.flatten(cb), _call = (x, cb) => cb(x),
 _flat = (a, n) => a.flat(n), call = (x, fn) => fn(x), printout = (...args) => console.log(...args), protolessModule = methods => { const env = Object.create(null); for (const method in methods) env[method] = methods[method]; return env }, _addAt = (a, i, v) => a.addAt(i, ...v), _removeFrom = (a, i, n) => a.removeFrom(i, n);`
 export const brrrHelpers = `
 /**  Helper functions */

@@ -352,6 +352,12 @@ const compile = () => {
           const [array, callback, out] = tree.args.map((x) => dfs(x, locals))
           return `_reduceRight(${array}, ${callback}, ${out});`
         }
+        case '^': {
+          return `_call(${dfs(tree.args[0], locals)}, ${dfs(
+            tree.args[1],
+            locals
+          )});`
+        }
         default: {
           if (tree.operator.name)
             return (

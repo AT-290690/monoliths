@@ -106,8 +106,8 @@ describe('compilation should work as expected', () => {
   it('nested pipes should work', () => {
     const source = `|> [
         10;
-        call [-> [x; * [x; 3]]];
-        call [-> [x; * [x; 10]]]
+        ^ [-> [x; * [x; 3]]];
+        ^ [-> [x; * [x; 10]]]
       ]`
     equal(runFromInterpreted(source), runFromCompiled(source))
   })
@@ -245,5 +245,21 @@ describe('compilation should work as expected', () => {
     const source = `:= [d; :: ["x"; 10; "y"; 23]];
     :: ["y"; 5; "m"; :: ["x"; :: ["x"; 10; "y"; d]; "y"; 23];]`
     deepEqual(runFromInterpreted(source), runFromCompiled(source))
+  })
+  it('^ should work', () => {
+    const source1 = `:= [x; 11; y; 23];
+    |> [x; 
+        + [y; 23; 4];
+        * [2];
+        ^ [-> [x;
+          * [x; x]
+        ]];
+       ];
+    `
+    const source2 = `|> [0; 
+      + [2];
+      ^ [-> [x; * [x; x]]]];`
+    equal(runFromInterpreted(source1), runFromCompiled(source1))
+    equal(runFromInterpreted(source2), runFromCompiled(source2))
   })
 })

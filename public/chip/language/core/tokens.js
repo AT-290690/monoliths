@@ -840,6 +840,15 @@ const tokens = {
     env[name] = value
     return value
   },
+  ['^']: (args, env) => {
+    if (args.length != 2)
+      throw new SyntaxError('Invalid number of arguments for ^ []')
+    const entity = evaluate(args[0], env)
+    const callback = evaluate(args[1], env)
+    if (typeof callback !== 'function')
+      throw new TypeError('Second argument of ^ [] must be an -> []')
+    return callback(entity)
+  },
 }
 
 export { tokens }
