@@ -197,7 +197,7 @@ make_grid[];
         consoleElement.classList.add('info_line')
         consoleElement.classList.remove('error_line')
         const source = editor.getValue()
-        const selection = editor.getSelection()
+        const selection = editor.getSelection().trim()
         if (!selection) return (consoleElement.value = 'Nothing is selected!')
         const out = `__debug_log[${
           selection[selection.length - 1] === ';'

@@ -784,7 +784,7 @@ export const LIBRARY = {
         path.closed = false
         return path
       },
-      path: (anchors, a, b, c) => new Two.Path(anchors, a, b, c),
+      path: (anchors, a, b, c) => new Two.Path(anchors.items, a, b, c),
     },
     VECTOR: {
       NAME: 'VECTOR',
