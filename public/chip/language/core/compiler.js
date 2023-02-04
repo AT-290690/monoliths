@@ -65,11 +65,11 @@ const compile = () => {
           } ${evaluatedBody.toString().trimStart()}};`
         }
         case '~':
-          return '(' + tree.args.map((x) => dfs(x, locals)).join('+') + ')'
+          return '(' + tree.args.map((x) => dfs(x, locals)).join('+') + ');'
         case '==':
-          return '(' + tree.args.map((x) => dfs(x, locals)).join('===') + ')'
+          return '(' + tree.args.map((x) => dfs(x, locals)).join('===') + ');'
         case '!=':
-          return '(' + tree.args.map((x) => dfs(x, locals)).join('!==') + ')'
+          return '(' + tree.args.map((x) => dfs(x, locals)).join('!==') + ');'
         case '+':
         case '-':
         case '*':
@@ -83,7 +83,7 @@ const compile = () => {
             tree.args
               .map((x) => dfs(x, locals))
               .join(symbols[tree.operator.name] ?? tree.operator.name) +
-            ')'
+            ');'
           )
         case '&&':
         case '||':
@@ -100,7 +100,7 @@ const compile = () => {
             dfs(tree.args[0], locals) +
             '%' +
             dfs(tree.args[1], locals) +
-            ')'
+            ');'
           )
         case '|':
           return `(${dfs(tree.args[0], locals)}.toFixed(
@@ -127,6 +127,46 @@ const compile = () => {
             tree.args[1],
             locals
           )});`
+        case '===': {
+          const [first, ...rest] = tree.args
+          return `_every(Brrr.of(${rest
+            .map((x) => dfs(x, locals))
+            .join(',')}), x => Brrr.of(${dfs(
+            first,
+            locals
+          )}).isEqual(Brrr.of(x)));`
+        }
+        case '!==': {
+          const [first, ...rest] = tree.args
+          return `_every(Brrr.of(${rest
+            .map((x) => dfs(x, locals))
+            .join(',')}), x => !Brrr.of(${dfs(
+            first,
+            locals
+          )}).isEqual(Brrr.of(x)));`
+        }
+        case '<>':
+          return `_difference(${dfs(tree.args[0], locals)}, ${dfs(
+            tree.args[1],
+            locals
+          )});`
+        case '><':
+          return `_intersection(${dfs(tree.args[0], locals)}, ${dfs(
+            tree.args[1],
+            locals
+          )});`
+        case '</>':
+          return `_xor(${dfs(tree.args[0], locals)}, ${dfs(
+            tree.args[1],
+            locals
+          )});`
+        case '.:.':
+          return `_union(${dfs(tree.args[0], locals)}, ${dfs(
+            tree.args[1],
+            locals
+          )});`
+        case '.:+':
+          return `_fill(${dfs(tree.args[0], locals)});`
         case '><>':
           return `_findLeft(${dfs(tree.args[0], locals)}, ${dfs(
             tree.args[1],

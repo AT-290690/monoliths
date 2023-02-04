@@ -481,4 +481,44 @@ describe('interpretation should work as expected', () => {
       4
     )
   })
+  it('<> </> .:. >< should work', () => {
+    equal(
+      runFromInterpreted(
+        `|> [
+      .: [1; 2; 3; 4];
+      <> [.: [1; 2; 4]];
+      .< []
+    ];
+    `
+      ),
+      3
+    )
+    deepEqual(
+      runFromInterpreted(`|> [
+      .: [1; 2; 3; 4; 5; 6; 7];
+      </> [.: [1; 2; 4; 6]];
+    ];
+    `).items,
+      [3, 5, 7]
+    )
+
+    deepEqual(
+      runFromInterpreted(`|> [
+      .: [1; 2; 3; 4; 5; 6; 7];
+      .:. [.: [1; 2; 4; 6]];
+    ];
+    `).items,
+      [1, 2, 3, 4, 5, 6, 7, 1, 2, 4, 6]
+    )
+
+    deepEqual(
+      runFromInterpreted(`
+    |> [
+      .: [1; 2; 3; 4; 5; 6; 7];
+      >< [.: [1; 2; 4; 6]];
+    ];
+    `).items,
+      [1, 2, 4, 6]
+    )
+  })
 })

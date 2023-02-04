@@ -10,7 +10,7 @@ _spreadArr = (args) => {
     const [first, ...rest] = args
     return first.merge(...rest)
   } else return args.reduce((acc, item) => ({ ...acc, ...item }), {})
-},
+}, _difference = (a, b) => a.difference(b), _intersection = (a, b) => a.intersection(b), _xor = (a, b) => a.xor(b), _union = (a, b) => a.union(b), _fill = (n) => Brrr.from(Array.from({ length: n }).fill(null).map((_, i) => i)),
 _mapEntries = (map) => Brrr.from([...map.entries()].map(Brrr.from)), _mapKeys = (map) => Brrr.from([...map.keys()]), _mapValues = (map) => Brrr.from([...map.values()]), _mapGet = (map, key) => map.get(key), _mapSize = (map) => map.size,
 _mapRemove = (map, key) => { map.delete(key); return map }, _mapSet = (map, key, value) => { map.set(key, value); return map }, _mapHas = (map, key) => map.has(key), _scanLeft = (a, cb) => { for (let i = 0; i < a.length; ++i) cb(a.get(i), i, a); return a },
 _scanRight = (a, cb) => {  for (let i = a.length - 1; i >= 0; --i) cb(a.get(i), i, a); return a }, _mapLeft = (a, cb, copy = new Brrr()) => { for (let i = 0; i < a.length; ++i) copy.set(i, cb(a.at(i), i, a)); return a.balance() },

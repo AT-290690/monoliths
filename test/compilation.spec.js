@@ -256,10 +256,42 @@ describe('compilation should work as expected', () => {
         ]];
        ];
     `
+    equal(runFromInterpreted(source1), runFromCompiled(source1))
+
     const source2 = `|> [0; 
       + [2];
       ^ [-> [x; * [x; x]]]];`
-    equal(runFromInterpreted(source1), runFromCompiled(source1))
-    equal(runFromInterpreted(source2), runFromCompiled(source2))
+    deepEqual(runFromInterpreted(source2), runFromCompiled(source2))
+  })
+  it('<> </> .:. >< should work', () => {
+    const source1 = `|> [
+      .: [1; 2; 3; 4];
+      <> [.: [1; 2; 4]];
+      .< []
+    ];
+    `
+    deepEqual(runFromInterpreted(source1), runFromCompiled(source1))
+    const source2 = `|> [
+      .: [1; 2; 3; 4];
+      <> [.: [1; 2; 4]];
+      .< []
+    ];
+    `
+    deepEqual(runFromInterpreted(source2), runFromCompiled(source2))
+    const source3 = `|> [
+      .: [1; 2; 3; 4; 5; 6; 7];
+      .:. [.: [1; 2; 4; 6]];
+    ];
+    `
+    deepEqual(runFromInterpreted(source3), runFromCompiled(source3))
+
+    const source4 = `
+    |> [
+      .: [1; 2; 3; 4; 5; 6; 7];
+      >< [.: [1; 2; 4; 6]];
+    ];
+    `
+
+    deepEqual(runFromInterpreted(source4), runFromCompiled(source4))
   })
 })

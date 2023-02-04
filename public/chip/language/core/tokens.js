@@ -74,7 +74,7 @@ const tokens = {
       throw new RangeError('Invalid number of arguments to ~')
     const operands = args.map((a) => evaluate(a, env))
     if (operands.some((n) => typeof n !== 'string'))
-      throw new TypeError('Invalid use of ` (Not all args are strings)')
+      throw new TypeError('Invalid use of ~ (Not all args are strings)')
     const [first, ...rest] = operands
     return rest.reduce((acc, x) => (acc += x), first)
   },
@@ -299,6 +299,72 @@ const tokens = {
     for (let i = len; i >= 0; --i)
       copy.set(len - i, callback(array.get(i), i, array))
     return copy
+  },
+  ['===']: (args, env) => {
+    if (args.length < 2)
+      throw new RangeError('Invalid number of arguments to ===')
+    const [f, ...rest] = args.map((a) => evaluate(a, env))
+    const first = Brrr.of(f)
+    return +rest.every((x) => first.isEqual(Brrr.of(x)))
+  },
+  ['!==']: (args, env) => {
+    if (args.length < 2)
+      throw new RangeError('Invalid number of arguments to !==')
+    const [f, ...rest] = args.map((a) => evaluate(a, env))
+    const first = Brrr.of(f)
+    return +rest.every((x) => !first.isEqual(Brrr.of(x)))
+  },
+  ['<>']: (args, env) => {
+    if (args !== 2) {
+      if (args.length < 2)
+        throw new RangeError('Invalid number of arguments to <>')
+    }
+    const a = evaluate(args[0], env)
+    if (!(a.constructor.name === 'Brrr'))
+      throw new TypeError('First argument of <> must be an .: []')
+    const b = evaluate(args[1], env)
+    if (!(b.constructor.name === 'Brrr'))
+      throw new TypeError('Second argument of <> must be an .: []')
+    return a.difference(b)
+  },
+  ['><']: (args, env) => {
+    if (args !== 2) {
+      if (args.length < 2)
+        throw new RangeError('Invalid number of arguments to ><')
+    }
+    const a = evaluate(args[0], env)
+    if (!(a.constructor.name === 'Brrr'))
+      throw new TypeError('First argument of >< must be an .: []')
+    const b = evaluate(args[1], env)
+    if (!(b.constructor.name === 'Brrr'))
+      throw new TypeError('Second argument of >< must be an .: []')
+    return a.intersection(b)
+  },
+  ['</>']: (args, env) => {
+    if (args !== 2) {
+      if (args.length < 2)
+        throw new RangeError('Invalid number of arguments to </>')
+    }
+    const a = evaluate(args[0], env)
+    if (!(a.constructor.name === 'Brrr'))
+      throw new TypeError('First argument of </> must be an .: []')
+    const b = evaluate(args[1], env)
+    if (!(b.constructor.name === 'Brrr'))
+      throw new TypeError('Second argument of </> must be an .: []')
+    return a.xor(b)
+  },
+  ['.:.']: (args, env) => {
+    if (args !== 2) {
+      if (args.length < 2)
+        throw new RangeError('Invalid number of arguments to .:.')
+    }
+    const a = evaluate(args[0], env)
+    if (!(a.constructor.name === 'Brrr'))
+      throw new TypeError('First argument of .:. must be an .: []')
+    const b = evaluate(args[1], env)
+    if (!(b.constructor.name === 'Brrr'))
+      throw new TypeError('Second argument of .:. must be an .: []')
+    return a.union(b)
   },
   ['~::']: (args, env) => {
     if (args.length !== 2)
@@ -746,6 +812,18 @@ const tokens = {
     return Brrr.from([...map.values()])
   },
   ['.:']: (args, env) => Brrr.from(args.map((item) => extract(item, env))),
+  ['.:+']: (args, env) => {
+    if (args.length !== 1)
+      throw new RangeError('Invalid number of arguments to .:+ ')
+    const n = evaluate(args[0], env)
+    if (typeof n !== 'number')
+      throw new TypeError('Second argument of .:+ must be an number')
+    return Brrr.from(
+      Array.from({ length: n })
+        .fill(null)
+        .map((_, i) => i)
+    )
+  },
   ['<-']: (args, env) => (exp) => {
     args.forEach((arg) => {
       const method = arg.value
