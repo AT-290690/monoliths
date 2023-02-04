@@ -187,6 +187,16 @@ const compile = () => {
             tree.args[1],
             locals
           )});`
+        case '>.:':
+          return `_findIndexLeft(${dfs(tree.args[0], locals)}, ${dfs(
+            tree.args[1],
+            locals
+          )});`
+        case '.:<':
+          return `_findIndexRight(${dfs(tree.args[0], locals)}, ${dfs(
+            tree.args[1],
+            locals
+          )});`
         case '.>':
           return `_at(${dfs(tree.args[0], locals)}, 0);`
         case '.<':

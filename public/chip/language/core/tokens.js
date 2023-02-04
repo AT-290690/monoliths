@@ -7,10 +7,6 @@ export const pipe =
     fns.reduce((v, f) => f(v), x)
 const extract = (item, env) =>
   item.type === 'value' ? item.value : evaluate(item, env)
-const dfs = (tree) => {
-  callback(tree['*'])
-  for (const branch of tree['=>']) dfs(branch)
-}
 const MAX_KEY = 10
 const tokens = {
   ['+']: (args, env) => {
@@ -450,6 +446,28 @@ const tokens = {
     let out
     for (let i = 0; i < n; ++i) out = callback()
     return out
+  },
+  ['>.:']: (args, env) => {
+    if (args.length !== 2)
+      throw new RangeError('Invalid number of arguments to >:.')
+    const array = evaluate(args[0], env)
+    if (!(array.constructor.name === 'Brrr'))
+      throw new TypeError('First argument of >:. must be an .: []')
+    const callback = evaluate(args[1], env)
+    if (typeof callback !== 'function')
+      throw new TypeError('Second argument of >:. must be an -> []')
+    return array.findIndex(callback)
+  },
+  ['.:<']: (args, env) => {
+    if (args.length !== 2)
+      throw new RangeError('Invalid number of arguments to .:<')
+    const array = evaluate(args[0], env)
+    if (!(array.constructor.name === 'Brrr'))
+      throw new TypeError('First argument of .:< must be an .: []')
+    const callback = evaluate(args[1], env)
+    if (typeof callback !== 'function')
+      throw new TypeError('Second argument of .:< must be an -> []')
+    return array.findLastIndex(callback)
   },
   ['><>']: (args, env) => {
     if (args.length !== 2)

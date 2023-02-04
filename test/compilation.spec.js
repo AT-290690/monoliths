@@ -140,10 +140,15 @@ describe('compilation should work as expected', () => {
       `
     deepEqual(runFromInterpreted(source3), runFromCompiled(source3))
   })
-
   it('><> should work', () => {
-    const source = `><> [.: [1; 2; 3; 4]; -> [x; i; a; == [x; 2]]]`
-    equal(runFromInterpreted(source), runFromCompiled(source))
+    const source1 = `><> [.: [1; 2; 3; 4]; -> [x; i; a; == [x; 2]]]`
+    equal(runFromInterpreted(source1), runFromCompiled(source1))
+    const source2 = `<>< [.: [1; 2; 3; 4]; -> [x; i; a; == [x; 2]]]`
+    equal(runFromInterpreted(source2), runFromCompiled(source2))
+    const source3 = `>.: [.: [1; 2; 3; 4]; -> [x; i; a; == [x; 2]]]`
+    equal(runFromInterpreted(source3), runFromCompiled(source3))
+    const source4 = `.:< [.: [1; 2; 3; 4]; -> [x; i; a; == [x; 2]]]`
+    equal(runFromInterpreted(source4), runFromCompiled(source4))
   })
   it('>>. and .<< should work', () => {
     const source1 = `>>. [.: [1; 2; 3; 4]; -> [x; i; a; + [i; * [x; 2]]]]`
