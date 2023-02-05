@@ -1,6 +1,6 @@
-import { CodeMirror } from './chip/editor/cell.editor.bundle.js'
-import { run as chipRun } from '../chip/language/misc/utils.js'
-import { encodeBase64 } from './chip/language/misc/compression.js'
+import { CodeMirror } from './editor/cell.editor.bundle.js'
+import { run as chipRun } from './language/misc/utils.js'
+import { encodeBase64 } from './language/misc/compression.js'
 
 const consoleElement = document.getElementById('console')
 const editorContainer = document.getElementById('editor-container')
@@ -19,17 +19,6 @@ const State = {
 }
 
 const extensions = {
-  // WINDOW: () => {
-  //   const link = `https://at-290690.github.io/monoliths/public/chip/preview.html?s=`
-  //   const encoded = consoleEditor.getValue()
-  //   //window.open(link + encoded, '_blank').focus()
-  //   if (encoded)
-  //     window.open(
-  //       link + encoded,
-  //       'Bit',
-  //       `toolbar=no,width=600,height=${800},left=1300,top=150,status=no,scrollbars=no,resize=no`
-  //     )
-  // },
   LOGGER: (disable = 0) => {
     if (disable) return () => {}
     popupContainer.style.display = 'block'
