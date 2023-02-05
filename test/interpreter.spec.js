@@ -226,24 +226,12 @@ describe('interpretation should work as expected', () => {
   })
 
   it('><> should work', () => {
-    equal(
-      runFromInterpreted(`><> [.: [1; 2; 3; 4]; -> [x; i; a; == [x; 2]]]`),
-      2
-    )
-    equal(
-      runFromInterpreted(`<>< [.: [1; 2; 3; 4]; -> [x; i; a; == [x; 2]]]`),
-      2
-    )
+    equal(runFromInterpreted(`><> [.: [1; 2; 3; 4]; -> [x;  == [x; 2]]]`), 2)
+    equal(runFromInterpreted(`<>< [.: [1; 2; 3; 4]; -> [x; == [x; 2]]]`), 2)
   })
   it('>.: should work', () => {
-    equal(
-      runFromInterpreted(`>.: [.: [1; 2; 3; 4]; -> [x; i; a; == [x; 2]]]`),
-      1
-    )
-    equal(
-      runFromInterpreted(`.:< [.: [1; 2; 3; 4]; -> [x; i; a; == [x; 2]]]`),
-      1
-    )
+    equal(runFromInterpreted(`>.: [.: [1; 2; 3; 4]; -> [x; == [x; 2]]]`), 1)
+    equal(runFromInterpreted(`.:< [.: [1; 2; 3; 4]; -> [x; == [x; 2]]]`), 1)
   })
   it('>>. and .<< should work', () => {
     deepEqual(

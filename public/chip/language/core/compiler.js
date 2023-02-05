@@ -48,12 +48,10 @@ const compile = () => {
           if (res !== undefined) return `((${name}=${res}),${name});`
           break
         }
-
         case '=': {
           const res = dfs(tree.args[1], locals)
           return `((${tree.args[0].name}=${res}),${tree.args[0].name});`
         }
-
         case '->': {
           const args = tree.args
           const body = args.pop()

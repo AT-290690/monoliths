@@ -165,26 +165,6 @@ const tokens = {
     }
     return env[name]
   },
-  ['->']: (args, env) => {
-    if (!args.length) throw new SyntaxError('-> [] need a body')
-    const argNames = args.slice(0, args.length - 1).map((expr) => {
-      if (expr.type !== 'word')
-        throw new TypeError('Argument names of -> [] must be words')
-      return expr.name
-    })
-    const body = args[args.length - 1]
-    return (...args) => {
-      if (args.length !== argNames.length)
-        throw new TypeError(
-          'Invalid number of arguments for -> [] near ["' +
-            argNames.join('; ') +
-            '"]'
-        )
-      const localEnv = Object.create(env)
-      for (let i = 0; i < args.length; ++i) localEnv[argNames[i]] = args[i]
-      return evaluate(body, localEnv)
-    }
-  },
   ['=']: (args, env) => {
     if (args.length !== 2)
       throw new RangeError('Invalid number of arguments for = []')
@@ -200,6 +180,26 @@ const tokens = {
     throw new ReferenceError(
       `Tried setting an undefined variable: ${entityName} using = []`
     )
+  },
+  ['->']: (args, env) => {
+    if (!args.length) throw new SyntaxError('-> [] need a body')
+    const argNames = args.slice(0, args.length - 1).map((expr) => {
+      if (expr.type !== 'word')
+        throw new TypeError('Argument names of -> [] must be words')
+      return expr.name
+    })
+    const body = args[args.length - 1]
+    return (...args) => {
+      //     if (args.length !== argNames.length)
+      //       throw new TypeError(
+      //         'Invalid number of arguments for -> [] near ["' +
+      //           argNames.join('; ') +
+      //           '"]'
+      //       )
+      const localEnv = Object.create(env)
+      for (let i = 0; i < args.length; ++i) localEnv[argNames[i]] = args[i]
+      return evaluate(body, localEnv)
+    }
   },
   ['>-']: (args, env) => {
     if (args.length !== 2)
