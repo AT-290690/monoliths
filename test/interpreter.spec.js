@@ -523,4 +523,16 @@ describe('interpretation should work as expected', () => {
       [1, 2, 4, 6]
     )
   })
+  it('<-:: and <-.: should work', () => {
+    deepEqual(
+      runFromInterpreted(`:= [obj; :: ["x"; 10; "y"; 12; "z"; 10]];
+  <-:: [x; y; z; obj]; .:[x; y; z]`).items,
+      [10, 12, 10]
+    )
+    deepEqual(
+      runFromInterpreted(`:= [arr; .: [1; 2; 3; 4; 5; 6; 7; 8]];
+       <-.: [a; b; c; rest; arr]; .: [a; b; c; rest]`).items,
+      [1, 2, 3, [4, 5, 6, 7, 8]]
+    )
+  })
 })

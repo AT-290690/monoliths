@@ -165,6 +165,60 @@ const tokens = {
     }
     return env[name]
   },
+  ['<-::']: (args, env) => {
+    if (!args.length)
+      throw new SyntaxError('Invalid number of arguments for <-:: []')
+    const obj = evaluate(args.pop(), env)
+    if (!(obj instanceof Map))
+      throw new TypeError(`:: ${obj} is not a instance of ::`)
+    let names = []
+    for (let i = 0; i < args.length; ++i) {
+      const word = args[i]
+      if (word.type !== 'word')
+        throw new SyntaxError(
+          `First argument of <-:: [] must be word but got ${word.type ?? VOID}`
+        )
+      if (word.name.includes('.') || word.name.includes('-'))
+        throw new SyntaxError(
+          `Invalid use of operation <-:: [] [variable name must not contain . or -] but got ${name}`
+        )
+      names.push(word.name)
+    }
+    names.forEach((name) => {
+      if (obj.has(name)) env[name] = obj.get(name)
+      else
+        throw new TypeError(
+          `Key ${name} must be one of ${[...obj.keys()]} at operation <-:: []`
+        )
+    })
+    return VOID
+  },
+  ['<-.:']: (args, env) => {
+    if (!args.length)
+      throw new SyntaxError('Invalid number of arguments for <-.: []')
+    const obj = evaluate(args.pop(), env)
+    if (!(obj.constructor.name === 'Brrr'))
+      throw new TypeError(`.: ${obj} is not a instance of .:`)
+    let names = []
+    for (let i = 0; i < args.length; ++i) {
+      const word = args[i]
+      if (word.type !== 'word')
+        throw new SyntaxError(
+          `First argument of <-.: [] must be word but got ${word.type ?? VOID}`
+        )
+      if (word.name.includes('.') || word.name.includes('-'))
+        throw new SyntaxError(
+          `Invalid use of operation <-.: [] [variable name must not contain . or -] but got ${name}`
+        )
+      names.push(word.name)
+    }
+
+    names.forEach((name, i) => {
+      if (i === names.length - 1) env[name] = obj.slice(i)
+      else env[name] = obj.at(i)
+    })
+    return VOID
+  },
   ['=']: (args, env) => {
     if (args.length !== 2)
       throw new RangeError('Invalid number of arguments for = []')

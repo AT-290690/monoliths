@@ -40,7 +40,33 @@ const compile = () => {
           out += `), ${name});`
           return out
         }
+        case '<-::': {
+          let out = '(('
+          const obj = dfs(tree.args.pop(), locals)
+          for (let i = 0, len = tree.args.length; i < len; ++i) {
+            let name = tree.args[i].name
+            locals.add(name)
+            out += `${name}=${obj}.get(${`"${name}"`})${
+              i !== len - 1 ? ',' : ''
+            }`
+          }
+          out += `));`
 
+          return out
+        }
+        case '<-.:': {
+          let out = '(('
+          const obj = dfs(tree.args.pop(), locals)
+          for (let i = 0, len = tree.args.length; i < len; ++i) {
+            let name = tree.args[i].name
+            locals.add(name)
+            if (i !== len - 1) out += `${name}=${obj}.at(${i}),`
+            else out += `${name}=${obj}.slice(${i})`
+          }
+          out += `));`
+
+          return out
+        }
         case '~=': {
           const res = dfs(tree.args[1], locals)
           const name = tree.args[0].name

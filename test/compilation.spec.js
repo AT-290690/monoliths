@@ -299,4 +299,16 @@ describe('compilation should work as expected', () => {
 
     deepEqual(runFromInterpreted(source4), runFromCompiled(source4))
   })
+  it('<-:: and <-.: should work', () => {
+    const source1 = `:= [obj; :: ["x"; 10; "y"; 12; "z"; 10]];
+    <-:: [x; y; z; obj]; .:[x; y; z]`
+    deepEqual(runFromInterpreted(source1), runFromCompiled(source1))
+    const source2 = `:= [arr; .: [1; 2; 3; 4; 5; 6; 7; 8]];
+    <-.: [a; b; c; rest; arr]; .: [a; b; c; rest]`
+    deepEqual(runFromInterpreted(source2), runFromCompiled(source2))
+    const source3 = `:= [arr; .: [1; 2; 3; 4; 5; 6; 7; 8]];
+    <-.: [a; b; c; rest; arr];
+    |> [rest; .:= [a]; .:= [b]; .:= [c]];`
+    deepEqual(runFromInterpreted(source3), runFromCompiled(source3))
+  })
 })
