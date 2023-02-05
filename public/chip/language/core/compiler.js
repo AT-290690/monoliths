@@ -326,7 +326,7 @@ const compile = () => {
               }, '') +
             '])'
           )
-        case '#': {
+        case "'": {
           const names = tree.args.map(({ name }) => {
             locals.add(name)
             return `${name} = "${name}"`

@@ -1,6 +1,6 @@
 import { CodeMirror } from './chip/editor/cell.editor.bundle.js'
 import { execute } from './commands/exec.js'
-import { API, checkDir, run, State } from './commands/utils.js'
+import { API, checkDir, State } from './commands/utils.js'
 export const consoleElement = document.getElementById('console')
 export const editorContainer = document.getElementById('editor-container')
 export const mainContainer = document.getElementById('main-container')

@@ -1,0 +1,67 @@
+<head>
+  <title>Bit</title>
+  <meta name="description" content="Run hyper light programms" />
+  <link rel="icon" type="image/x-icon" href="../assets/images/file.svg" />
+  <style>
+    body {
+      background: black;
+    }
+    #container {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    #monolith {
+      width: 100%;
+      background: transparent;
+      color: white;
+      padding-left: 8px;
+      border-left: solid 1px white;
+      border-right: solid 1px white;
+      font-family: 'Drifter';
+      height: fit-content;
+      resize: none;
+      outline: none;
+    }
+    @font-face {
+      font-family: 'Drifter';
+      src: url(../assets/fonts/DrifterMono.ttf);
+    }
+    body {
+      background: #0e0e0e;
+      color: white;
+      word-break: break-all;
+      padding: 5%;
+      padding-top: 1%;
+      font-family: Drifter;
+      overflow: scroll;
+      overflow-x: hidden;
+      height: fit-content;
+    }
+
+    #monolith,
+    #monolith:hover,
+    #monolith:visited,
+    #monolith:focus,
+    #monolith:active {
+      transition: opacity 1s;
+      text-decoration: none;
+      color: inherit;
+      outline: 0;
+      cursor: context-menu;
+    }
+
+    #monolith {
+      transition: opacity 1s;
+      opacity: 0.4;
+    }
+    #monolith:hover {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <script type="module" src="decode.js"></script>
+  <div spellcheck="false" id="monolith" contenteditable></div>
+  <iframe id="container"></iframe>
+</body>

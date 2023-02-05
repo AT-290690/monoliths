@@ -412,6 +412,21 @@ make_grid[];
       editor.setValue(decompress(editor.getValue()))
       consoleElement.value = ''
       break
+    case 'URI':
+      editor.setValue(encodeURIComponent(encodeBase64(editor.getValue())))
+      consoleElement.value = ''
+      break
+    case 'IRU':
+      editor.setValue(
+        decompress(
+          LZUTF8.decompress(decodeURIComponent(editor.getValue().trim()), {
+            inputEncoding: 'Base64',
+            outputEncoding: 'String',
+          })
+        )
+      )
+      consoleElement.value = ''
+      break
     case 'COMPRESS':
       editor.setValue(
         LZUTF8.compress(compress(removeNoCode(editor.getValue())), {

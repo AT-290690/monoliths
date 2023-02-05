@@ -843,7 +843,7 @@ const tokens = {
         return temp
       }
   },
-  ['#']: (args, env) => {
+  ["'"]: (args, env) => {
     if (!args.length)
       throw new TypeErorr('Invalid number of arguments for # []')
     args.forEach(({ name, type }) => {
