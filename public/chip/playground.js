@@ -81,8 +81,6 @@ const exe = async (source) => {
     consoleElement.value = consoleElement.value.trim() || err + ' '
     droneButton.classList.remove('shake')
     droneButton.classList.add('shake')
-    // editor.focus()
-    // console.log(err)
     droneIntel(errorIcon)
   }
 }

@@ -1,5 +1,5 @@
 import { fork } from 'child_process'
-import { readFile } from 'fs/promises'
+// import { readFile } from 'fs/promises'
 import { cpus } from 'os'
 class ThreadPool {
   #counter = 0

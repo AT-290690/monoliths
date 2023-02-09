@@ -170,7 +170,7 @@ const tokens = {
       throw new SyntaxError('Invalid number of arguments for <-:: []')
     const obj = evaluate(args.pop(), env)
     if (!(obj instanceof Map))
-      throw new TypeError(`:: ${obj} is not a instance of ::`)
+      throw new TypeError(`:: ${obj} is not a instance of :: at <-::`)
     let names = []
     for (let i = 0; i < args.length; ++i) {
       const word = args[i]
@@ -845,15 +845,15 @@ const tokens = {
   },
   ["'"]: (args, env) => {
     if (!args.length)
-      throw new TypeErorr('Invalid number of arguments for # []')
+      throw new TypeErorr(`Invalid number of arguments for ' []`)
     args.forEach(({ name, type }) => {
       if (type !== 'word')
         throw new SyntaxError(
-          'Invalid use of operation # (Arguments must be words)'
+          `Invalid use of operation ' (Arguments must be words)`
         )
       if (name.includes('.') || name.includes('-'))
         throw new SyntaxError(
-          'Invalid use of operation # (variable name must not contain . or -)'
+          `Invalid use of operation ' (variable name must not contain . or -)`
         )
       env[name] = name
     })
