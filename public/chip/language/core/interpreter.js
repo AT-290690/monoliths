@@ -1,4 +1,4 @@
-const evaluate = (expr, env) => {
+export const evaluate = (expr, env) => {
   switch (expr.type) {
     case 'value':
       return expr.value
@@ -22,4 +22,6 @@ const evaluate = (expr, env) => {
     }
   }
 }
-export default evaluate
+export const runFromAST = (AST, env) => {
+  return { result: evaluate(AST, env), env }
+}

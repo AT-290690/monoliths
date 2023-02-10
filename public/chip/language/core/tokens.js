@@ -1,4 +1,4 @@
-import evaluate from './interpreter.js'
+import { evaluate } from './interpreter.js'
 import Brrr from '../extensions/Brrr.js'
 export const VOID = 0
 export const pipe =

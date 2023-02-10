@@ -1,5 +1,6 @@
 import { compileToJs } from '../core/compiler.js'
-import { cell, parse } from '../core/parser.js'
+import { parse } from '../core/parser.js'
+import { runFromAST } from '../core/interpreter.js'
 import { tokens } from '../core/tokens.js'
 import { STD, protolessModule } from '../extensions/extentions.js'
 import { removeNoCode, wrapInBody } from './helpers.js'
@@ -325,7 +326,8 @@ export const exe = (source, extensions) => {
   if (extensions) for (const ext in extensions) STD[ext] = extensions[ext]
   const ENV = protolessModule(STD)
   ENV[';;tokens'] = protolessModule(tokens)
-  const { result } = cell(ENV)(wrapInBody(source))
+  const AST = parse(wrapInBody(source))
+  const { result } = runFromAST(AST, ENV)
   return result
 }
 export const isBalancedParenthesis = (sourceCode) => {
@@ -500,7 +502,7 @@ export const compileExecutable = (source, ctx) => {
   const ENV = protolessModule(ctx)
   ENV[';;tokens'] = protolessModule(tokens)
   delete ENV[';;tokens']['<-']
-  const { AST } = cell(ENV, false)(inlined)
+  const AST = parse(inlined)
   const { top, program, modules } = compileToJs(AST, ctx)
   const lib = treeShake(modules)
   return `const VOID = 0;

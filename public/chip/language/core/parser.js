@@ -1,4 +1,3 @@
-import evaluate from './interpreter.js'
 const tailCallOpt = (children, name, parent) => {
   for (let i = 0; i < children.length; ++i)
     if (children[i].args)
@@ -114,11 +113,3 @@ export const parse = (program) => {
   }
   return result.expr
 }
-export const cell =
-  (env, run = true) =>
-  (source) => {
-    const AST = parse(source)
-    return run
-      ? { result: evaluate(AST, env), env, AST }
-      : { result: null, env, AST }
-  }
