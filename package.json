@@ -8,10 +8,6 @@
     "singleQuote": true
   },
   "scripts": {
-    "start": "node index.js",
-    "test": "mocha"
-  },
-  "devDependencies": {
-    "mocha": "^10.1.0"
+    "start": "node index.js"
   }
 }

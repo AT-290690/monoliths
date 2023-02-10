@@ -13,7 +13,7 @@ export const evaluate = (expr, env) => {
 
       const op = evaluate(expr.operator, env)
       if (typeof op !== 'function')
-        throw new TypeError(expr.operator.name + ' is not a function.')
+        throw new TypeError(expr.operator.name + ' is not a -> []')
 
       return op.apply(
         null,

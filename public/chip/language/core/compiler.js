@@ -446,7 +446,7 @@ const compile = () => {
               const imp =
                 lib.type === 'word' ? lib.name : dfs(lib, locals).slice(0, -1)
               const methods = tree.operator.args.map((x) =>
-                sanitizeProp(x.value)
+                sanitizeProp(x.name)
               )
               return methods
                 .map((method) => {

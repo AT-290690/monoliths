@@ -28,6 +28,7 @@ const tailCallOpt = (children, name, parent) => {
 const importArgs = (expr) =>
   (expr.args = expr.args.map((arg) => {
     arg.type = 'import'
+    arg.class = 'function'
     return arg
   }))
 

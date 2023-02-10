@@ -94,8 +94,8 @@ const dfs = (
   // excludes = new Set()
 ) => {
   for (const node of tree) {
-    const { type, operator, args, value } = node
-    if (type === 'import' && node.class === 'string') imports.add(value)
+    const { type, operator, args, name } = node
+    if (type === 'import') imports.add(name)
     // if (type === 'value' && node.class === 'string') excludes.add(value)
     else if (
       type === 'word' &&

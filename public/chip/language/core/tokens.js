@@ -896,9 +896,11 @@ const tokens = {
         .map((_, i) => i)
     )
   },
-  ['<-']: (args, env) => (exp) => {
+  ['<-']: (args, env) => (imp) => {
     args.forEach((arg) => {
-      const method = arg.value
+      if (!arg.name)
+        throw new TypeError(`import has to be a word but got ${method}`)
+      const method = arg.name
       if (
         method.includes('constructor') ||
         method.includes('prototype') ||
@@ -906,7 +908,7 @@ const tokens = {
       )
         throw new TypeError(`Forbidden property access ${method}`)
 
-      env[method] = exp[method]
+      env[method] = imp[method]
     })
     return VOID
   },

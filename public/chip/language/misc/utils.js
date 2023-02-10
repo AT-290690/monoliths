@@ -503,6 +503,7 @@ export const compileExecutable = (source, ctx) => {
   ENV[';;tokens'] = protolessModule(tokens)
   delete ENV[';;tokens']['<-']
   const AST = parse(inlined)
+  // const { AST } = cell(ENV, false)(inlined)
   const { top, program, modules } = compileToJs(AST, ctx)
   const lib = treeShake(modules)
   return `const VOID = 0;
